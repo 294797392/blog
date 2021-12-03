@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "outDir": "build"
+    },
+
+    "files":[
+        "main.ts",
+        "menu.ts"
+    ]
+}

@@ -1,0 +1,22 @@
+.xtaskbar{
+    width: 100%;
+    height: 30px;
+    display:flex;
+    justify-content: space-around;
+    background-color: rebeccapurple;
+    position: absolute;
+    z-index: 1;
+}
+
+.xtaskbar-app-menu{
+    width: 50%;
+    height: 100%;
+    display: flex;
+}
+
+.xtaskbar-sys-info{
+    width: 50%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
+}

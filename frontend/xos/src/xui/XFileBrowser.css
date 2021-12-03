@@ -1,0 +1,76 @@
+.xfile-browser{
+    height: 100%;
+    width: 100%;
+}
+
+
+.xfile-group{
+    margin: 20px 0 0 0;
+}
+
+.xfile-group-header{
+    height: 30px;
+    line-height: 30px;
+    display: flex;
+}
+
+.xfile-group-header-name{
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0 10px 0 0;
+}
+
+.xfile-group-header-line{
+    height: 1px;
+    background: silver;
+    flex-grow: 1;
+    margin: 14px 0 0 0;
+}
+
+.xfile-icon{
+    width: 75px;
+    height: 75px;
+    position: relative;
+    cursor: pointer;
+    margin: 5px 5px 0 0;
+    border: solid 1px transparent;
+}
+
+.xfile-icon:hover{
+    text-decoration: underline;
+    background: #d6edff;
+}
+
+.xfile-icon-selected{
+    background: #cce8ff;
+    border: solid 1px #99d1ff;
+}
+.xfile-icon-selected:hover{
+    background: #cce8ff;
+    border: solid 1px #99d1ff;
+}
+
+
+.xfile-icon-icon{
+    text-align: center;
+    margin: 10px 0 0 0;
+}
+
+.xfile-icon-img{
+    width: 32px;
+    height: 32px;
+}
+
+.xfile-icon-name{
+    width: 100%;
+    font-size: 12px;
+    text-align: center;
+    overflow: hidden;
+    user-select: none;
+}
+
+.xfile-list{
+    margin: 5px 0 0 0;
+    display: flex;
+    flex-wrap: wrap;
+}

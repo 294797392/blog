@@ -1,0 +1,23 @@
+.xapp{
+    cursor: pointer;
+}
+
+.xapp-icon{
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    border: none;
+}
+
+.xapp-img{
+    padding: 0;
+    margin: 0;
+    border: none;
+    width: 50px;
+    height: 50px;
+    vertical-align: middle; /* 默认情况下img标签下都会有一个大概5px的空白行，解决方法：https://www.jianshu.com/p/2af064692505 */
+}
+
+.xapp-name{
+    text-align: center;
+}

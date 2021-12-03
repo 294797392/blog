@@ -1,0 +1,34 @@
+@keyframes animation-xapp-scale{
+    from{}
+    to{
+        transform: scale(2);
+        transform-origin: bottom;
+    }
+}
+
+.xlpad{
+    height: 70px;
+    position: absolute;
+    bottom: 0px;
+    background-image: inherit;
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: bottom;
+    left: 50%;
+    transform: translate(-50%); /* CSS3实现居中，http://www.divcss5.com/css3-style/c50561.shtml */
+}
+
+.xlpad-apps-panel{
+    margin: 0 5px 0 5px;
+    position: relative;
+    /* position: absolute; */
+    display: flex;
+}
+
+.xlpad-app{
+    margin: 10px 5px 0 5px;
+}
+
+.xlpad-app:hover{
+    /* animation: animation-xapp-scale 100ms forwards; */
+}

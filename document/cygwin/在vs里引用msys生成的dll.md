@@ -1,0 +1,20 @@
+# 通过main函数加载msyscrt
+
+msys环境下生成的dll和可执行程序，不依赖于msvcrt，而是实现了自己的一套crt。
+
+而使用msvc创建的应用程序会依赖于msvcrt，所以在msvc里调用msys的dll文件需要手动初始化msys的crt。
+
+msys2是基于cygwin的，msys2所实现的linux适配层的原理和cygwin是一样的。通过cygwin官网的一个提示（https://cygwin.com/faq.html#faq.programming.msvs-mingw - 6.19），了解到msys生成的dll里有个导出函数叫做msys_crt0，这个函数就是初始化msys crt的函数，这个函数需要一个main函数当作参数传递给它。
+
+在调用msys_crt0初始化crt的时候会有个问题，这个函数会卡住主线程，因为我们写的main函数是通过msys_crt0去调用的，解决这个问题的办法是把msys_crt0这个函数放在msvc的main函数里执行，然后使用传递给msys_crt0的main函数作为真正的main函数。
+
+程序运行的流程就相当于先初始化msvcrt，然后在msvc的main函数里初始化msyscrt，然后使用msyscrt的main函数作为程序入口点。
+
+
+# 通过cygload加载cygwin1.dll
+cygwin的源码里有个cygload程序，这个程序演示了通过动态加载cygwin1.dll来初始化cygwin的crt。
+因为不熟悉汇编语言，在编译cygload的时候没有编译过去，所以就没有去测试cygload。
+通过查看cygload的源码，发现cygload的原理是通过修改msvc的入口函数（mainCRTStartup）来加载cygwin1.dll的，修改入口函数的主要目的是为了给进程栈预留4kb的空间，至于为什么要预留4kb的空间，没有再去深入了解了。
+使用cygload的时候，需要在vs里把入口点函数设置为cygloadCRTStartup，cygloadCRTStartup函数会先为栈预留4kb的空间，然后去调用mainCRTStartup。
+
+
