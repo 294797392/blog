@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "mm_errno.h": "c"
+        "mm_errno.h": "c",
+        "winsock2.h": "c",
+        "ylog.h": "c",
+        "string.h": "c"
     }
 }
