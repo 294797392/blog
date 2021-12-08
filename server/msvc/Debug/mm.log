@@ -1,0 +1,6 @@
+﻿  mm_main.c
+E:\oheiheiheiheihei\blog\server\source\mm_main.c(65,1): warning C4133: “初始化”: 从“Ythread *”到“mm_thread *”的类型不兼容
+E:\oheiheiheiheihei\blog\server\source\mm_main.c(153,55): warning C4133: “=”: 从“mm_thread **”到“Ythread **”的类型不兼容
+  mm.vcxproj -> E:\oheiheiheiheihei\blog\server\msvc\Debug\mm.exe
+  E:\oheiheiheiheihei\blog\server\msvc\..\depens\libY\msvc\libY.dll
+  复制了 1 个文件

@@ -3,6 +3,9 @@
         "mm_errno.h": "c",
         "winsock2.h": "c",
         "ylog.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "mm_config.h": "c",
+        "ypool.h": "c",
+        "yqueue.h": "c"
     }
 }

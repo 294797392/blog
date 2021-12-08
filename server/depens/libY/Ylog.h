@@ -11,18 +11,23 @@
 
 #include "Yfirstinclude.h"
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <wchar.h>
+
 #include "Ybase.h"
 #include "Ylogbase.h"
 
-#define YLOGD(...) Ylog_write(NULL, YLOG_LEVEL_DEBUG, __LINE__, __VA_ARGS__)
-#define YLOGI(...) Ylog_write(NULL, YLOG_LEVEL_INFO, __LINE__, __VA_ARGS__)
-#define YLOGE(...) Ylog_write(NULL, YLOG_LEVEL_ERROR, __LINE__, __VA_ARGS__)
-#define YLOGW(...) Ylog_write(NULL, YLOG_LEVEL_WARN, __LINE__, __VA_ARGS__)
+#define YLOGD(...) Y_log_write(NULL, YLOG_LEVEL_DEBUG, __LINE__, __VA_ARGS__)
+#define YLOGI(...) Y_log_write(NULL, YLOG_LEVEL_INFO, __LINE__, __VA_ARGS__)
+#define YLOGE(...) Y_log_write(NULL, YLOG_LEVEL_ERROR, __LINE__, __VA_ARGS__)
+#define YLOGW(...) Y_log_write(NULL, YLOG_LEVEL_WARN, __LINE__, __VA_ARGS__)
 
-#define YLOGCD(cate, ...) Ylog_write(cate, YLOG_LEVEL_DEBUG, __LINE__, __VA_ARGS__)
-#define YLOGCI(cate, ...) Ylog_write(cate, YLOG_LEVEL_INFO, __LINE__, __VA_ARGS__)
-#define YLOGCE(cate, ...) Ylog_write(cate, YLOG_LEVEL_ERROR, __LINE__, __VA_ARGS__)
-#define YLOGCW(cate, ...) Ylog_write(cate, YLOG_LEVEL_WARN, __LINE__, __VA_ARGS__)
+#define YLOGCD(cate, ...) Y_log_write(cate, YLOG_LEVEL_DEBUG, __LINE__, __VA_ARGS__)
+#define YLOGCI(cate, ...) Y_log_write(cate, YLOG_LEVEL_INFO, __LINE__, __VA_ARGS__)
+#define YLOGCE(cate, ...) Y_log_write(cate, YLOG_LEVEL_ERROR, __LINE__, __VA_ARGS__)
+#define YLOGCW(cate, ...) Y_log_write(cate, YLOG_LEVEL_WARN, __LINE__, __VA_ARGS__)
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,14 +38,15 @@ extern "C" {
 	 * Ylog全局初始化函数，该函数在整个应用程序里只调用一次
 	 *
 	 * 返回值：
-	 * tcpsvc对象
+	 * YERRNO
 	 */
-	YAPI int Ylog_global_init();
+	YAPI int Y_log_global_init();
 
-	YAPI void Ylog_write(const wchar_t *category, Ylog_level level, int line, const wchar_t *msg, ...);
+	YAPI void Y_log_write(const wchar_t *category, Ylog_level level, int line, const wchar_t *msg, ...);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif
+

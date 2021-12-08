@@ -3,5 +3,6 @@
 
 int mmcfg_init();
 int mmcfg_get_port();
+int mmcfg_get_thread_num();
 
 #endif

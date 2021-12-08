@@ -9,7 +9,14 @@
 #endif
 
 // 定义导出和导入符号
+// 注意，如果是链接静态库，那么不需要__declspec(dllimport)
 #ifdef Y_ENV_WIN32
+    #ifdef Y_EXPORT
+        #define YAPI __declspec(dllexport)
+    #else
+        #define YAPI __declspec(dllimport)
+    #endif
+#elif Y_ENV_MINGW
     #ifdef Y_EXPORT
         #define YAPI __declspec(dllexport)
     #else

@@ -16,4 +16,8 @@ int mmcfg_get_port()
     return MMDEF_PORT;
 }
 
+int mmcfg_get_thread_num()
+{
+    return MMDEF_THREAD_NUM;
+}
 
