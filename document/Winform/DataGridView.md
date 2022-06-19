@@ -1,0 +1,3 @@
+
+
+使用INotifyPropertyChanged去通知，即使只更改了一个属性的值，那么DataGridView的一整行都会被刷新
