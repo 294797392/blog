@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "string.h": "c",
+        "winsock2.h": "c",
+        "windows.h": "c",
+        "stdio.h": "c",
+        "zeus_request.h": "c",
+        "zeus_log.h": "c",
+        "zeus_os.h": "c",
+        "zeus_string.h": "c",
+        "stdlib.h": "c",
+        "zeus.h": "c"
+    }
+}
