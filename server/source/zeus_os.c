@@ -13,3 +13,17 @@ int zeus_os_error()
     #endif
 }
 
+void *zeus_calloc(int count, int size)
+{
+    void *mem = calloc(count, size);
+    if(mem)
+    {
+        perror("应用程序发生致命错误");
+    }
+    return mem;
+}
+
+void zeus_free(void *mem)
+{
+    free(mem);
+}

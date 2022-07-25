@@ -9,6 +9,10 @@
         "zeus_os.h": "c",
         "zeus_string.h": "c",
         "stdlib.h": "c",
-        "zeus.h": "c"
+        "zeus.h": "c",
+        "zeus_http_procotol.h": "c",
+        "zeus_packet.h": "c",
+        "zeus_const.h": "c",
+        "zeus_errno.h": "c"
     }
 }

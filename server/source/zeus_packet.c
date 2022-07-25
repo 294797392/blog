@@ -9,6 +9,7 @@
 #include "zeus_errno.h"
 #include "zeus_string.h"
 #include "zeus_const.h"
+#include "zeus_os.h"
 #include "zeus_packet.h"
 
 #define HTTP_METHOD_GET             "GET"
@@ -20,17 +21,6 @@
 #define HTTP_METHOD_DELETE          "DELETE"
 
 #define CMPMETHOD(buf, method)  strnicmp(buf, method, strlen(method)) == 0
-
-#define RECV_BUF_SIZE           512
-
-typedef enum
-{
-    ZPSR_STATE_STARTLINE,
-
-    ZPSR_STATE_HEADER,
-
-    ZPSR_STATE_BODY
-}ZEUS_PARSER_STATE;
 
 static ZEUS_HTTP_METHOD text2method(const char *method)
 {
@@ -66,75 +56,342 @@ static ZEUS_HTTP_METHOD text2method(const char *method)
     return ZHTTP_METHOD_UNKOWN;
 }
 
-int zeus_receive_packet(SOCKET client, zeus_packet *pkt)
+static int is_space(char c)
 {
-    ZEUS_PARSER_STATE psr_state = ZPSR_STATE_STARTLINE;
-    char *content = (char*)calloc(RECV_BUF_SIZE, 1);
-    int offset = 0;
+    return c == ' ' ? 1 : 0;
+}
 
-    ZEUS_HTTP_METHOD method = ZHTTP_METHOD_UNKOWN;
-    char url[ZEUS_DEF_URL_SIZE] = {'\0'};
+static int is_letter(char c)
+{
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c >= 'Z');
+}
 
-    while (1)
+static int is_number(char c)
+{
+    return c >= '0' && c <= 9;
+}
+
+static int is_method_param(char c)
+{
+    if(is_letter(c))
     {
-        int rc = recv(client, content + offset, RECV_BUF_SIZE, 0);
-        if(rc < 0)
+        return 1;
+    }
+
+    return 0;
+}
+
+static int is_url_param(char c)
+{
+    // TODO：要处理URL中含有中文的情况
+    if(is_letter(c) || is_number(c) || c == '/' || c == '\\')
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
+static int is_hdr_param(char c)
+{
+    if(is_letter(c))
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
+static int is_version_param(char c)
+{
+    // TODO：要处理URL中含有中文的情况
+    if(c != ' ')
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
+static void event_ground(const char *current, zeus_parser *psr)
+{
+    char c = current[0];
+    zeus_packet *packet = psr->packet;
+
+    if(is_method_param(c))
+    {
+        packet->method_text = current;
+        packet->method_size++;
+        psr->state = ZEUS_PSRSTAT_METHOD;
+    }
+    else
+    {
+        // ignore..
+        zprintf(ZTEXT("ground state, ignore:%c"), c);
+    }
+}
+
+static void event_method(const char *current, zeus_parser *psr)
+{
+    char c = current[0];
+    zeus_packet *packet = psr->packet;
+
+    if(is_space(c))
+    {
+        // Method结束了
+        psr->state = ZEUS_PSRSTAT_URL;
+    }
+    else
+    {
+        packet->method_size++;
+    }
+}
+
+static void event_url(const char *current, zeus_parser *psr)
+{
+    char c = current[0];
+    zeus_packet *packet = psr->packet;
+
+    if(is_url_param(c))
+    {
+        if(packet->url == NULL)
         {
-            // 如果数据报文收失败了，那么就断定为客户端已断开连接
-            return ZERR_CLIENT_DISCONNECTED;
+            packet->url = current;
+        }
+        packet->url_size++;
+    }
+    else if(is_space(c))
+    {
+        // url end
+        psr->state = ZEUS_PSRSTAT_VERSION;
+    }
+    else
+    {
+        // ignore..
+        zprintf(ZTEXT("url state, ignore:%c"), c);
+    }
+}
+
+static void event_version(const char *current, zeus_parser *psr)
+{
+    char c = current[0];
+    zeus_packet *packet = psr->packet;
+
+    if(is_version_param(c))
+    {
+        if(packet->version_text == NULL)
+        {
+            packet->version_text = current;
         }
 
-        switch (psr_state)
+        if(c != '\r')
         {
-            case ZPSR_STATE_STARTLINE:
-            {
-                int lf = zeus_charat(content + offset, '\n');
-                if(lf == -1)
+            packet->version_size++;
+        }
+    }
+    else if(c == '\n')
+    {
+        // 版本号结束了
+        psr->state = ZEUS_PSRSTAT_HDR_KEY;
+    }
+    else
+    {
+        // ignore..
+        zprintf(ZTEXT("version state, ignore:%c"), c);
+    }
+}
+
+static void event_hdr_key(const char *current, zeus_parser *psr)
+{
+    char c = current[0];
+    zeus_packet *packet = psr->packet;
+    zeus_header *hdr = NULL;
+
+    if(packet->num_hdr == 0)
+    {
+        // 第一次遇到header
+        hdr = (zeus_header*)zeus_calloc(1, sizeof(zeus_header));
+        packet->first_hdr = hdr;
+        packet->last_hdr = hdr;
+    }
+    else
+    {
+        hdr = packet->last_hdr;
+    }
+
+    if(is_hdr_param(c))
+    {
+        if(hdr->key == NULL)
+        {
+            hdr->key = current;
+        }
+
+        // accumulate header key
+        hdr->key_size++;
+    }
+    else if(c == ':')
+    {
+        psr->state = ZEUS_PSRSTAT_HDR_VAL;
+    }
+    else
+    {
+        // ignore..
+        zprintf(ZTEXT("hdr key state, ignore:%c"), c);
+    }
+}
+
+static void event_hdr_val(const char *current, zeus_parser *psr)
+{
+    char c = current[0];
+    zeus_packet *packet = psr->packet;
+    zeus_header *hdr = packet->last_hdr;
+
+    if(is_hdr_param(c))
+    {
+        if(hdr->value == NULL)
+        {
+            hdr->value = current;
+        }
+
+        // accumulate header key
+        hdr->value_size++;
+    }
+    else if(c == '\n')
+    {
+        // 此时说明一个头部结束了
+        if(stricmp(hdr->key, ZEUS_HDRKEY_CONTENT_LENGTH, hdr->key_size) == 0)
+        {
+            // TODO；解析content-length
+        }
+
+        packet->num_hdr++;
+        psr->state = ZEUS_PSRSTAT_HDR_END;
+    }
+    else
+    {
+        // ignore..
+        zprintf(ZTEXT("hdr key state, ignore:%c"), c);
+    }
+}
+
+static void event_hdr_end(const char *current, zeus_parser *psr)
+{
+    char c = current[0];
+    zeus_packet *packet = psr->packet;
+
+    if(c == '\n')
+    {
+        // 头部结束后，紧接着马上又遇到了一个\n，那就说明所有标头都收完了
+        psr->state = ZEUS_PSRSTAT_BODY;
+    }
+    else if(is_hdr_param(c))
+    {
+        // 标头下又是一个标头
+        psr->state = ZEUS_PSRSTAT_HDR_KEY;
+        zeus_header *hdr = (zeus_header*)zeus_calloc(1, sizeof(zeus_header));
+        hdr->key = current;
+        hdr->key_size++;
+        packet->last_hdr->next = hdr;
+        packet->last_hdr = hdr;
+    }
+    else
+    {
+        // ignore..
+        zprintf(ZTEXT("hdr end state, ignore:%c"), c);
+    }
+}
+
+static int event_body(const char *current, zeus_parser *psr)
+{
+    zeus_packet *packet = psr->packet;
+    if(packet->body == NULL)
+    {
+        packet->body = current;
+    }
+
+    packet->body_size++;
+
+    if(packet->body_size == psr->packet->content_length)
+    {
+        return ZERR_OK;
+    }
+
+    return ZERR_NEED_MORE;
+}
+
+int zeus_psrse_packet(zeus_parser *psr)
+{
+    zeus_packet *packet = psr->packet;
+    int start = psr->psr_offset;
+    int end = psr->datasize;
+
+    for(int i = start; i < end; i++)
+    {
+        char *current = psr->raw + psr->psr_offset;
+
+        switch (psr->state)
+        {
+            case ZEUS_PSRSTAT_GROUND:
                 {
-                    offset = strlen(content);
+                    event_ground(current, psr);
                     break;
                 }
 
-                // 解析method
-                int index = zeus_charat(content, ' ');
-                if(index == -1)
+            case ZEUS_PSRSTAT_METHOD:
                 {
-                    return ZERR_INVALID_REQUEST;
+                    event_method(current, psr);
+                    break;
                 }
 
-                method = text2method(content);
-                if(method == ZHTTP_METHOD_UNKOWN)
+            case ZEUS_PSRSTAT_URL:
                 {
-                    return ZERR_INVALID_REQUEST;
+                    event_url(current, psr);
+                    break;
                 }
 
-                int second_space = zeus_charat2(content + index + 1, ' ', url);
-                if(second_space == -1)
+            case ZEUS_PSRSTAT_VERSION:
                 {
-                    return ZERR_INVALID_REQUEST;
-                }
-                else if(second_space == -2)
-                {
-                    zprintf(ZTEXT("解析URL失败, 缓冲区不足"));
-                    return ZERR_INVALID_REQUEST;
+                    event_version(current, psr);
+                    break;
                 }
 
-                int 
-
-                if(content + lf - 1 == '\r')
+            case ZEUS_PSRSTAT_HDR_KEY:
                 {
-                    // 结尾是\r\n
-                }
-                else
-                {
-                    // 结尾是\n
+                    event_hdr_key(current, psr);
+                    break;
                 }
 
-                break;
-            }
-            
+            case ZEUS_PSRSTAT_HDR_VAL:
+                {
+                    event_hdr_val(current, psr);
+                    break;
+                }
+
+            case ZEUS_PSRSTAT_HDR_END:
+                {
+                    event_hdr_end(current, psr);
+                    break;
+                }
+
+            case ZEUS_PSRSTAT_BODY:
+                {
+                    // TODO：把body放在for循环外面执行
+                    // 因为此时是知道body的目标长度的
+                    int code = event_body(current, psr);
+                    if(code == ZERR_OK)
+                    {
+                        zprintf(ZTEXT("http packet解析完毕..."));
+                        return code;
+                    }
+                    break;
+                }
+
             default:
                 break;
         }
+
+        psr->psr_offset++;
     }
+
+    return ZERR_NEED_MORE;
 }

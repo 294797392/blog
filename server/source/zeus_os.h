@@ -14,5 +14,7 @@
 #endif
 
 int zeus_os_error();
+void *zeus_calloc(int count, int size);
+void zeus_free(void *mem);
 
 #endif

@@ -11,5 +11,7 @@
 
 
 #define ZEUS_DEF_URL_SIZE               1024
+#define ZEUS_MAX_HDR_NUM                32
+#define ZEUS_RAW_BUF_SIZE               512                 // 每次从客户端SOCKET里读取的字节数
 
 #endif

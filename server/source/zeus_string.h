@@ -34,6 +34,7 @@ extern "C" {
      * 
      * 返回值：
      * c在str字符串中的索引位置，如果没找到则返回-1
+     * str到c之间的字符数量，包含start字符和c字符
      */
     int zeus_charat(const char *str, char c);
 

@@ -1,5 +1,5 @@
 /***********************************************************************************
- * @ file    : zeus_http.h
+ * @ file    : zeus_http_procotol.h
  * @ author  : oheiheiheiheihei
  * @ version : 0.9
  * @ date    : 2022.07.24 10:07
@@ -32,6 +32,9 @@ extern "C" {
         ZHTTP_METHOD_OPTIONS,
         ZHTTP_METHOD_DELETE,
     }ZEUS_HTTP_METHOD;
+
+
+    #define ZEUS_HDRKEY_CONTENT_LENGTH                "content-length"
 
 #ifdef __cplusplus
 }
