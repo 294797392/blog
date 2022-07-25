@@ -152,18 +152,15 @@ static void event_url(const char *current, zeus_parser *psr)
     char c = current[0];
     zeus_packet *packet = psr->packet;
 
-    if(is_url_param(c))
+    if(is_space(c))
     {
-        if(packet->url == NULL)
-        {
-            packet->url = current;
-        }
-        packet->url_size++;
+        return;
     }
-    else if(is_space(c))
+    else if(is_url_param(c))
     {
-        // url end
-        psr->state = ZEUS_PSRSTAT_VERSION;
+        packet->url = current;
+        packet->url_size++;
+        psr->state = ZEUS_PSRSTAT_URL_PARAM;
     }
     else
     {
@@ -172,32 +169,65 @@ static void event_url(const char *current, zeus_parser *psr)
     }
 }
 
+static void event_url_param(const char *current, zeus_parser *psr)
+{
+    char c = current[0];
+    zeus_packet *packet = psr->packet;
+
+    if(is_space(c))
+    {
+        psr->state = ZEUS_PSRSTAT_VER;
+    }
+    else if(is_url_param(c))
+    {
+        packet->url_size++;
+    }
+    else
+    {
+        // ignore..
+        zprintf(ZTEXT("url param state, ignore:%c"), c);
+    }
+}
+
 static void event_version(const char *current, zeus_parser *psr)
 {
     char c = current[0];
     zeus_packet *packet = psr->packet;
 
-    if(is_version_param(c))
+    if(is_space(c))
     {
-        if(packet->version_text == NULL)
-        {
-            packet->version_text = current;
-        }
-
-        if(c != '\r')
-        {
-            packet->version_size++;
-        }
+        return;
     }
-    else if(c == '\n')
+    else if(is_version_param(c))
     {
-        // 版本号结束了
-        psr->state = ZEUS_PSRSTAT_HDR_KEY;
+        packet->version_text = current;
+        packet->version_size++;
+        psr->state = ZEUS_PSRSTAT_HDR_VAL_PARAM;
     }
     else
     {
         // ignore..
         zprintf(ZTEXT("version state, ignore:%c"), c);
+    }
+}
+
+static void event_ver_param(const char *current, zeus_parser *psr)
+{
+    char c = current[0];
+    zeus_packet *packet = psr->packet;
+
+    if(c == '\n')
+    {
+        psr->state = ZEUS_PSRSTAT_HDR_KEY;
+    }
+    else if(is_version_param(c))
+    {
+        packet->version_size++;
+    }
+    else
+    {
+        // ignore..
+        zprintf(ZTEXT("version param state, ignore:%c"), c);
     }
 }
 
@@ -349,9 +379,21 @@ int zeus_psrse_packet(zeus_parser *psr)
                     break;
                 }
 
-            case ZEUS_PSRSTAT_VERSION:
+            case ZEUS_PSRSTAT_URL_PARAM:
+                {
+                    event_url_param(current, psr);
+                    break;
+                }
+
+            case ZEUS_PSRSTAT_VER:
                 {
                     event_version(current, psr);
+                    break;
+                }
+
+            case ZEUS_PSRSTAT_VER_PARAM:
+                {
+                    event_ver_param(current, psr);
                     break;
                 }
 
@@ -375,8 +417,6 @@ int zeus_psrse_packet(zeus_parser *psr)
 
             case ZEUS_PSRSTAT_BODY:
                 {
-                    // TODO：把body放在for循环外面执行
-                    // 因为此时是知道body的目标长度的
                     int code = event_body(current, psr);
                     if(code == ZERR_OK)
                     {
