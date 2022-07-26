@@ -33,7 +33,6 @@ extern "C" {
         ZHTTP_METHOD_DELETE,
     }ZEUS_HTTP_METHOD;
 
-
     #define ZEUS_HDRKEY_CONTENT_LENGTH                "content-length"
 
 #ifdef __cplusplus

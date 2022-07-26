@@ -13,6 +13,8 @@
         "zeus_http_procotol.h": "c",
         "zeus_packet.h": "c",
         "zeus_const.h": "c",
-        "zeus_errno.h": "c"
+        "zeus_errno.h": "c",
+        "zeus_svc.h": "c",
+        "zeus_config.h": "c"
     }
 }
