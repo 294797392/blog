@@ -19,7 +19,10 @@
 #include "zeus_errno.h"
 #include "zeus_log.h"
 #include "zeus_os.h"
+#include "zeus_poll.h"
 #include "zeus_svc.h"
+
+#pragma comment(lib,"ws2_32.lib")
 
 struct zeus_svc_s
 {
@@ -50,6 +53,8 @@ static void zeus_accept_thread_proc(void *userdata)
             zloge(ZTEXT("accept客户端失败, %d"), error);
 			continue;
         }
+
+        FD_SET(clientfd, &svc->rdfds);
     }
 }
 
@@ -58,12 +63,16 @@ static void zeus_receive_thread_proc(void *userdata)
     zeus *z = (zeus*)userdata;
     zeus_svc *svc = z->svc;
 
+    struct timeval time;
+    memset(&time, 0, sizeof(struct timeval));
+    time.tv_usec = 50 *1000;
+
     while (1)
     {
         // 因为每次select，系统内部会修改fd_set的值，所以这里每次都要赋值创建一个新的fd_set
         fd_set readfds = svc->rdfds;
 
-        int ret = select(0, &readfds, NULL, NULL, NULL);
+        int ret = select(0, &readfds, NULL, NULL, &time);
         if (ret == 0)
 		{
 			/* timeout */
@@ -83,9 +92,15 @@ static void zeus_receive_thread_proc(void *userdata)
 		}
 		else
 		{
+            for(int i = 0; i < FD_SETSIZE; i++)
+            {
+
+            }
+
 			/* one or more fd has io event */
 			if (FD_ISSET(svc->skfd, &svc->rdfds))
 			{
+
 			}
 		}
     }
@@ -151,7 +166,6 @@ int new_zeus_svc(zeus *z)
     // 初始化select
     fd_set rdfds;
     FD_ZERO(&rdfds);
-	FD_SET(s, &rdfds);
 
     // 初始化svc
     zeus_svc *svc = (zeus_svc*)zeus_calloc(1, sizeof(zeus_svc));

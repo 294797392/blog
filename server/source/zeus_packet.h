@@ -83,7 +83,6 @@ extern "C" {
         ZEUS_PASER_STATE state;                     // 解析器状态
     }zeus_parser;
 
-
     int zeus_psrse_packet(zeus_parser *psr);
 
 #ifdef __cplusplus

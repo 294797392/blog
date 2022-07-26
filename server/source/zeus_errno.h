@@ -6,5 +6,6 @@
 #define ZERR_CLIENT_DISCONNECTED                    100
 #define ZERR_INVALID_REQUEST                        101
 #define ZERR_NEED_MORE                              102
+#define ZERR_INVALID_PARAM                          103
 
 #endif
