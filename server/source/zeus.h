@@ -8,15 +8,12 @@
 
 #include "zeus_errno.h"
 #include "zeus_config.h"
-#include "zeus_worker.h"
 #include "zeus_svc.h"
 
 typedef struct zeus_conn_s
 {
     SOCKET fd;
-
     uint64_t timestamp;
-
 }zeus_conn;
 
 typedef struct zeus_s

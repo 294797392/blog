@@ -19,13 +19,29 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\mm_config.c" />
-    <ClCompile Include="..\source\mm_main.c" />
+    <ClCompile Include="..\source\zeus.c" />
+    <ClCompile Include="..\source\zeus_config.c" />
+    <ClCompile Include="..\source\zeus_log.c" />
+    <ClCompile Include="..\source\zeus_os.c" />
+    <ClCompile Include="..\source\zeus_packet.c" />
+    <ClCompile Include="..\source\zeus_socket.c" />
+    <ClCompile Include="..\source\zeus_socket_select.c" />
+    <ClCompile Include="..\source\zeus_string.c" />
+    <ClCompile Include="..\source\zeus_svc_iocp.c" />
+    <ClCompile Include="..\source\zeus_svc_socket.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\mm_config.h" />
-    <ClInclude Include="..\source\mm_default.h" />
-    <ClInclude Include="..\source\mm_errno.h" />
+    <ClInclude Include="..\source\zeus.h" />
+    <ClInclude Include="..\source\zeus_config.h" />
+    <ClInclude Include="..\source\zeus_const.h" />
+    <ClInclude Include="..\source\zeus_errno.h" />
+    <ClInclude Include="..\source\zeus_http.h" />
+    <ClInclude Include="..\source\zeus_log.h" />
+    <ClInclude Include="..\source\zeus_os.h" />
+    <ClInclude Include="..\source\zeus_packet.h" />
+    <ClInclude Include="..\source\zeus_socket.h" />
+    <ClInclude Include="..\source\zeus_string.h" />
+    <ClInclude Include="..\source\zeus_svc.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -33,6 +49,7 @@
     <ProjectGuid>{50c690a8-6856-44e7-887b-1f11431afe7b}</ProjectGuid>
     <RootNamespace>mm</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>zeus</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -95,7 +112,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;Y_ENV_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;ZEUS_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <CompileAs>CompileAsC</CompileAs>
       <AdditionalIncludeDirectories>$(SolutionDir)../depens/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

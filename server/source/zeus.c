@@ -30,31 +30,6 @@
 #pragma comment(lib, "Ws2_32.lib")
 #endif
 
-static int start_workers(zeus *z)
-{
-    zeus_worker **workers = (zeus_worker**)calloc(z->config->num_worker, sizeof(zeus_worker));
-
-    for(int i = 0; i < z->config->num_worker)
-    {
-        zeus_worker *zw = (zeus_worker*)calloc(1, sizeof(zeus_worker));
-        zw->index = i;
-        zw->z = z;
-        zw->state = ZW_STATE_IDLE;
-        zw->event = CreateEvent(NULL, FALSE, FALSE, NULL);
-
-        workers[i] = zw;
-
-        #ifdef ZEUS_WIN32
-        _beginthread(zeus_worker_main, 0, zw);
-        #endif
-    }
-
-    z->workers = workers;
-    z->num_worker = z->config->num_worker;
-
-    return ZEUS_OK;
-}
-
 static zeus *new_zeus()
 {
     zeus *z = (zeus*)calloc(1, sizeof(zeus));
@@ -64,7 +39,7 @@ static zeus *new_zeus()
 
 int main(int argc, char **argv)
 {
-    int code = ZEUS_OK;
+    int code = ZERR_OK;
     zeus *z = NULL;
     zeus_config *config = NULL;
 
