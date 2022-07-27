@@ -1,4 +1,4 @@
-/***********************************************************************************
+﻿/***********************************************************************************
  * @ file    : zeus_default.h
  * @ author  : oheiheiheiheihei
  * @ version : 0.9
@@ -8,6 +8,8 @@
 
 #ifndef __ZEUS_LOG_H__
 #define __ZEUS_LOG_H__
+
+#define ZEUS_DEF_PORT					1018				// 默认端口号
 
 
 #define ZEUS_DEF_URL_SIZE               1024

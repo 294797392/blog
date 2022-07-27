@@ -19,18 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\zeus.c" />
+    <ClCompile Include="..\source\socket\zeus_socket_select.c" />
+    <ClCompile Include="..\source\main.c" />
     <ClCompile Include="..\source\zeus_config.c" />
     <ClCompile Include="..\source\zeus_log.c" />
     <ClCompile Include="..\source\zeus_os.c" />
-    <ClCompile Include="..\source\zeus_packet.c" />
-    <ClCompile Include="..\source\zeus_socket.c" />
-    <ClCompile Include="..\source\zeus_socket_select.c" />
+    <ClCompile Include="..\source\zeus_parser.c" />
     <ClCompile Include="..\source\zeus_string.c" />
-    <ClCompile Include="..\source\zeus_svc_iocp.c" />
-    <ClCompile Include="..\source\zeus_svc_socket.c" />
+    <ClCompile Include="..\source\zeus_svc.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\socket\zeus_socket.h" />
     <ClInclude Include="..\source\zeus.h" />
     <ClInclude Include="..\source\zeus_config.h" />
     <ClInclude Include="..\source\zeus_const.h" />
@@ -38,8 +37,7 @@
     <ClInclude Include="..\source\zeus_http.h" />
     <ClInclude Include="..\source\zeus_log.h" />
     <ClInclude Include="..\source\zeus_os.h" />
-    <ClInclude Include="..\source\zeus_packet.h" />
-    <ClInclude Include="..\source\zeus_socket.h" />
+    <ClInclude Include="..\source\zeus_parser.h" />
     <ClInclude Include="..\source\zeus_string.h" />
     <ClInclude Include="..\source\zeus_svc.h" />
   </ItemGroup>
@@ -55,26 +53,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -112,19 +110,20 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;ZEUS_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;ZEUS_WIN32;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <CompileAs>CompileAsC</CompileAs>
-      <AdditionalIncludeDirectories>$(SolutionDir)../depens/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)../source/;$(SolutionDir)../source/socket;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)../depens/libY/msvc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libY.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y $(SolutionDir)..\depens\libY\msvc\libY.dll $(OutputPath)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

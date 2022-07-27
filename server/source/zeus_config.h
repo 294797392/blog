@@ -19,6 +19,6 @@ typedef struct zeus_config_s
 
 }zeus_config;
 
-int zeus_pase_config(wchar_t *path, zeus_config **config);
+zeus_config * zeus_pase_config(wchar_t *path);
 
 #endif

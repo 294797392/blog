@@ -1,9 +1,9 @@
-/***********************************************************************************
+﻿/***********************************************************************************
  * @ file    : zeus_packet.h
  * @ author  : oheiheiheiheihei
  * @ version : 0.9
  * @ date    : 2022.07.24 0:03
- * @ brief   : 解析HTTP数据包，使用状态机模式来解析HTTP数据包
+ * @ brief   : HTTP数据包解析器，使用状态机模式来解析HTTP数据包
  ************************************************************************************/
 
 #ifndef __ZEUS_PACKET_H__
@@ -14,7 +14,7 @@
 #endif
 
 #include "zeus_const.h"
-#include "zeus_http_procotol.h"
+#include "zeus_http.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,9 +42,9 @@ extern "C" {
     typedef struct zeus_header_s zeus_header;
     struct zeus_header_s
     {
-        char *key;
+        const char *key;
         int key_size;
-        char *value;
+        const char *value;
         int value_size;
         zeus_header *next;  // 下一个header
     };
@@ -53,14 +53,14 @@ extern "C" {
     typedef struct zeus_packet_s
     {
         ZEUS_HTTP_METHOD method;                    // 请求方法
-        char *method_text;                          // Method文本
+        const char *method_text;                          // Method文本
         size_t method_size;
 
         ZEUS_HTTP_VERSION version;                  // http版本号
-        char *version_text;
+        const char *version_text;
         size_t version_size;
 
-        char *url;                                  // 请求的资源的URL，相对URL
+        const char *url;                                  // 请求的资源的URL，相对URL
         size_t url_size;                            // URL的长度
 
         zeus_header *first_hdr;                     // header链表
@@ -68,7 +68,7 @@ extern "C" {
         int num_hdr;                                // HTTP头的数量
         int content_length;                         // 从header解析出来的content-length
 
-        char *body;
+        const char *body;
         int body_size;
     }zeus_packet;
 

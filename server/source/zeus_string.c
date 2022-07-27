@@ -1,4 +1,4 @@
-
+﻿
 #include <stdlib.h>
 #include <stdio.h>
 #include <wchar.h>
@@ -7,6 +7,7 @@
 
 void zprintf(zchar *format, ...)
 {
-    wprintf(format);
+    printf("%s\n", format);
+    //wprintf(L"%s", format);
 }
 
