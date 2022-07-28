@@ -1,4 +1,4 @@
-#include <stdlib.h>
+﻿#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -16,7 +16,7 @@ int zeus_os_error()
 void *zeus_calloc(int count, int size)
 {
     void *mem = calloc(count, size);
-    if(mem)
+    if(mem == NULL)
     {
         perror("应用程序发生致命错误");
     }

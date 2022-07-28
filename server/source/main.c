@@ -23,29 +23,45 @@
 #include "zeus_string.h"
 #include "zeus_os.h"
 #include "zeus_log.h"
+#include "zeus_parser.h"
 #include "zeus.h"
-#include "zeus_worker.h"
+#include "zeus_svc.h"
 
 #ifdef ZEUS_WIN32
 #pragma comment(lib, "Ws2_32.lib")
 #endif
 
-static zeus *new_zeus()
+typedef struct zeus_s
 {
-    zeus *z = (zeus*)calloc(1, sizeof(zeus));
+    zeus_config *config;
+    zeus_svc *socket;
+}zeus;
 
-    return z;
+static void handle_client_new_data(zeus_svc *socketops, SOCKET fd, const char *data, size_t datasize, void *userdata)
+{
 }
 
 int main(int argc, char **argv)
 {
+#ifdef ZEUS_WIN32
+    WORD version = MAKEWORD(1, 1);
+    WSADATA wsaData;
+    int rc = WSAStartup(version, &wsaData);
+#endif // ZEUS_WIN32
+
     int code = ZERR_OK;
-    zeus *z = NULL;
     zeus_config *config = NULL;
+    zeus_svc *svc_socket = NULL;
+    zeus *z = NULL;
 
-    z = new_zeus();
+    // 实例化变量
+    z = (zeus *)zeus_calloc(1, sizeof(zeus));
+    config = zeus_pase_config(L"");
+    svc_socket = new_zeus_svc(config->listen_port, ZSOCKET_IO_MODE_SELECT);
+    zeus_svc_register_new_data_callback(svc_socket, handle_client_new_data, z);
 
-    zeus_pase_config("", &config);
+    z->config = config;
+    z->socket = svc_socket;
 
     zlogi(ZTEXT("zeus正在运行..."));
 

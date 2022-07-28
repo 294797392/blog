@@ -1,4 +1,4 @@
-/***********************************************************************************
+﻿/***********************************************************************************
  * @ file    : zeus_string.h
  * @ author  : oheiheiheiheihei
  * @ version : 0.9
@@ -11,7 +11,8 @@
 
 
 #ifdef ZEUS_WIN32
-#define ZTEXT(string) L##string
+//#define ZTEXT(string) L##string
+#define ZTEXT(string) string
 #elif ZEUS_LINUX
 #define ZTEXT(string)
 #endif
@@ -20,7 +21,8 @@
 extern "C" {
 #endif
 
-    typedef wchar_t zchar;
+    //typedef wchar_t zchar;
+    typedef char zchar;
 
     void zprintf(zchar *format, ...);
 

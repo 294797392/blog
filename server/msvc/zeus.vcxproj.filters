@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="socket">
+      <UniqueIdentifier>{77f993e7-2aff-4a38-aaeb-1d4db59c2144}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\socket\zeus_socket_select.c">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main.c" />
+    <ClCompile Include="..\source\zeus_config.c" />
+    <ClCompile Include="..\source\zeus_log.c" />
+    <ClCompile Include="..\source\zeus_os.c" />
+    <ClCompile Include="..\source\zeus_parser.c" />
+    <ClCompile Include="..\source\zeus_string.c" />
+    <ClCompile Include="..\source\zeus_svc.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\zeus_config.h" />
+    <ClInclude Include="..\source\zeus_const.h" />
+    <ClInclude Include="..\source\zeus_errno.h" />
+    <ClInclude Include="..\source\zeus_http.h" />
+    <ClInclude Include="..\source\zeus_log.h" />
+    <ClInclude Include="..\source\zeus_os.h" />
+    <ClInclude Include="..\source\zeus_parser.h" />
+    <ClInclude Include="..\source\zeus_string.h" />
+    <ClInclude Include="..\source\zeus_svc.h" />
+    <ClInclude Include="..\source\socket\zeus_socket.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\zeus.h" />
+  </ItemGroup>
+</Project>

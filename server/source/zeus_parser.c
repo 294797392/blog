@@ -1,4 +1,4 @@
-#include <stdlib.h>
+﻿#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -10,7 +10,7 @@
 #include "zeus_string.h"
 #include "zeus_const.h"
 #include "zeus_os.h"
-#include "zeus_packet.h"
+#include "zeus_parser.h"
 
 #define HTTP_METHOD_GET             "GET"
 #define HTTP_METHOD_HEAD            "HEAD"
@@ -289,7 +289,7 @@ static void event_hdr_val(const char *current, zeus_parser *psr)
     else if(c == '\n')
     {
         // 此时说明一个头部结束了
-        if(stricmp(hdr->key, ZEUS_HDRKEY_CONTENT_LENGTH, hdr->key_size) == 0)
+        if(strnicmp(hdr->key, ZEUS_HDRKEY_CONTENT_LENGTH, hdr->key_size) == 0)
         {
             // TODO；解析content-length
         }
