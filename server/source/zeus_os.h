@@ -9,8 +9,13 @@
 #ifndef __ZEUS_MISC_H__
 #define __ZEUS_MISC_H__
 
+#ifdef ZEUS_WIN32
+#include <WinSock2.h>
+#include <Windows.h>
+#endif
 
 #ifdef ZEUS_WIN32
+typedef SOCKET zfd;
 #endif
 
 int zeus_os_error();

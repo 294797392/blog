@@ -9,7 +9,6 @@
 
 #include "zeus_log.h"
 #include "zeus_os.h"
-#include "zeus_socket.h"
 #include "zeus_errno.h"
 
 extern struct zeus_socket_s socket_io_select;
@@ -18,7 +17,7 @@ static struct zeus_socket_s *socket_io_list[] =
     &socket_io_select,
 };
 
-zeus_svc *new_zeus_svc(int port, ZEUS_SOCKET_MODE mode)
+zeus_svc *new_zeus_svc(int port)
 {
     zeus_svc *svc = (zeus_svc *)zeus_calloc(1, sizeof(zeus_svc));
     svc->port = port;

@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\socket\zeus_socket_select.c" />
+    <ClCompile Include="..\source\event\zeus_driver_select.c" />
     <ClCompile Include="..\source\main.c" />
     <ClCompile Include="..\source\zeus_config.c" />
     <ClCompile Include="..\source\zeus_log.c" />
@@ -29,7 +29,7 @@
     <ClCompile Include="..\source\zeus_svc.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\socket\zeus_socket.h" />
+    <ClInclude Include="..\source\event\zeus_event_driver.h" />
     <ClInclude Include="..\source\zeus.h" />
     <ClInclude Include="..\source\zeus_config.h" />
     <ClInclude Include="..\source\zeus_const.h" />
@@ -113,7 +113,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;ZEUS_WIN32;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <CompileAs>CompileAsC</CompileAs>
-      <AdditionalIncludeDirectories>$(SolutionDir)../source/;$(SolutionDir)../source/socket;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)../source/;$(SolutionDir)../source/event;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

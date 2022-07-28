@@ -9,11 +9,7 @@
 #ifndef __ZEUS_SOCKET_H__
 #define __ZEUS_SOCKET_H__
 
-#ifdef ZEUS_WIN32
-#include <WinSock2.h>
-#include <Windows.h>
-#endif
-
+#include "zeus_os.h"
 #include "zeus.h"
 
 #ifdef __cplusplus
