@@ -4,6 +4,9 @@
     <Filter Include="event">
       <UniqueIdentifier>{77f993e7-2aff-4a38-aaeb-1d4db59c2144}</UniqueIdentifier>
     </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{a3d7402f-d80b-4a8b-8ab6-4d9a1d7a8b23}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\main.c" />
@@ -22,6 +25,9 @@
     <ClCompile Include="..\source\event\zeus_event.c">
       <Filter>event</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\core\zeus_pool.c">
+      <Filter>core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\zeus_config.h" />
@@ -39,6 +45,9 @@
     <ClInclude Include="..\source\zeus_parser.h" />
     <ClInclude Include="..\source\event\zeus_event.h">
       <Filter>event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\core\zeus_pool.h">
+      <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
