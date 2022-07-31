@@ -12,14 +12,19 @@
 #include "zeus_os.h"
 #include "zeus_errno.h"
 #include "zeus.h"
-#include "zeus_event.h"
 #include "zeus_event_driver.h"
 
 typedef struct select_ctx_s
 {
-	zfd socket;
+	zfd svc;
 	fd_set rdfds;
+	fd_set wrfds;
 }select_ctx;
+
+static select_ctx select_contetx =
+{
+	.svc = 0,
+};
 
 //static void handle_new_client(zeus_svc *svc)
 //{
@@ -106,88 +111,30 @@ typedef struct select_ctx_s
 //	}
 //}
 
-static void *select_initialize(zeus_event_driver *drv)
+static int select_initialize(zeus_event_driver *drv)
 {
-	return NULL;
+	select_ctx *ctx = (select_ctx *)zeus_calloc(1, sizeof(select_ctx));
 
-	//select_ctx *sctx = (select_ctx *)zeus_calloc(1, sizeof(select_ctx));
-//
-//#ifdef ZEUS_UNIX
-//	/*
-// * 如果客户端socket已经关闭，服务端继续向socket写数据，内核会发出SIGPIPE信号。
-// * 默认的操作是终止进程，但该信号可以被捕获并处理。
-// * 设置SIG_IGN选项忽略该信号
-// */
-//	signal(SIGPIPE, SIG_IGN);
-//#endif
-//
-//	int error = 0;
-//	int port = svc->port;
-//	SOCKET s = -1;
-//
-//	// 新建一个socket
-//	if((s = socket(PF_INET, SOCK_STREAM, 0)) == -1)
-//	{
-//		error = zeus_os_error();
-//		zloge(ZTEXT("socket初始化失败, %d"), error);
-//		return NULL;
-//	}
-//
-//	// 设置Socket选项，当程序异常退出之后再次打开程序的时候端口还可以继续使用
-//	int on = 1;
-//	if(setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on)) < 0)
-//	{
-//		error = zeus_os_error();
-//		zloge(ZTEXT("setsockopt失败, SO_REUSEADDR, %d"), error);
-//		return NULL;
-//	}
-//
-//	// 设置要侦听的网络接口和端口
-//	struct sockaddr_in bdaddr;
-//	bdaddr.sin_family = PF_INET;
-//	bdaddr.sin_port = htons(port);
-//	bdaddr.sin_addr.s_addr = INADDR_ANY;
-//	memset(&(bdaddr.sin_zero), 0, sizeof(bdaddr.sin_zero));
-//
-//	// 绑定
-//	if(bind(s, (struct sockaddr *)&bdaddr, sizeof(struct sockaddr)) < 0)
-//	{
-//		error = zeus_os_error();
-//		zloge(ZTEXT("bind失败, %d"), error);
-//		return NULL;
-//	}
-//
-//	// 开始监听
-//	if(listen(s, 5) < 0)
-//	{
-//		error = zeus_os_error();
-//		zloge(ZTEXT("listen失败, %d"), error);
-//		return NULL;
-//	}
-//
-//	// 初始化select
-//	FD_ZERO(&sctx->rdfds);
-//	FD_SET(s, &sctx->rdfds);
-//	sctx->socket = s;
-//	svc->fd = s;
-//
-//	return sctx;
+	FD_ZERO(&ctx->rdfds);
+	FD_ZERO(&ctx->wrfds);
+
+	return NULL;
 }
 
 static int select_add_event(zeus_event_driver *drv, zeus_event *evt)
 {
-
 }
 
 static void select_remove_event(zeus_event_driver *drv, zeus_event *evt)
 {
 }
 
-struct zeus_event_driver_operation_s select_driver =
+struct zeus_event_driver_operation_s zeus_event_driver_select =
 {
 	.name = "select",
 	.author = "",
 	.type = ZEUS_EVT_DRV_SELECT,
+	.context = &select_contetx,
 	.initialize = select_initialize,
 	.add_event = select_add_event,
 	.remove_event = select_remove_event,

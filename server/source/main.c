@@ -26,20 +26,11 @@
 #include "zeus_parser.h"
 #include "zeus.h"
 #include "zeus_svc.h"
+#include "zeus_event_driver.h"
 
 #ifdef ZEUS_WIN32
 #pragma comment(lib, "Ws2_32.lib")
 #endif
-
-typedef struct zeus_s
-{
-    zeus_config *config;
-    zeus_svc *socket;
-}zeus;
-
-static void handle_client_new_data(zeus_svc *socketops, SOCKET fd, const char *data, size_t datasize, void *userdata)
-{
-}
 
 int main(int argc, char **argv)
 {
@@ -51,17 +42,29 @@ int main(int argc, char **argv)
 
     int code = ZERR_OK;
     zeus_config *config = NULL;
-    zeus_svc *svc_socket = NULL;
+    zeus_event_driver *event_driver = NULL;
+    zeus_svc *svc = NULL;
     zeus *z = NULL;
 
     // 实例化变量
     z = (zeus *)zeus_calloc(1, sizeof(zeus));
+    
+    // 解析配置文件
     config = zeus_pase_config(L"");
-    svc_socket = new_zeus_svc(config->listen_port, ZSOCKET_IO_MODE_SELECT);
-    zeus_svc_register_new_data_callback(svc_socket, handle_client_new_data, z);
+
+    // 初始化事件监控模块，对文件描述符进行监控
+    event_driver = new_event_driver(config);
+
+    // 初始化服务
+    svc = new_zeus_svc(config);
+
+
+    //zeus_event_driver_add_event(event_driver, 
+
 
     z->config = config;
-    z->socket = svc_socket;
+    z->svc = svc;
+    z->event_driver = event_driver;
 
     zlogi(ZTEXT("zeus正在运行..."));
 

@@ -1,24 +1,29 @@
-ï»¿/***********************************************************************************
- * @ file    : zeus_poll.h
+/***********************************************************************************
+ * @ file    : zeus.h
  * @ author  : oheiheiheiheihei
  * @ version : 0.9
- * @ date    : 2022.07.26 21:00
- * @ brief   : å°è£…socketç½‘ç»œæ¨¡å‹ï¼ˆselectï¼Œepollï¼ŒIOCP..ï¼‰
+ * @ date    : 2022.07.28 00:54
+ * @ brief   : ¶¨Òå¹«¹²ÀàĞÍ
  ************************************************************************************/
 
-#ifndef __ZEUS_SOCKET_H__
-#define __ZEUS_SOCKET_H__
+#ifndef __ZEUS_EVENT_H__
+#define __ZEUS_EVENT_H__
 
 #include "zeus_os.h"
-#include "zeus.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+	typedef struct zeus_event_s zeus_event;
+
+	typedef int(*zeus_event_handler)(zeus_event *evt);
+
+	zeus_event *new_zeus_event(zfd fd, zeus_event_handler handler);
+	void free_zeus_event(zeus_event *evt);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-

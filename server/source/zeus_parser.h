@@ -1,17 +1,13 @@
 ﻿/***********************************************************************************
- * @ file    : zeus_packet.h
+ * @ file    : zeus_parser.h
  * @ author  : oheiheiheiheihei
  * @ version : 0.9
  * @ date    : 2022.07.24 0:03
  * @ brief   : HTTP数据包解析器，使用状态机模式来解析HTTP数据包
  ************************************************************************************/
 
-#ifndef __ZEUS_PACKET_H__
-#define __ZEUS_PACKET_H__
-
-#ifdef ZEUS_WIN32
-#include <Windows.h>
-#endif
+#ifndef __ZEUS_PARSER_H__
+#define __ZEUS_PARSER_H__
 
 #include "zeus_const.h"
 #include "zeus_http.h"

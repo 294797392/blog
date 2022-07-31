@@ -2,10 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef ZEUS_WIN32
-#include <Windows.h>
-#endif
-
 #include "zeus_errno.h"
 #include "zeus_string.h"
 #include "zeus_const.h"

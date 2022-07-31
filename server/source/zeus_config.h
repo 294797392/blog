@@ -11,12 +11,13 @@
 
 typedef struct zeus_config_s
 {
-    char listen_addr[128];
-    int listen_port;
+	char listen_addr[128];
+	int listen_port;
 
-    // 工作者线程的数量
-    int num_worker;
+	// 工作者线程的数量
+	int num_worker;
 
+	int event_driver_type;
 }zeus_config;
 
 zeus_config * zeus_pase_config(wchar_t *path);

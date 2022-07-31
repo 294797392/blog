@@ -1,23 +1,38 @@
-## 缘由
+
+<link rel="stylesheet" type="text/css" href="module.css">
+
+# 缘由
 
 最近想写一个属于自己的HTTP服务器，并把自己写的网站挂上去，但是没有什么开发HTTP的经验，很多问题不知道该如何处理，比如HTTP的客户端连接管理，HTTP长连接如何实现等等..，
 此时就想到了nginx-一个开源的web服务器，先学习下它的源码，看它是怎么做的，然后可以模仿它的思路去写自己的服务器，这样就可以少走很多弯路。
 
 nginx源码在逻辑上分为几个不同的模块，分别是event...
 
-## 模块介绍
-
-* ngx_init_cycle 
+* __ngx_init_cycle__  
 nginx源码中有一个核心结构体，叫做ngx_cycle_t，这个结构体里包含了nginx运行的时候所需要的所有的数据和对象
 
-## nginx启动过程
+# nginx启动过程
 
-首先从main函数开始，在core/nginx.c文件里，ngx_init_cycle，顾名思义，作用就是初始化ngx_cycle_t结构体，结构体里包含了所有的module，首先会调用ngx_cycle_modules对ngx_cycle_t结构体里的modules字段进行初始化，
-modules字段里包含了nginx里所有的模块，然后创建核心模块（NGX_CORE_MODULE）的配置文件（module->create_conf），然后会调用module->init_conf，进行初始化配置文件，接着socket监听端口，然后调用ngx_init_modules，这个函数比较关键，会对nginx里的所有模块进行初始化，最后会对父子进程的一些东西进行处理。
+* main -> ngx_init_cycle
+* main -> ngx_init_cycle -> ngx_init_modules
+* main -> ngx_single_process_cycle  
+  这个函数会处理整个应用程序的主循环，对socket的监控就是在这个函数里做的
+* main -> ngx_single_process_cycle -> init_process  
+  这个阶段会调用所有模块的process_init函数对模块进行初始化操作（ngx_process_cycle.c 774 - 781行）  
+  ngx_event_core_module的process_init函数就是在这个阶段被调用的  
+  ngx_event_core_module的process_init函数里会调用ngx_event_module.actions.init函数初始化事件模型（ngx_event.c 658 - 675行）  
+  ngx_event_module就是对各种事件模型的封装（select, epoll, poll, kqueue等等..）
+* main->ngx_single_process_cycle -> ngx_process_events_and_timers  
+  这个函数被放在了一个while(true)的结构里，此时所有的模块都初始化完毕了，开始整个应用程序的主循环  
+  这个函数里会调用ngx_process_events这个宏，ngx_process_events宏就会调用ngx_event_module的process_events函数指针对监控的事件进行处理
+
+
+首先从main函数开始，在core/nginx.c文件里，ngx_init_cycle，顾名思义，作用就是初始化ngx_cycle_t结构体，结构体里包含了所有的module，首先会调用ngx_cycle_modules对ngx_cycle_t结构体里的modules字段进行初始化，modules字段里包含了nginx里所有的模块。
+然后创建核心模块（NGX_CORE_MODULE）的配置文件（module->create_conf），然后会调用module->init_conf，进行初始化配置文件，接着socket监听端口，然后调用ngx_init_modules，这个函数比较关键，会对nginx里的所有模块进行初始化，最后会对父子进程的一些东西进行处理。
 
 这里主要关注ngx_cycle_modules和ngx_init_modules这两个函数，这两个函数都在ngx_module.c文件里
 
-ngx_cycle_moudles:
+## ngx_cycle_moudles:
 ```c
 ngx_int_t
 ngx_cycle_modules(ngx_cycle_t *cycle)
@@ -44,7 +59,7 @@ ngx_cycle_modules(ngx_cycle_t *cycle)
 ```
 代码很容易理解，就是把全局的ngx_modules拷贝到了cycle结构体的modules字段里。
 
-ngx_init_modules：
+## ngx_init_modules：
 ```c
 ngx_int_t
 ngx_init_modules(ngx_cycle_t *cycle)
@@ -61,9 +76,9 @@ ngx_init_modules(ngx_cycle_t *cycle)
 
     return NGX_OK;
 }
-这个函数里会调用所有模块的init_module函数指针，如果某个模块的init_module返回值不是NGX_OK，那么就会停止初始化```
-
-模块的启动流程到这里就基本结束了，剩下的就是看每个模块是怎么实现的了。
+```
+这个函数里会调用所有模块的init_module函数指针，如果某个模块的init_module返回值不是NGX_OK，那么就会停止初始化
+模块的启动流程到这里就基本结束了，
 
 
 
@@ -126,14 +141,34 @@ NGX_EVENT_CONF：事件模块配置文件
 其中与启动流程关联最大的字段就是init_module和init_process这两个函数指针，这两个函数指针会在ngx_init_cycle里被调用。
 初始化的调用流程很简单，就是init_module -> init_process -> event_module.process_event
 
-## event模块解析
+# event模块解析
 
-event模块的主要作用是监控文件描述符的可读和可写的状态，ngx_event_t结构体用来封装一个文件描述符，event模块对ngx_event_t进行监控。
+event模块总体架构：
+
+<table class="table_event_modules">
+<tr>
+<td align="middle"><div>ngx_devpoll_module</div></td>
+<td align="middle"><div>ngx_epoll_module</div></td>
+<td align="middle"><div>ngx_eventport_module</div></td>
+</tr>
+<tr>
+<td align="middle"><div>ngx_iocp_module</div></td>
+<td align="middle"><div>ngx_kqueue_module</div></td>
+<td align="middle"><div>ngx_poll_module</div></td>
+</tr>
+<tr>
+<td align="middle"><div>ngx_select_module</div></td>
+<td align="middle"><div>ngx_win32_poll_module</div></td>
+<td align="middle"><div>ngx_win32_select_module</div></td>
+</tr>
+<tr>
+<td align="middle" colspan="3"><div class="ngx_event_core_module">ngx_event_core_module</div></td>
+</tr>
+</table>
+
+event模块的主要作用是监控文件描述符的可读和可写的状态，ngx_event_t结构体用来封装一个事件，实际上就是对文件描述符的封装，event模块对ngx_event_t进行监控。
 如果一个ngx_event_t可读或者可写，那么event模块就会调用ngx_event_t对应的handler去处理事件。
-与event模块相关的代码在event目录里。ngx_event_xxx.c封装了不同ngx_event_t的handler实现，event/modules目录下对不同操作系统下的文件描述符的io模型进行了封装（比如select模型，windows下的iocp模型，linux下的epoll和poll模型），
-所以nginx支持使用多种方式去对文件描述符进行监控和管理，扩展性很好。
-
-
+与event模块相关的代码在event目录里。ngx_event_xxx.c封装了不同ngx_event_t的handler实现，event/modules目录下对不同操作系统下的事件模型进行了封装（比如select模型，windows下的iocp模型，linux下的epoll和poll模型），所以nginx支持使用多种事件模型进行事件管理，扩展性很好。
 
 在分析之前需要先分析event模块的两个核心结构体：
 ```C
@@ -170,9 +205,6 @@ add：增加一个要监控的ngx_event_t
 del：删除一个不需要监控的ngx_event_t
 process_events：该函数在main函数中被周期性的调用，每调用一次，event模块就会监控一次模块里的所有的ngx_event_t，当某个ngx_event_t可读或者可写的时候，调用ngx_event_t对应的handler。
 
-
-
-
 我们主要关注两个模块，分别是ngx_events_module和ngx_event_core_module，这两个模块的源码都在event/ngx_event.c文件里，
 贴一下代码：
 ```C
@@ -207,9 +239,8 @@ ngx_module_t  ngx_event_core_module = {
 };
 ```
 目前我们只关心ngx_event_core_module
-其中ngx_event_core_module_ctx是模块的上下文信息，上下文信息就是该模块在运行的时候所需要的信息，
-ngx_event_core_commands暂时没研究。
-通过module type字段可以看出来它是一个事件模块（NGX_EVENT_MODULE），这里要注意一下，这个事件模块是modules目录下的模块的管理器。
+其中ngx_event_core_module_ctx是模块的上下文信息，上下文信息就是该模块在运行的时候所需要的信息，ngx_event_core_commands暂时没研究。
+通过module type字段可以看出来它是一个事件模块（NGX_EVENT_MODULE），这里要注意一下，这个事件模块相当于是modules目录下的模块的管理器。
 
 最主要的是ngx_event_process_init函数，这个函数在初始化的时候会被调用，这个函数里又初始化了一个类型是NGX_EVENT_MODULE的模块
 主要代码：
@@ -233,7 +264,7 @@ ngx_event_core_commands暂时没研究。
         break;
     }
 ```
-这段代码的作用就是找到第一个文件描述符的io模型，然后启动它，对所有的文件描述符进行监控和管理。
+这段代码的作用就是找到第一个ngx_event_module，然后启动它，对所有的文件描述符进行监控和管理。
 
 下面来看一下事件模块的实现，使用ngx_select_module举例，看一下ngx_select_module的定义：
 ```C

@@ -10,10 +10,16 @@
     <ClCompile Include="..\source\zeus_config.c" />
     <ClCompile Include="..\source\zeus_log.c" />
     <ClCompile Include="..\source\zeus_os.c" />
-    <ClCompile Include="..\source\zeus_parser.c" />
     <ClCompile Include="..\source\zeus_string.c" />
     <ClCompile Include="..\source\zeus_svc.c" />
     <ClCompile Include="..\source\event\zeus_driver_select.c">
+      <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\event\zeus_event_driver.c">
+      <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\zeus_parser.c" />
+    <ClCompile Include="..\source\event\zeus_event.c">
       <Filter>event</Filter>
     </ClCompile>
   </ItemGroup>
@@ -24,11 +30,14 @@
     <ClInclude Include="..\source\zeus_http.h" />
     <ClInclude Include="..\source\zeus_log.h" />
     <ClInclude Include="..\source\zeus_os.h" />
-    <ClInclude Include="..\source\zeus_parser.h" />
     <ClInclude Include="..\source\zeus_string.h" />
     <ClInclude Include="..\source\zeus_svc.h" />
     <ClInclude Include="..\source\zeus.h" />
     <ClInclude Include="..\source\event\zeus_event_driver.h">
+      <Filter>event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\zeus_parser.h" />
+    <ClInclude Include="..\source\event\zeus_event.h">
       <Filter>event</Filter>
     </ClInclude>
   </ItemGroup>
