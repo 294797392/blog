@@ -15,6 +15,8 @@
         "zeus_const.h": "c",
         "zeus_errno.h": "c",
         "zeus_svc.h": "c",
-        "zeus_config.h": "c"
+        "zeus_config.h": "c",
+        "zeus_parser.h": "c",
+        "zeus_event_mgr.h": "c"
     }
 }

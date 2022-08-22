@@ -37,7 +37,7 @@ extern "C" {
 	 * 返回值：
 	 * 缓冲对象
 	 */
-	zeus_pool *zeus_pool_obtain(Ypool *yp);
+	zeus_pool *zeus_pool_obtain(zeus_pool *yp);
 
 	/*
 	 * 描述：
@@ -49,7 +49,7 @@ extern "C" {
 	 * @yp：缓冲池对象
 	 * @yo：要回收的对象
 	 */
-	YAPI void Y_pool_recycle(Ypool *yp, Yobject *yo);
+	void zeus_pool_recycle(zeus_pool *yp, Yobject *yo);
 
 	/*
 	 * 描述：
@@ -58,9 +58,9 @@ extern "C" {
 	 * 返回值：
 	 * 内存地址
 	 */
-	YAPI void *Y_object_get_data(Yobject *yo);
+	void *Y_object_get_data(Yobject *yo);
 
-	YAPI void Y_object_set_data(Yobject *yo, void *data);
+	void Y_object_set_data(Yobject *yo, void *data);
 
 #ifdef __cplusplus
 }

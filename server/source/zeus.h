@@ -16,7 +16,6 @@
 
 #include "zeus_os.h"
 #include "zeus_config.h"
-#include "zeus_event_driver.h"
 #include "zeus_parser.h"
 
 #ifdef __cplusplus
@@ -34,20 +33,13 @@ extern "C" {
 		zeus_parser *parser;                                // HTTP数据包解析器
 	};
 
-	// HTTP服务对象
-	struct zeus_svc_s
-	{
-		int port;                                           // 监听的端口
-		zfd fd;												// 服务器socket
-	};
-
 	struct zeus_s
 	{
 		zeus_config *config;
 
 		zeus_svc *svc;
 
-		zeus_event_driver *event_driver;							// 文件描述符监听器
+		zeus_event_mgr *event_driver;							// 文件描述符监听器
 	};
 
 #ifdef __cplusplus

@@ -1,9 +1,9 @@
-/***********************************************************************************
+ï»¿/***********************************************************************************
  * @ file    : zeus.h
  * @ author  : oheiheiheiheihei
  * @ version : 0.9
  * @ date    : 2022.07.28 00:54
- * @ brief   : ¶¨Òå¹«¹²ÀàÐÍ
+ * @ brief   : å®šä¹‰å…¬å…±ç±»åž‹
  ************************************************************************************/
 
 #ifndef __ZEUS_EVENT_H__
@@ -14,6 +14,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+	typedef enum 
+	{
+		ZEUS_EVENT_WRITE,
+		ZEUS_EVENT_READ,
+		ZEUS_EVENT_LISTEN
+	}zeus_event_type;
 
 	typedef struct zeus_event_s zeus_event;
 

@@ -26,7 +26,7 @@
 #include "zeus_parser.h"
 #include "zeus.h"
 #include "zeus_svc.h"
-#include "zeus_event_driver.h"
+#include "zeus_event_mgr.h"
 
 #ifdef ZEUS_WIN32
 #pragma comment(lib, "Ws2_32.lib")
@@ -40,31 +40,27 @@ int main(int argc, char **argv)
     int rc = WSAStartup(version, &wsaData);
 #endif // ZEUS_WIN32
 
-    int code = ZERR_OK;
-    zeus_config *config = NULL;
-    zeus_event_driver *event_driver = NULL;
-    zeus_svc *svc = NULL;
-    zeus *z = NULL;
+    int code                        = ZERR_OK;
+    zeus_config *config             = NULL;
+    zeus_event_mgr *event_mgr       = NULL;
+    zeus_svc *svc                   = NULL;
+    zeus *z                         = NULL;
 
     // 实例化变量
     z = (zeus *)zeus_calloc(1, sizeof(zeus));
-    
+
     // 解析配置文件
     config = zeus_pase_config(L"");
 
     // 初始化事件监控模块，对文件描述符进行监控
-    event_driver = new_event_driver(config);
+    event_mgr = new_event_mgr(config);
 
     // 初始化服务
     svc = new_zeus_svc(config);
 
-
-    //zeus_event_driver_add_event(event_driver, 
-
-
     z->config = config;
     z->svc = svc;
-    z->event_driver = event_driver;
+    z->event_driver = event_mgr;
 
     zlogi(ZTEXT("zeus正在运行..."));
 

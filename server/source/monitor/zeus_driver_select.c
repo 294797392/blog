@@ -12,7 +12,7 @@
 #include "zeus_os.h"
 #include "zeus_errno.h"
 #include "zeus.h"
-#include "zeus_event_driver.h"
+#include "zeus_event_mgr.h"
 
 typedef struct select_ctx_s
 {
@@ -20,11 +20,6 @@ typedef struct select_ctx_s
 	fd_set rdfds;
 	fd_set wrfds;
 }select_ctx;
-
-static select_ctx select_contetx =
-{
-	.svc = 0,
-};
 
 //static void handle_new_client(zeus_svc *svc)
 //{
@@ -111,30 +106,31 @@ static select_ctx select_contetx =
 //	}
 //}
 
-static int select_initialize(zeus_event_driver *drv)
+static int select_initialize(zeus_event_mgr *drv)
 {
 	select_ctx *ctx = (select_ctx *)zeus_calloc(1, sizeof(select_ctx));
 
 	FD_ZERO(&ctx->rdfds);
 	FD_ZERO(&ctx->wrfds);
 
+	drv->context = ctx;
+
 	return NULL;
 }
 
-static int select_add_event(zeus_event_driver *drv, zeus_event *evt)
+static int select_add_event(zeus_event_mgr *drv, zeus_event *evt)
 {
 }
 
-static void select_remove_event(zeus_event_driver *drv, zeus_event *evt)
+static void select_remove_event(zeus_event_mgr *drv, zeus_event *evt)
 {
 }
 
-struct zeus_event_driver_operation_s zeus_event_driver_select =
+struct zeus_event_mgr_actions_s zeus_event_driver_select =
 {
 	.name = "select",
 	.author = "",
 	.type = ZEUS_EVT_DRV_SELECT,
-	.context = &select_contetx,
 	.initialize = select_initialize,
 	.add_event = select_add_event,
 	.remove_event = select_remove_event,

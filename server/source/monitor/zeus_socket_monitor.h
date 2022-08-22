@@ -1,13 +1,13 @@
 ﻿/***********************************************************************************
- * @ file    : zeus_poll.h
+ * @ file    : zeus_socket_monitor.h
  * @ author  : oheiheiheiheihei
  * @ version : 0.9
  * @ date    : 2022.07.26 21:00
- * @ brief   : 封装socket网络模型（select，epoll，IOCP..）
+ * @ brief   : 管理socket文件描述符的模块
  ************************************************************************************/
 
-#ifndef __ZEUS_EVENT_DRIVER_H__
-#define __ZEUS_EVENT_DRIVER_H__
+#ifndef __ZEUS_SOCKET_MONITOR_H__
+#define __ZEUS_SOCKET_MONITOR_H__
 
 #include "zeus_os.h"
 #include "zeus_config.h"
@@ -17,8 +17,8 @@
 extern "C" {
 #endif
 
-	typedef struct zeus_event_driver_s zeus_event_driver;
-	typedef struct zeus_event_driver_operation_s zeus_event_driver_operation;
+	typedef struct zeus_event_mgr_s zeus_event_mgr;
+	typedef struct zeus_event_mgr_actions_s zeus_event_mgr_actions;
 
 	// 定义所支持的socket网络模型
 	typedef enum
@@ -27,22 +27,21 @@ extern "C" {
 		ZEUS_EVT_DRV_EPOLL,
 		ZEUS_EVT_DRV_IOCP,
 		ZEUS_EVT_DRV_KQUEUE
-	}ZEUS_EVENT_DRIVER_TYPE;
+	}ZEUS_EVENT_MGR_TYPE;
 
-	struct zeus_event_driver_operation_s
+	struct zeus_event_mgr_actions_s
 	{
 		const char *name;
 		const char *author;
-		ZEUS_EVENT_DRIVER_TYPE type;
-		void *context;
-		int(*initialize)(zeus_event_driver *drv);
-		int(*add_event)(zeus_event_driver *drv, zeus_event *evt);
-		void(*remove_event)(zeus_event_driver *drv, zeus_event *evt);
+		ZEUS_EVENT_MGR_TYPE type;
+		int(*initialize)(zeus_event_mgr *mgr);
+		int(*add_event)(zeus_event_mgr *mgr, zeus_event *evt);
+		void(*remove_event)(zeus_event_mgr *mgr, zeus_event *evt);
 	};
 
-	struct zeus_event_driver_s
+	struct zeus_event_mgr_s
 	{
-		zeus_event_driver_operation *operations;
+		zeus_event_mgr_actions *actions;
 		void *context;
 	};
 
@@ -56,7 +55,7 @@ extern "C" {
 	 * 返回值：
 	 * 新建的zeus_event_driver对象
 	 */
-	zeus_event_driver *new_event_driver(zeus_config *config);
+	zeus_event_mgr *new_event_mgr(zeus_config *config);
 
 	/*
 	 * 描述：
@@ -65,7 +64,7 @@ extern "C" {
 	 * 参数：
 	 * @drv：要释放的事件监控器
 	 */
-	void free_event_driver(zeus_event_driver *drv);
+	void free_event_mgr(zeus_event_mgr *drv);
 
 	/*
 	 * 描述：
@@ -78,7 +77,7 @@ extern "C" {
 	 *
 	 * 返回值：参考ZEUS_ERR
 	 */
-	int zeus_event_driver_add_event(zeus_event_driver *driver, zeus_event *evt);
+	int zeus_event_mgr_add_event(zeus_event_mgr *driver, zeus_event *evt);
 
 	/*
 	 * 描述：
@@ -90,7 +89,7 @@ extern "C" {
 	 *
 	 * 返回值：参考ZEUS_ERR
 	 */
-	int zeus_event_driver_remove_event(zeus_event_driver *driver, zeus_event *evt);
+	int zeus_event_mgr_remove_event(zeus_event_mgr *driver, zeus_event *evt);
 
 #ifdef __cplusplus
 }

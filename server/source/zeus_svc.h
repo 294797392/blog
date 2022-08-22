@@ -19,6 +19,8 @@
 extern "C" {
 #endif
 
+	typedef struct zeus_svc_s zeus_svc;
+
 	zeus_svc *new_zeus_svc(zeus_config *config);
 	void free_zeus_svc(zeus_svc *svc);
 	void zeus_svc_start(zeus_svc *svc);

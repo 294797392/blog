@@ -12,7 +12,14 @@
 #include "zeus_errno.h"
 #include "zeus_svc.h"
 #include "zeus_config.h"
-#include "zeus_event_driver.h"
+#include "zeus_event_mgr.h"
+
+// HTTP服务对象
+struct zeus_svc_s
+{
+	int port;											// 监听的端口
+	zfd fd;												// 服务器socket
+};
 
 zeus_svc *new_zeus_svc(zeus_config *config)
 {

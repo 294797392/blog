@@ -22,7 +22,7 @@
     <ClCompile Include="..\source\core\zeus_pool.c" />
     <ClCompile Include="..\source\event\zeus_driver_select.c" />
     <ClCompile Include="..\source\event\zeus_event.c" />
-    <ClCompile Include="..\source\event\zeus_event_driver.c" />
+    <ClCompile Include="..\source\event\zeus_event_mgr.c" />
     <ClCompile Include="..\source\main.c" />
     <ClCompile Include="..\source\zeus_config.c" />
     <ClCompile Include="..\source\zeus_log.c" />
@@ -34,7 +34,7 @@
   <ItemGroup>
     <ClInclude Include="..\source\core\zeus_pool.h" />
     <ClInclude Include="..\source\event\zeus_event.h" />
-    <ClInclude Include="..\source\event\zeus_event_driver.h" />
+    <ClInclude Include="..\source\event\zeus_event_mgr.h" />
     <ClInclude Include="..\source\zeus.h" />
     <ClInclude Include="..\source\zeus_config.h" />
     <ClInclude Include="..\source\zeus_const.h" />

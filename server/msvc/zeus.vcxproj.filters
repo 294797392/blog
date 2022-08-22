@@ -18,7 +18,7 @@
     <ClCompile Include="..\source\event\zeus_driver_select.c">
       <Filter>event</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\event\zeus_event_driver.c">
+    <ClCompile Include="..\source\event\zeus_event_mgr.c">
       <Filter>event</Filter>
     </ClCompile>
     <ClCompile Include="..\source\zeus_parser.c" />
@@ -39,7 +39,7 @@
     <ClInclude Include="..\source\zeus_string.h" />
     <ClInclude Include="..\source\zeus_svc.h" />
     <ClInclude Include="..\source\zeus.h" />
-    <ClInclude Include="..\source\event\zeus_event_driver.h">
+    <ClInclude Include="..\source\event\zeus_event_mgr.h">
       <Filter>event</Filter>
     </ClInclude>
     <ClInclude Include="..\source\zeus_parser.h" />
