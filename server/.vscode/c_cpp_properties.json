@@ -9,7 +9,7 @@
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE",
-                "Y_ENV_WIN32"
+                "Y_WIN32"
             ],
             "windowsSdkVersion": "10.0.19041.0",
             "compilerPath": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\VC\\Tools\\MSVC\\14.30.30705\\bin\\Hostx64\\x64\\cl.exe",
@@ -21,13 +21,14 @@
         {
             "name": "Mingw",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/external/libY/libYinc"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE",
-                "Y_ENV_MINGW"
+                "Y_MINGW"
             ],
             "windowsSdkVersion": "10.0.19041.0",
             "compilerPath": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\VC\\Tools\\MSVC\\14.30.30705\\bin\\Hostx64\\x64\\cl.exe",

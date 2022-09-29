@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\core\zeus_pool.c" />
     <ClCompile Include="..\source\event\zeus_driver_select.c" />
     <ClCompile Include="..\source\event\zeus_event.c" />
     <ClCompile Include="..\source\event\zeus_event_mgr.c" />
@@ -32,7 +31,6 @@
     <ClCompile Include="..\source\zeus_svc.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\core\zeus_pool.h" />
     <ClInclude Include="..\source\event\zeus_event.h" />
     <ClInclude Include="..\source\event\zeus_event_mgr.h" />
     <ClInclude Include="..\source\zeus.h" />
@@ -52,7 +50,7 @@
     <ProjectGuid>{50c690a8-6856-44e7-887b-1f11431afe7b}</ProjectGuid>
     <RootNamespace>mm</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>zeus</ProjectName>
+    <ProjectName>blog</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
