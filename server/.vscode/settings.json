@@ -6,6 +6,8 @@
         "string.h": "c",
         "mm_config.h": "c",
         "ypool.h": "c",
-        "yqueue.h": "c"
+        "yqueue.h": "c",
+        "liby.h": "c",
+        "stdio.h": "c"
     }
 }

@@ -1,0 +1,12 @@
+﻿{
+    "listens":[
+        {
+            "port": 1018,
+            "root": "conf"
+        }
+    ],
+
+    "event_poll":{
+        "action":"select"
+    }
+}

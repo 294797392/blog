@@ -19,6 +19,7 @@ extern "C" {
 #include "Ytree.h"
 #include "Ylog.h"
 #include "Yfactory.h"
+#include "Yfile.h"
 
 #ifdef __cplusplus
 }

@@ -22,7 +22,8 @@
             "name": "Mingw",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/external/libY/libYinc"
+                "${workspaceFolder}/external/libY/libYinc",
+                "${workspaceFolder}/external/cJSON"
             ],
             "defines": [
                 "_DEBUG",

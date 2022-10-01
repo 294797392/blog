@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef ZEUS_WIN32
+#if (defined(Y_WIN32)) || (defined(Y_MINGW))
 #include <WinSock2.h>
 #include <Windows.h>
 #include <process.h>
-#elif ZEUS_UNIX
+#elif (defined(Y_UNIX))
 #include <unistd.h>
 #include <sys/select.h>
 #include <sys/types.h>
@@ -18,57 +18,90 @@
 #include <fcntl.h>
 #endif
 
-#include "zeus_errno.h"
-#include "zeus_config.h"
-#include "zeus_string.h"
-#include "zeus_os.h"
-#include "zeus_log.h"
-#include "zeus_parser.h"
-#include "zeus.h"
-#include "zeus_svc.h"
-#include "zeus_event_mgr.h"
+#include <libY.h>
 
-#ifdef ZEUS_WIN32
+#include "errors.h"
+#include "default.h"
+#include "blog.h"
+#include "listening.h"
+#include "event.h"
+
+#if (defined(Y_WIN32)) || (defined(Y_MINGW))
 #pragma comment(lib, "Ws2_32.lib")
 #endif
 
-int main(int argc, char **argv)
+cJSON *config = NULL;
+event_poll *poll = NULL;
+
+static int setupenv()
 {
-#ifdef ZEUS_WIN32
+    Y_log_init("Ylog.json");
+
+#if (defined(Y_WIN32)) || (defined(Y_MINGW))
     WORD version = MAKEWORD(1, 1);
     WSADATA wsaData;
     int rc = WSAStartup(version, &wsaData);
-#endif // ZEUS_WIN32
+#endif
 
-    int code                        = ZERR_OK;
-    zeus_config *config             = NULL;
-    zeus_event_mgr *event_mgr       = NULL;
-    zeus_svc *svc                   = NULL;
-    zeus *z                         = NULL;
+    return YERR_SUCCESS;
+}
 
-    // 实例化变量
-    z = (zeus *)zeus_calloc(1, sizeof(zeus));
+static cJSON *read_config()
+{
+    YBYTE *bytes = NULL;
+    uint64_t size = 0;
+    int code = Y_file_readbytes(YTEXT(DEF_CONFIG_PATH), &bytes, &size);
+    if(code != YERR_SUCCESS)
+    {
+        YLOGE(YTEXT("read config failed, %d, %s"), code, YTEXT(DEF_CONFIG_PATH));
+        return NULL;
+    }
 
-    // 解析配置文件
-    config = zeus_pase_config(L"");
+    cJSON *config = cJSON_Parse(bytes);
+    if(config == NULL)
+    {
+        YLOGE(YTEXT("parse config failed, invalid format"));
+        return NULL;
+    }
 
-    // 初始化事件监控模块，对文件描述符进行监控
-    event_mgr = new_event_mgr(config);
+    return config;
+}
 
-    // 初始化服务
-    svc = new_zeus_svc(config);
+int main(int argc, char **argv)
+{
+    int rc = 0;
 
-    z->config = config;
-    z->svc = svc;
-    z->event_driver = event_mgr;
+    // 做一些环境初始化操作
+    // 比如socket初始化
+    setupenv();
 
-    zlogi(ZTEXT("zeus正在运行..."));
+    // 读取配置文件
+    if((config = read_config()) == NULL)
+    {
+        return 0;
+    }
+
+    // 创建监听并打开监听
+    Ylist *listens = create_listens(config);
+    if((rc = open_listens(listens)) != 0)
+    {
+        return 0;
+    }
+
+    // 初始化事件轮询器
+    if(!(poll = create_event_poll(config)))
+    {
+        return 0;
+    }
 
     while (1)
     {
-        char line[1024] = {'\0'};
-        fgets(line, sizeof(line), stdin);
+        rc = poll_events(poll);
+        if(rc != 0)
+        {
+            YLOGE(YTEXT("poll_events failed, %d"), rc);
+        }
     }
-
+    
     return 0;
 }
