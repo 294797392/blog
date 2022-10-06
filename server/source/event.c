@@ -68,8 +68,22 @@ event_poll *create_event_poll(cJSON *config)
     poll->actions = actions;
     poll->pollctx = pollctx;
     poll->event_list = Y_create_list();
-    poll->event_queue = Y_create_queue();
+    poll->posted_event_queue = Y_create_queue();
     return poll;
+}
+
+int add_event(event_poll *poll, event *evt)
+{
+    Y_list_add(poll->event_list, evt);
+
+    return poll->actions->add_event(poll, evt);
+}
+
+void del_event(event_poll *poll, event *evt)
+{
+    Y_list_remove(poll->event_list, evt, 1);
+
+    return poll->actions->del_event(poll, evt);
 }
 
 int poll_events(event_poll *poll)

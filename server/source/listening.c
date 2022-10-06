@@ -2,13 +2,67 @@
 #include <stdio.h>
 #include <string.h>
 
+#if (defined(Y_WIN32)) || (defined(Y_MINGW))
+#include <WinSock2.h>
+#include <Windows.h>
+#endif
+
 #include <libY.h>
 #include <cJSON.h>
 #include <cJSON_Helper.h>
 
+#include "platform.h"
+#include "errors.h"
 #include "listening.h"
 #include "default.h"
 #include "blog.h"
+
+static void open_listen(Ylist *yl, void *item, void *userdata)
+{
+    listening *lsten = (listening*)item;
+	int error = 0;
+#if (defined(Y_WIN32)) || (defined(Y_MINGW))
+	SOCKET s = -1;
+#elif (defined(Y_UNIX))
+    int s = -1;
+#endif
+
+	// 新建一个socket
+	if((s = socket(PF_INET, SOCK_STREAM, 0)) == -1)
+	{
+		error = syserror();
+        YLOGE(YTEXT("create tcp socket failed, %d"), error);
+        return;
+	}
+
+	// 设置Socket选项，当程序异常退出之后再次打开程序的时候端口还可以继续使用
+	int on = 1;
+	if(setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on)) < 0)
+	{
+		error = syserror();
+		YLOGE(YTEXT("setsockopt failed SO_REUSEADDR, %d"), error);
+		return NULL;
+	}
+
+	// 设置要侦听的网络接口和端口
+	struct sockaddr_in bdaddr;
+	bdaddr.sin_family = PF_INET;
+	bdaddr.sin_port = htons(lsten->port);
+	bdaddr.sin_addr.s_addr = INADDR_ANY;
+	memset(&(bdaddr.sin_zero), 0, sizeof(bdaddr.sin_zero));
+
+	// 绑定
+	if(bind(s, (struct sockaddr *)&bdaddr, sizeof(struct sockaddr)) < 0)
+	{
+		error = syserror();
+		YLOGE(YTEXT("bind failed, %d"), error);
+		return NULL;
+	}
+
+    YLOGI(YTEXT("open listen success, port = %d, root = %s"), lsten->port, lsten->root);
+
+    lsten->fd = s;
+}
 
 Ylist *create_listens(cJSON *config)
 {
@@ -40,7 +94,9 @@ Ylist *create_listens(cJSON *config)
 
 int open_listens(Ylist *listens)
 {
+    Y_list_foreach(listens, open_listen, listens);
 
+    return YERR_SUCCESS;
 }
 
 

@@ -96,11 +96,9 @@ int main(int argc, char **argv)
 
     while (1)
     {
-        rc = poll_events(poll);
-        if(rc != 0)
-        {
-            YLOGE(YTEXT("poll_events failed, %d"), rc);
-        }
+        poll_events(poll);
+
+        process_events(poll);
     }
     
     return 0;

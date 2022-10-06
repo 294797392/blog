@@ -15,6 +15,13 @@
 extern "C" {
 #endif
 
+    #define BLOG_ERR_FAIL                                   -1
+    #define BLOG_ERR_SUCCESS                                0
+    #define BLOG_ERR_CLIENT_DISCONNECTED                    100
+    #define BLOG_ERR_INVALID_REQUEST                        101
+    #define BLOG_ERR_NEED_MORE                              102
+    #define BLOG_ERR_INVALID_PARAM                          103
+
     typedef struct service_s service;
     typedef struct service_conf_s service_conf;
     typedef struct event_s event;
@@ -34,6 +41,7 @@ extern "C" {
         int read;                               // 该文件描述符是否可读
         int write;                              // 该文件描述符是否可写
         process_event_func process;             // 处理该事件的处理器
+        void *ctx;                              // 该事件处理器所带的上下文信息
     };
 
     struct event_poll_s
@@ -41,7 +49,7 @@ extern "C" {
         Ylist *event_list;                      // 所有事件的列表
         void *pollctx;                          // event_poll_actions使用的上下文信息
         event_poll_actions *actions;            // 轮询操作
-        Yqueue *event_queue;                    // 待处理的事件
+        Yqueue *posted_event_queue;             // 待处理的事件
     };
 
     struct event_poll_actions_s

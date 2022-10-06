@@ -8,6 +8,9 @@
         "ypool.h": "c",
         "yqueue.h": "c",
         "liby.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "cjson_helper.h": "c",
+        "errors.h": "c",
+        "stdlib.h": "c"
     }
 }

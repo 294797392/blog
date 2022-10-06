@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
     event_poll *create_event_poll(cJSON *config);
-    void add_event(event_poll *poll, event *evt);
+    int add_event(event_poll *poll, event *evt);
     void del_event(event_poll *poll, event *evt);
     int poll_events(event_poll *poll);
     int process_events(event_poll *poll);
