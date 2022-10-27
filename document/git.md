@@ -1,6 +1,6 @@
 
 
-## 拉取仓库
+## 远程仓库克隆到本地
 git clone [url]
 
 ## 提交到本地仓库
@@ -10,7 +10,7 @@ git commit -m "[message]"
 ## 推送到远程仓库
 git push origin master
 
-## 本地代码与远程同步
+## 本地仓库与远程仓库同步
 git pull
 
 ## 回退到某个版本：（回退的代码都会被删掉）
@@ -22,4 +22,16 @@ git commit --amend
 
 ## 删除本地多余的分支
 git remote prune origin
+
+
+## 切换分支
+git checkout [branchName]
+
+## 新建分支
+git branch [branchName]
+
+## 显示本地仓库里的所有分支
+git branch -a
+
+
 
