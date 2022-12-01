@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#if (defined(Y_WIN32)) || (defined(Y_MINGW))
+#if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
 #include <WinSock2.h>
 #include <Windows.h>
 #include <process.h>
-#elif (defined(Y_UNIX))
+#elif (defined(ENV_UNIX))
 #include <unistd.h>
 #include <sys/select.h>
 #include <sys/types.h>
@@ -20,86 +20,44 @@
 
 #include <libY.h>
 
-#include "errors.h"
-#include "default.h"
-#include "blog.h"
-#include "listening.h"
-#include "event.h"
+#include "FDMonitor.h"
+#include "ServiceHost.h"
 
-#if (defined(Y_WIN32)) || (defined(Y_MINGW))
+#if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
 #pragma comment(lib, "Ws2_32.lib")
 #endif
 
-cJSON *config = NULL;
-event_poll *poll = NULL;
-
-static int setupenv()
+static void Initialize()
 {
-    Y_log_init("Ylog.json");
-
-#if (defined(Y_WIN32)) || (defined(Y_MINGW))
+#if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
     WORD version = MAKEWORD(1, 1);
     WSADATA wsaData;
     int rc = WSAStartup(version, &wsaData);
 #endif
-
-    return YERR_SUCCESS;
-}
-
-static cJSON *read_config()
-{
-    YBYTE *bytes = NULL;
-    uint64_t size = 0;
-    int code = Y_file_readbytes(YTEXT(DEF_CONFIG_PATH), &bytes, &size);
-    if(code != YERR_SUCCESS)
-    {
-        YLOGE(YTEXT("read config failed, %d, %s"), code, YTEXT(DEF_CONFIG_PATH));
-        return NULL;
-    }
-
-    cJSON *config = cJSON_Parse(bytes);
-    if(config == NULL)
-    {
-        YLOGE(YTEXT("parse config failed, invalid format"));
-        return NULL;
-    }
-
-    return config;
 }
 
 int main(int argc, char **argv)
 {
-    int rc = 0;
+    Initialize();
 
-    // 做一些环境初始化操作
-    // 比如socket初始化
-    setupenv();
-
-    // 读取配置文件
-    if((config = read_config()) == NULL)
+    FDMonitorOptions monitorOptions = 
     {
-        return 0;
-    }
+        .Type = FDMON_TYPE_SELECT
+    };
+    FDMonitor *fdMonitor = FDMonitorCreate(&monitorOptions);
 
-    // 创建监听并打开监听
-    Ylist *listens = create_listens(config);
-    if((rc = open_listens(listens)) != 0)
+    ServiceHostOptions svchostOptions = 
     {
-        return 0;
-    }
-
-    // 初始化事件轮询器
-    if(!(poll = create_event_poll(config)))
-    {
-        return 0;
-    }
+        .BindAddress = "0.0.0.0",
+        .ListenPort = 1018,
+        .RootDir = "~/",
+        .FDMonitor = fdMonitor
+    };
+    ServiceHost *svchost = ServiceHostOpen(&svchostOptions);    
 
     while (1)
     {
-        poll_events(poll);
 
-        process_events(poll);
     }
-    
     return 0;
 }

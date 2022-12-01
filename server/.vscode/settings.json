@@ -11,6 +11,8 @@
         "stdio.h": "c",
         "cjson_helper.h": "c",
         "errors.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "servicehost.h": "c",
+        "listening.h": "c"
     }
 }
