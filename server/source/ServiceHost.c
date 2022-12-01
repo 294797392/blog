@@ -32,7 +32,7 @@ ServiceHost *ServiceHostOpen(ServiceHostOptions *options)
     svchost->Options = options;
     svchost->FDMonitor = options->FDMonitor;
 
-	if((svchost->Socket = socket(PF_INET, SOCK_STREAM, 0)) == -1)
+	if((svchost->Socket = socket(PF_INET, SOCK_STREAM, 0)) < 0)
 	{
         YLOGE("create socket failed, %d", errno);
         return NULL;

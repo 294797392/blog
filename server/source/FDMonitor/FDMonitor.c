@@ -8,10 +8,10 @@
 #include "FDMonitor.h"
 #include "FDMonitorTypes.h"
 
-extern FDMonitorActions FDMonitorActionsSelect;
+extern FDMonitorActions SelectFDMonitorActions;
 FDMonitorActions **FDMonitorActionsList = 
 {
-    &FDMonitorActionsSelect
+    &SelectFDMonitorActions
 };
 
 static FDMonitorActions *SelectActions(FDMonitorOptions *options)
@@ -39,7 +39,7 @@ FDMonitor *FDMonitorCreate(FDMonitorOptions *options)
     monitor->FileDescriptorPool = Y_create_pool(sizeof(FileDescriptor), MAX_FD_COUNT);
     monitor->Options = options;
     monitor->Actions = SelectActions(options);
-    monitor->ActionsData = monitor->Actions->Initialize(monitor);
+    monitor->Actions->Initialize(monitor);
     return monitor;
 }
 

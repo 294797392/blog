@@ -46,11 +46,11 @@ extern "C" {
     struct FDMonitorActions
     {
         FDMonitorTypes Type;
-        void*(*Initialize)(FDMonitor *monitor);
+        int(*Initialize)(FDMonitor *monitor);
         void(*Release)(FDMonitor *monitor);
         int(*AddFD)(FDMonitor *monitor, FileDescriptor *fd);
         int(*DelFD)(FDMonitor *monitor, FileDescriptor *fd);
-        int(*PollFD)(FDMonitor *monitor);
+        int(*PollFDs)(FDMonitor *monitor);
     };
 
     struct FDMonitor
