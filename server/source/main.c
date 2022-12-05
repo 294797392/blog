@@ -20,15 +20,18 @@
 
 #include <libY.h>
 
-#include "FDMonitor.h"
+#include "FDEventPoll.h"
 #include "ServiceHost.h"
 
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
 #pragma comment(lib, "Ws2_32.lib")
+#pragma comment(lib, "libY.lib")
 #endif
 
 static void Initialize()
 {
+    Y_log_init(NULL);
+
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
     WORD version = MAKEWORD(1, 1);
     WSADATA wsaData;
@@ -40,24 +43,26 @@ int main(int argc, char **argv)
 {
     Initialize();
 
-    FDMonitorOptions monitorOptions = 
+    FDEventPollOptions evpollOptions = 
     {
         .Type = FDMON_TYPE_SELECT
     };
-    FDMonitor *fdMonitor = FDMonitorCreate(&monitorOptions);
+    FDEventPoll *fdMonitor = FDEventPollCreate(&evpollOptions);
 
     ServiceHostOptions svchostOptions = 
     {
         .BindAddress = "0.0.0.0",
         .ListenPort = 1018,
         .RootDir = "~/",
-        .FDMonitor = fdMonitor
+        .FDEventPoll = fdMonitor
     };
     ServiceHost *svchost = ServiceHostOpen(&svchostOptions);    
 
+    YLOGI("start webserver success");
+
     while (1)
     {
-
+        FDEventPollPoll(fdMonitor);
     }
     return 0;
 }

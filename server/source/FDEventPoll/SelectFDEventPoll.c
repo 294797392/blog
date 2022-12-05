@@ -3,12 +3,12 @@
 #include <string.h>
 
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
-#include <Windows.h>
 #include <WinSock2.h>
+#include <Windows.h>
 #endif
 
 #include "ResponseCode.h"
-#include "FDMonitor.h"
+#include "FDEventPoll.h"
 
 typedef struct SelectFDMonitor
 {
@@ -22,7 +22,7 @@ typedef struct SelectFDMonitor
     int nevents;
 }SelectFDMonitor;
 
-int SelectFDMonitorActionsInitialize(FDMonitor *monitor)
+int SelectFDMonitorActionsInitialize(FDEventPoll *monitor)
 {
     SelectFDMonitor *selectMonitor = (SelectFDMonitor*)calloc(1, sizeof(SelectFDMonitor));
     monitor->ActionsData = selectMonitor;
@@ -33,12 +33,12 @@ int SelectFDMonitorActionsInitialize(FDMonitor *monitor)
     return CODE_SUCCESS;
 }
 
-void SelectFDMonitorActionsRelease(FDMonitor *monitor)
+void SelectFDMonitorActionsRelease(FDEventPoll *monitor)
 {
 
 }
 
-int SelectFDMonitorActionsAddFD(FDMonitor *monitor, FileDescriptor *fd)
+int SelectFDMonitorActionsAddFD(FDEventPoll *monitor, FileDescriptor *fd)
 {
     SelectFDMonitor *selectMonitor = (SelectFDMonitor*)monitor->ActionsData;
 
@@ -57,7 +57,7 @@ int SelectFDMonitorActionsAddFD(FDMonitor *monitor, FileDescriptor *fd)
     return CODE_SUCCESS;
 }
 
-int SelectFDMonitorActionsDelFD(FDMonitor *monitor, FileDescriptor *fd)
+int SelectFDMonitorActionsDelFD(FDEventPoll *monitor, FileDescriptor *fd)
 {
     SelectFDMonitor *selectMonitor = (SelectFDMonitor*)monitor->ActionsData;
 
@@ -76,14 +76,14 @@ int SelectFDMonitorActionsDelFD(FDMonitor *monitor, FileDescriptor *fd)
     return CODE_SUCCESS;
 }
 
-int SelectFDMonitorActionsPollFDs(FDMonitor *monitor)
+int SelectFDMonitorActionsPollFDs(FDEventPoll *monitor)
 {
     SelectFDMonitor *selectMonitor = (SelectFDMonitor*)monitor->ActionsData;
 
     return CODE_SUCCESS;
 }
 
-FDMonitorActions SelectFDMonitorActions = 
+FDEventPollActions SelectFDEventPollActions = 
 {
     .Type = FDMON_TYPE_SELECT,
     .Initialize = SelectFDMonitorActionsInitialize,

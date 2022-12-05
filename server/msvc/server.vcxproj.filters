@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="..\source\DefaultOptions.h" />
+    <ClInclude Include="..\source\HTTPConstants.h" />
+    <ClInclude Include="..\source\ResponseCode.h" />
+    <ClInclude Include="..\source\ServiceHost.h" />
+    <ClInclude Include="..\source\FDEvent\FDEvents.h">
+      <Filter>FDEvent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\FDEventPoll\FDEventPoll.h">
+      <Filter>FDEventPoll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\FDEventPoll\FDEventPollTypes.h">
+      <Filter>FDEventPoll</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\main.c" />
+    <ClCompile Include="..\source\ServiceHost.c" />
+    <ClCompile Include="..\source\FDEvent\AcceptClientEvent.c">
+      <Filter>FDEvent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\FDEventPoll\FDEventPoll.c">
+      <Filter>FDEventPoll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\FDEventPoll\SelectFDEventPoll.c">
+      <Filter>FDEventPoll</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\source\service.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="FDEvent">
+      <UniqueIdentifier>{8254e9e2-2d78-4dc6-8667-fcb22e388c06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FDEventPoll">
+      <UniqueIdentifier>{28c36392-d9b8-4586-a178-b0abc02b3e19}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

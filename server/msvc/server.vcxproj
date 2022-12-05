@@ -18,39 +18,12 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\source\event\zeus_driver_select.c" />
-    <ClCompile Include="..\source\event\zeus_event.c" />
-    <ClCompile Include="..\source\event\zeus_event_mgr.c" />
-    <ClCompile Include="..\source\main.c" />
-    <ClCompile Include="..\source\zeus_config.c" />
-    <ClCompile Include="..\source\zeus_log.c" />
-    <ClCompile Include="..\source\zeus_os.c" />
-    <ClCompile Include="..\source\zeus_parser.c" />
-    <ClCompile Include="..\source\zeus_string.c" />
-    <ClCompile Include="..\source\zeus_svc.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\source\event\zeus_event.h" />
-    <ClInclude Include="..\source\event\zeus_event_mgr.h" />
-    <ClInclude Include="..\source\zeus.h" />
-    <ClInclude Include="..\source\zeus_config.h" />
-    <ClInclude Include="..\source\zeus_const.h" />
-    <ClInclude Include="..\source\zeus_errno.h" />
-    <ClInclude Include="..\source\zeus_http.h" />
-    <ClInclude Include="..\source\zeus_log.h" />
-    <ClInclude Include="..\source\zeus_os.h" />
-    <ClInclude Include="..\source\zeus_parser.h" />
-    <ClInclude Include="..\source\zeus_string.h" />
-    <ClInclude Include="..\source\zeus_svc.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{50c690a8-6856-44e7-887b-1f11431afe7b}</ProjectGuid>
-    <RootNamespace>mm</RootNamespace>
+    <ProjectGuid>{15075911-52ce-418c-996a-0cec0ac84d66}</ProjectGuid>
+    <RootNamespace>server</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>blog</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -62,7 +35,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -75,7 +48,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -113,21 +86,15 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;ZEUS_WIN32;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;ENV_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <CompileAs>CompileAsC</CompileAs>
-      <AdditionalIncludeDirectories>$(SolutionDir)../source/;$(SolutionDir)../source/event;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)../external/libY;$(SolutionDir)../external/cJSON;$(SolutionDir)../source/FDEvent;$(SolutionDir)../source/FDEventPoll;$(SolutionDir)../source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)../depens/libY/msvc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)../external/libY;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Command>
-      </Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -173,6 +140,25 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\DefaultOptions.h" />
+    <ClInclude Include="..\source\FDEventPoll\FDEventPoll.h" />
+    <ClInclude Include="..\source\FDEventPoll\FDEventPollTypes.h" />
+    <ClInclude Include="..\source\FDEvent\FDEvents.h" />
+    <ClInclude Include="..\source\HTTPConstants.h" />
+    <ClInclude Include="..\source\ResponseCode.h" />
+    <ClInclude Include="..\source\ServiceHost.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\FDEventPoll\FDEventPoll.c" />
+    <ClCompile Include="..\source\FDEventPoll\SelectFDEventPoll.c" />
+    <ClCompile Include="..\source\FDEvent\AcceptClientEvent.c" />
+    <ClCompile Include="..\source\main.c" />
+    <ClCompile Include="..\source\ServiceHost.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\source\service.json" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

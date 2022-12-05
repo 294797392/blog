@@ -8,6 +8,6 @@ typedef enum
     FDMON_TYPE_EPOLL,
     FDMON_TYPE_IOCP,
     FDMON_TYPE_KPOLL
-}FDMonitorTypes;
+}FDEventPollTypes;
 
 #endif

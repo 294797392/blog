@@ -13,6 +13,9 @@
         "errors.h": "c",
         "stdlib.h": "c",
         "servicehost.h": "c",
-        "listening.h": "c"
+        "listening.h": "c",
+        "windows.h": "c",
+        "fdeventpolltypes.h": "c",
+        "defaultoptions.h": "c"
     }
 }

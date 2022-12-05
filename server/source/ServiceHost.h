@@ -3,7 +3,7 @@
 
 #include <libY.h>
 
-#include "FDMonitor.h"
+#include "FDEventPoll.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,7 +15,7 @@ extern "C" {
         char *BindAddress;
         int ListenPort;
         char *RootDir;
-        FDMonitor *FDMonitor;
+        FDEventPoll *FDEventPoll;
     }ServiceHostOptions;
 
     ServiceHost *ServiceHostOpen(ServiceHostOptions *options);
