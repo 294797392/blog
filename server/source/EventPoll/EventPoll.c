@@ -5,16 +5,16 @@
 #include <libY.h>
 
 #include "DefaultOptions.h"
-#include "FDEventPoll.h"
-#include "FDEventPollTypes.h"
+#include "EventPoll.h"
+#include "EventPollTypes.h"
 
-extern FDEventPollActions SelectFDEventPollActions;
-FDEventPollActions *FDEventPollActionsList[] = 
+extern EventPollActions SelectEventPollActions;
+EventPollActions *EventPollActionsList[] = 
 {
-    &SelectFDEventPollActions
+    &SelectEventPollActions
 };
 
-static FDEventPollActions *SelectActions(FDEventPollOptions *options)
+static EventPollActions *SelectActions(EventPollOptions *options)
 {
     size_t len = sizeof(FDEventPollActionsList) / sizeof(FDEventPollActions*);
 
@@ -31,7 +31,7 @@ static FDEventPollActions *SelectActions(FDEventPollOptions *options)
 }
 
 
-FDEventPoll *FDEventPollCreate(FDEventPollOptions *options)
+EventPoll *EventPollCreate(EventPollOptions *options)
 {
     FDEventPoll *monitor = (FDEventPoll*)calloc(1, sizeof(FDEventPoll));
     monitor->FDQueue = Y_create_queue();
@@ -43,24 +43,25 @@ FDEventPoll *FDEventPollCreate(FDEventPollOptions *options)
     return monitor;
 }
 
-int FDEventPollAddFD(FDEventPoll *monitor, FileDescriptor *fd)
+int EventPollAddEvent(EventPoll *evpoll, Event *evt)
 {
 }
 
-int FDEventPollDelFD(FDEventPoll *monitor, int fd)
-{}
-
-int FDEventPollPoll(FDEventPoll *monitor)
+int EventPollDelEvent(EventPoll *evpoll, int fd)
 {
 
 }
 
-FileDescriptor *FDEventPollCreateFD(FDEventPoll *monitor)
+int EventPollPoll(EventPoll *evpoll)
 {
 
 }
 
-void FDEventPollRelease(FDEventPoll *monitor)
+Event *EventPollCreateEvent(EventPoll *evpoll)
+{
+}
+
+void EventPollRelease(EventPoll *evpoll)
 {
 
 }

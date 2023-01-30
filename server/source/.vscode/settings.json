@@ -17,6 +17,11 @@
         "zeus_svc.h": "c",
         "zeus_config.h": "c",
         "zeus_parser.h": "c",
-        "zeus_event_mgr.h": "c"
+        "zeus_event_mgr.h": "c",
+        "fdeventpolltypes.h": "c",
+        "eventpoll.h": "c",
+        "eventpolltypes.h": "c",
+        "defaultoptions.h": "c",
+        "liby.h": "c"
     }
 }
