@@ -1,9 +1,26 @@
 ## 布局过程
 
 WPF的布局过程分三个步骤，分别是：
-1.  Measure：确定子元素的大小，返回当前控件所需要的大小
-2.  Arrange：根据Measure阶段确定的大小对确定子元素渲染的区域（Rect）
+1.  Measure：确定子元素的大小
+2.  Arrange：排列子元素
 3.  Render：渲染界面
+
+## Measure过程
+https://learn.microsoft.com/zh-cn/dotnet/desktop/wpf/advanced/layout?view=netframeworkdesktop-4.8#LayoutSystem_Measure_Arrange
+1. UIElement -> Measure（公开接口，用户可以调用）
+Clip和Visibility会影响到UIElement阶段的大小测量
+
+2. FramworkElement -> MeasureCore（由UIElement -> Measure调用）
+Height，Width，Margin，Style会影响FrameworkElement阶段的大小测量
+
+3. Panel -> MeasureOverride（由FrameworkElement -> MeasureCore调用。用户可以通过重写此方法来影响布局系统）
+Panel在Measure阶段需要对每个子元素进行大小测量（需要在MeasureOverride里调用每个子元素的Measure方法），然后通过所有子元素的大小来计算自己所需要的实际空间大小，最后返回给WPF布局系统。
+注意只有Panel才可以重写MeasureOverride方法，其他的控件无法重写此方法，因为Panel的作用是排列子元素。
+
+## Arrange过程
+
+
+## Render过程
 
 
 ## 自定义布局
