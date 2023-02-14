@@ -1,4 +1,4 @@
-## 布局过程
+## Panel布局过程
 
 WPF的布局过程分三个步骤，分别是：
 1.  Measure：确定子元素的大小
@@ -7,6 +7,12 @@ WPF的布局过程分三个步骤，分别是：
 
 ## Measure过程
 https://learn.microsoft.com/zh-cn/dotnet/desktop/wpf/advanced/layout?view=netframeworkdesktop-4.8#LayoutSystem_Measure_Arrange
+https://www.codeproject.com/Articles/1034445/Understanding-MeasureOverride-and-ArrangeOverride
+
+MeasureOverride用来对Panel里的每个子元素进行大小的测量。
+
+MeasureOverride的输入参数是FrameworkElement所测量到的控件大小，输出参数是Panel所占的实际空间大小。
+
 1. UIElement -> Measure（公开接口，用户可以调用）
 Clip和Visibility会影响到UIElement阶段的大小测量
 
@@ -14,11 +20,18 @@ Clip和Visibility会影响到UIElement阶段的大小测量
 Height，Width，Margin，Style会影响FrameworkElement阶段的大小测量
 
 3. Panel -> MeasureOverride（由FrameworkElement -> MeasureCore调用。用户可以通过重写此方法来影响布局系统）
-Panel在Measure阶段需要对每个子元素进行大小测量（需要在MeasureOverride里调用每个子元素的Measure方法），然后通过所有子元素的大小来计算自己所需要的实际空间大小，最后返回给WPF布局系统。
+
+4. 重写MeasureOverride方法
+在MeasureOverride方法里需要对每个子元素进行大小测量（调用每个子元素的Measure方法），然后通过所有子元素的大小来计算自己所需要的实际空间大小，最后返回给WPF布局系统。
+在重写MeasureOverride方法的时候，需要考虑子元素和Panel的Margin等一系列有可能会影响到空间大小的值。
+如果不知道到底需要多大空间，可以返回Size.Empty，表示无限大的空间。
+对子元素调用Measure方法之后，会将测量后的大小保存到子元素的DesiredSize属性里，在Arrange阶段可以是用子元素的DesiredSize进行布局。
+如果没有对子元素调用Measure方法，那么子元素的DesiredSize将始终为0。
 注意只有Panel才可以重写MeasureOverride方法，其他的控件无法重写此方法，因为Panel的作用是排列子元素。
 
 ## Arrange过程
 
+Arrange用来确定子元素在Panel里的位置。
 
 ## Render过程
 
