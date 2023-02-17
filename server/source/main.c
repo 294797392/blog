@@ -29,6 +29,8 @@
 
 static void Initialize()
 {
+    Y_log_init(NULL);
+
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
     WORD version = MAKEWORD(1, 1);
     WSADATA wsaData;

@@ -14,5 +14,6 @@
         "stdlib.h": "c",
         "servicehost.h": "c",
         "listening.h": "c"
-    }
+    },
+    "cmake.sourceDirectory": "${workspaceFolder}/cmake"
 }
