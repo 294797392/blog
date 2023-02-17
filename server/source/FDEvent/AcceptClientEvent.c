@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "FDMonitor.h"
+#include "FDEventPoll.h"
 
-int AcceptClientEvent(FDMonitor *monitor, FileDescriptor *fd)
+int AcceptClientEvent(FDEventPoll *monitor, FileDescriptor *fd)
 {
 
 }

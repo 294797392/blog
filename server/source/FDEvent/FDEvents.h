@@ -12,8 +12,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "FDMonitor.h"
+#include "FDEventPoll.h"
 
-extern int AcceptClientEvent(FDMonitor *monitor, FileDescriptor *fd);
+extern int AcceptClientEvent(FDEventPoll *monitor, FileDescriptor *fd);
 
 #endif

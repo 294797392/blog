@@ -11,7 +11,7 @@
 #include <libY.h>
 
 #include "FDEvents.h"
-#include "FDMonitor.h"
+#include "FDEventPoll.h"
 #include "ServiceHost.h"
 
 struct ServiceHost
@@ -22,7 +22,7 @@ struct ServiceHost
     int Socket;
 #endif
 
-    FDMonitor *FDMonitor;
+    FDEventPoll *FDEventPoll;
     ServiceHostOptions *Options;
 };
 
@@ -30,7 +30,7 @@ ServiceHost *ServiceHostOpen(ServiceHostOptions *options)
 {
     ServiceHost *svchost = (ServiceHost*)calloc(1, sizeof(ServiceHost));
     svchost->Options = options;
-    svchost->FDMonitor = options->FDMonitor;
+    svchost->FDEventPoll = options->FDEventPoll;
 
 	if((svchost->Socket = socket(PF_INET, SOCK_STREAM, 0)) < 0)
 	{
@@ -68,11 +68,11 @@ ServiceHost *ServiceHostOpen(ServiceHostOptions *options)
     }
 
     // 文件描述符加入监控列表
-    FileDescriptor *fd = FDMonitorCreateFD(svchost->FDMonitor);
+    FileDescriptor *fd = FDEventPollCreateFD(svchost->FDEventPoll);
     fd->OnRead = AcceptClientEvent;
     fd->Socket = svchost->Socket;
     fd->Read = 1;
-    FDMonitorAddFD(svchost->FDMonitor, fd);
+	FDEventPollAddFD(svchost->FDEventPoll, fd);
 
     return svchost;
 }

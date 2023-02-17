@@ -13,7 +13,15 @@
         "errors.h": "c",
         "stdlib.h": "c",
         "servicehost.h": "c",
+<<<<<<< HEAD
         "listening.h": "c"
     },
     "cmake.sourceDirectory": "${workspaceFolder}/cmake"
+=======
+        "listening.h": "c",
+        "windows.h": "c",
+        "fdeventpolltypes.h": "c",
+        "defaultoptions.h": "c"
+    }
+>>>>>>> 6b52ea4c4b3ce91f1cd1a61631dd4ff5c90114cd
 }

@@ -20,7 +20,7 @@ set(CL_TARGET websvc)
 # 头文件搜索目录
 include_directories(../source)
 include_directories(../source/FDEvent)
-include_directories(../source/FDMonitor)
+include_directories(../source/FDEventPoll)
 include_directories(../external/libY)
 
 # 库搜索目录
