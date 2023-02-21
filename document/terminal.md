@@ -90,3 +90,18 @@
 
 ### 辅助按键
 
+
+
+
+## Device Concepts
+
+实现虚拟终端所需要了解的一些概念和名词。
+
+### mplicitMovement
+隐式移动，在收到了一个可显示的字符后，活动数据的位置（Active Data Position）
+
+### Active Prestation Position
+光标的位置，光标所在的行叫做Active Line，光标所在的字段叫做Active Field，光标所在的区域叫做Active Area，光标所在的纸张叫做Active Page
+
+
+
