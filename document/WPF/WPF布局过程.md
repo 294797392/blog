@@ -12,6 +12,10 @@ https://www.codeproject.com/Articles/1034445/Understanding-MeasureOverride-and-A
 MeasureOverride用来对Panel里的每个子元素进行大小的测量。
 
 MeasureOverride的输入参数是FrameworkElement所测量到的可用空间大小，输出参数是Panel所需要的实际空间大小。
+当FrameworkElement测量出来的可用空间比MeasureSize大的时候，使用可用空间大小去进行布局（Arrange）和渲染（Render）
+当Panel的大小动态改变（比如动态设置宽高，或者动态调整窗口大小）导致大小比MeasureSize小的时候，使用MeasureSize去进行布局和渲染，并且在Panel里会显示一个滚动条
+可以用一行代码来概括WPF是如何决定布局大小和渲染大小的：
+finalSize = Math.Max(MeasureSize, FrameworkElement所测量到的可用空间大小);
 
 1. UIElement -> Measure（公开接口，用户可以调用）
 Clip和Visibility会影响到UIElement阶段的大小测量
