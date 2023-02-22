@@ -1,0 +1,78 @@
+# 2D矩阵变换
+
+2D图像的变换原理就是对一张图像里的每一个像素点乘一个3x3的矩阵，运算后所得到的像素坐标点就是变换后的点。
+2D图像的变换有三种，分别是旋转，缩放和平移，每种变换都对应着一个变换矩阵。
+
+下面列举了几个基本的变换矩阵。
+
+## 旋转变换 - RotationTransform
+
+设旋转角度为θ，那么有如下矩阵：
+
+$$
+\left[
+    \begin{matrix}
+        x & y & 1 \\ 
+    \end{matrix}
+\right]
+\left[
+    \begin{matrix}
+        cos(θ) & sin(θ) & 0 \\ 
+        -sin(θ) &  cos(θ) & 0 \\
+        0 &  0 & 1 \\
+    \end{matrix}
+\right]
+$$
+
+__X = x * cos(θ) - y * sin(θ) + 1 * 0__  
+__Y = y * sin(θ) + x * cos(θ) + 1 * 0__
+
+## 缩放变换 - ScaleTransform
+
+设x轴缩放倍数为scaleX，y轴缩放倍数为scaleY，那么有如下矩阵：
+
+$$
+\left[
+    \begin{matrix}
+        x & y & 1 \\ 
+    \end{matrix}
+\right]
+\left[
+    \begin{matrix}
+    scaleX &  0 & 0 \\ 
+    0  & scaleY & 0 \\
+    0  & 0 & 1 \\
+    \end{matrix}
+\right]
+$$
+
+__X = x * scaleX + y * 0 + 1 * 0__  
+__Y = x * 0 + y * scaleY + 1 * 0__
+
+
+## 平移变换 - TranslationTramsform
+
+假设x轴平移dx个距离，y轴平移dy个距离，那么平移矩阵就是：
+$$
+\left[
+    \begin{matrix}
+        x & y & 1 \\ 
+    \end{matrix}
+\right]
+\left[
+    \begin{matrix}
+        1 & 0 & 0 \\ 
+        0 & 1 & 0 \\
+        dx & dy & 1 \\
+    \end{matrix}
+\right]
+$$
+
+X = x * 1 + y * 0 + 1 * dx
+Y = x * 0 + y * 1 + 1 * dy
+
+## 仿射变换
+
+仿射变换 = 平移/缩放变换 + 平移变换  
+使用3X3矩阵可以同时实现一个线性变化加一个平移变换  
+所以仿射变换就是把一个坐标点乘以一个3X3的矩阵
