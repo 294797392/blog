@@ -74,6 +74,17 @@
 ## CTRL键
 
 ## 光标控制键（上下左右键）
+键盘上还有4个印有箭头的按键，这4个按键按下的时候传输控制序列。如果终端收到了这些序列，光标会往上下左右移动一个字符。
+
+下表列出了光标控制键对应的控制序列：
+
+| 光标键  |VT52 Mode | ANSI Mode and Cursor Key Mode Reset |ANSI Mode and Cursor Key Mode Set|
+| :----- | ------ | ---------|---------|
+| Up     | ESC A  | ESC [ A  | ESC O A |
+| Down   | ESC B  | ESC [ A  | ESC O B |
+| Right  | ESC C  | ESC [ C  | ESC O C |
+| Left   | ESC D  | ESC [ D  | ESC O D |
+
 
 ## 辅助按键
 
@@ -123,7 +134,7 @@ CSI 序列的动作由其最后一个字符（Final Byte）决定。
 |G|CHA|光标移动到当前行的指定列|l|RM|重置模式(见下文)|
 |H|CUP|光标移动到指定行和列(以1行1列为参照)|m|SGR|设置属性(见下文)|
 |J|ED|删除(默认从当前光标处到行尾的)内容<br/>ESC [ 1 J: 删除从开始到光标处的内容<br/>ESC [ 2 J: 清空整个屏幕|n|DSR|状态报告(见下文)|
-|K|EL|删除行(默认从当前光标处到结尾).<br/>ESC [ 1 K: 删除从行首到当前光标处的内容<br/>ESC [ 2 K: 删除整行>|q|DECLL|设置键盘指示灯<br/>ESC [ 0 q: 熄灭所有指示灯<br/>ESC [ 1 q: 点亮 Scroll Lock 灯<br/>ESC [ 2 q: 点亮 Num Lock 灯<br/>ESC [ 3 q: 点亮 Caps Lock 灯|
+|K|EL|删除行(默认从当前光标处到结尾).<br/>ESC [ 1 K: 删除从行首到当前光标处的内容<br/>ESC [ 2 K: 删除光标所在整行|q|DECLL|设置键盘指示灯<br/>ESC [ 0 q: 熄灭所有指示灯<br/>ESC [ 1 q: 点亮 Scroll Lock 灯<br/>ESC [ 2 q: 点亮 Num Lock 灯<br/>ESC [ 3 q: 点亮 Caps Lock 灯|
 |L|DECALN|DEC 屏幕校准测试 - 以E's填充屏幕.|r|DECSTBM|设置滚动范围; 参数为首行和末行|
 |M|||s|?|存储光标位置|
 |P|||u|?|恢复光标位置|
