@@ -1,4 +1,4 @@
-# 2D矩阵变换
+# WPF中的2D坐标矩阵变换
 
 2D图像的变换原理就是对一张图像里的每一个像素点乘一个3x3的矩阵，运算后所得到的像素坐标点就是变换后的点。
 2D图像的变换有三种，分别是旋转，缩放和平移，每种变换都对应着一个变换矩阵。
@@ -7,7 +7,9 @@
 
 ## 旋转变换 - RotationTransform
 
-设旋转角度为θ，那么有如下矩阵：
+angle：旋转角度
+centerX：旋转中心点X坐标
+centerY：旋转中心点Y坐标
 
 $$
 \left[
@@ -17,19 +19,22 @@ $$
 \right]
 \left[
     \begin{matrix}
-        cos(θ) & sin(θ) & 0 \\ 
-        -sin(θ) &  cos(θ) & 0 \\
-        0 &  0 & 1 \\
+        cos(angle) & sin(angle) & 0 \\ 
+        -sin(angle) & cos(angle) & 0 \\
+        centerX * (1 - cos(angle) + centerY * sin(angle)) &  centerY * (1 - cos(angle) - centerY * sin(angle)) & 1 \\
     \end{matrix}
 \right]
 $$
 
 __X = x * cos(θ) - y * sin(θ) + 1 * 0__  
-__Y = y * sin(θ) + x * cos(θ) + 1 * 0__
+__Y = x * sin(θ) + y * cos(θ) + 1 * 0__
 
 ## 缩放变换 - ScaleTransform
 
-设x轴缩放倍数为scaleX，y轴缩放倍数为scaleY，那么有如下矩阵：
+scaleX：X轴缩放倍数
+scaleY：Y轴缩放倍数
+centerX：缩放中心点X坐标
+centerY：缩放中心点Y坐标
 
 $$
 \left[
@@ -41,18 +46,20 @@ $$
     \begin{matrix}
     scaleX &  0 & 0 \\ 
     0  & scaleY & 0 \\
-    0  & 0 & 1 \\
+    centerX - scaleX * centerX  & centerY - scaleY * centerY & 1 \\
     \end{matrix}
 \right]
 $$
 
-__X = x * scaleX + y * 0 + 1 * 0__  
-__Y = x * 0 + y * scaleY + 1 * 0__
+__X = x * scaleX + y * 0 + 1 * (centerX - scaleX * centerX)__  
+__Y = x * 0 + y * scaleY + 1 * (centerY - scaleY * centerY)__
 
 
 ## 平移变换 - TranslationTramsform
 
-假设x轴平移dx个距离，y轴平移dy个距离，那么平移矩阵就是：
+offsetX：X平移量
+offsetY：Y平移量
+
 $$
 \left[
     \begin{matrix}
@@ -63,13 +70,13 @@ $$
     \begin{matrix}
         1 & 0 & 0 \\ 
         0 & 1 & 0 \\
-        dx & dy & 1 \\
+        offsetX & offsetY & 1 \\
     \end{matrix}
 \right]
 $$
 
-X = x * 1 + y * 0 + 1 * dx
-Y = x * 0 + y * 1 + 1 * dy
+__X = x * 1 + y * 0 + 1 * offsetX__  
+__Y = x * 0 + y * 1 + 1 * offsetY__
 
 ## 仿射变换
 
