@@ -1,6 +1,10 @@
 # 键盘按键映射
 
-参考VT100 User Guide/Chapter 3 Programmer Information/The Keyboard
+参考：  
+* VT100 User Guide/Chapter 3 Programmer Information  
+* https://www.cnblogs.com/fanweisheng/p/11076987.html
+* https://www.gnu.org/software/screen/manual/html_node/Control-Sequences.html
+* https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
 
 ## 字母键
 默认情况下，发送小写字母的ASCII码，如果按住了Shift键或者Capslock打开了，那么就发送大写字母的ASCII码
@@ -81,13 +85,43 @@
 | 光标键  |VT52 Mode | ANSI Mode and Cursor Key Mode Reset |ANSI Mode and Cursor Key Mode Set|
 | :----- | ------ | ---------|---------|
 | Up     | ESC A  | ESC [ A  | ESC O A |
-| Down   | ESC B  | ESC [ A  | ESC O B |
+| Down   | ESC B  | ESC [ B  | ESC O B |
 | Right  | ESC C  | ESC [ C  | ESC O C |
 | Left   | ESC D  | ESC [ D  | ESC O D |
 
 
-## 辅助按键
 
+## 辅助键盘（数字小键盘）
+
+辅助键盘上的按键通常传输数字、小数点、负号和逗号的代码，主机可以向终端发出命令把辅助按键设置成应用模式，在应用模式下，每个辅助按键都发送控制序列。VT52/ANSI模式和数字/应用模式四种组合所发送的控制序列如下图所示：
+
+__VT52模式下的辅助键盘表__
+| 按键  |NumericMode |ApplicationMode|按键|NumbericMode|ApplicatioMode|
+| :-| ------ | ---------|---------|--|--|
+| 0 | 0 | ESC ? p | -(dash)   | -(dash)   | ESC ? m |
+| 1 | 1 | ESC ? q | ,(comma)  | ,(comma)  | ESC ? l* |
+| 2 | 2 | ESC ? r | .(period) | .(period) | ESC ? n |
+| 3 | 3 | ESC ? s | ENTER     | 同Return按键 | ESC ? M |
+| 4 | 4 | ESC ? t | PF1       | ESC P | ESC P |
+| 5 | 5 | ESC ? u | PF2       | ESC Q | ESC Q |
+| 6 | 6 | ESC ? v | PF3       | ESC R | ESC R |
+| 7 | 7 | ESC ? w | PF4       | ESC S | ESC S |
+| 8 | 8 | ESC ? x | | | |
+| 9 | 9 | ESC ? y | | | |
+
+__ANSI模式下的辅助键盘表__
+| 按键  |NumericMode |ApplicationMode|按键|NumbericMode|ApplicatioMode|
+| :-| ------ | ---------|---------|--|--|
+| 0 | 0 | ESC O p | -(dash)   | -(dash)   | ESC O m |
+| 1 | 1 | ESC O q | ,(comma)  | ,(comma)  | ESC O l* |
+| 2 | 2 | ESC O r | .(period) | .(period) | ESC O n |
+| 3 | 3 | ESC O s | ENTER     | 同Return按键 | ESC O M |
+| 4 | 4 | ESC O t | PF1       | ESC O P | ESC O P |
+| 5 | 5 | ESC O u | PF2       | ESC O Q | ESC O Q |
+| 6 | 6 | ESC O v | PF3       | ESC O R | ESC O R |
+| 7 | 7 | ESC O w | PF4       | ESC O S | ESC O S |
+| 8 | 8 | ESC O x | | | |
+| 9 | 9 | ESC O y | | | |
 
 
 
@@ -119,8 +153,7 @@
 
 CSI转义序列格式：__ESC [ # FinalByte__
 
-CSI 序列的动作由其最后一个字符（Final Byte）决定。  
-井号表示CSI要执行的动作的参数。
+CSI 序列的动作由其最后一个字符（Final Byte）决定，井号表示CSI要执行的动作的参数。
 
 | FinalByte | 英文缩写 | 描述 |FinalByte|英文缩写|描述|
 | :--- | ---------------| --|--|--|--|
@@ -136,8 +169,8 @@ CSI 序列的动作由其最后一个字符（Final Byte）决定。
 |J|ED|删除(默认从当前光标处到行尾的)内容<br/>ESC [ 1 J: 删除从开始到光标处的内容<br/>ESC [ 2 J: 清空整个屏幕|n|DSR|状态报告(见下文)|
 |K|EL|删除行(默认从当前光标处到结尾).<br/>ESC [ 1 K: 删除从行首到当前光标处的内容<br/>ESC [ 2 K: 删除光标所在整行|q|DECLL|设置键盘指示灯<br/>ESC [ 0 q: 熄灭所有指示灯<br/>ESC [ 1 q: 点亮 Scroll Lock 灯<br/>ESC [ 2 q: 点亮 Num Lock 灯<br/>ESC [ 3 q: 点亮 Caps Lock 灯|
 |L|DECALN|DEC 屏幕校准测试 - 以E's填充屏幕.|r|DECSTBM|设置滚动范围; 参数为首行和末行|
-|M|||s|?|存储光标位置|
-|P|||u|?|恢复光标位置|
+|M|DL|删除#标记的行.|s|?|存储光标位置|
+|P|DCH|删除当前行中#标记的字符.|u|?|恢复光标位置|
 |X|DECPNM|设置数字小键盘模式（NumericMode）|`|HPA|光标移动到当前行指定列|
 
 ## CSI - SGR参数
