@@ -8,3 +8,14 @@ DrawText会调用TextFormatter.FormatLine方法去创建一个TextLine，然后�
 TextFormatter.FormatLine会创建两种TextLine，一种是SimpleTextLine，另外一种是FullTextLine。
 SimpleTextLine.Draw比较简单，实际上是调用了DrawingContext.DrawGlyphRun方法，DrawGlyphRun也是把要画的数据拷贝到内存里。如果要画的文本只有一行，那么TextFormatter始终会创建SimpleTextLine。
 FullTextLine就比较复杂，FullTextLine.Draw方法里调用了UnsafeNativeMethods.LoDisplayLine，这个函数是C++的，不知道它内部做了什么操作。如果文本比较复杂（多行），那么TextFormatter会创建FullTextLine。
+
+
+# 关于FramworkElement.OnRender方法
+
+除了用DrawingVisual来画图，还可以通过重写FrameworkElement.OnRender方法来画图，这两者本质上是一样的，最后都是使用DrawingContext去画图。
+唯一的区别就是FrameworkElement.OnRender的调用时机是WPF布局系统控制的，而DrawingVisual的画图时机是程序员自己控制的，而且DrawingVisual更轻量，速度更快，因为DrawingVisual没有布局逻辑和事件处理逻辑。
+
+# 对DrawingVisual做鼠标命中测试
+
+虽然DrawingVisual没有鼠标点击事件，但是DrawingVisual提供了鼠标命中测试的功能。
+
