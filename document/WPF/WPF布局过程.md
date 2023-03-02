@@ -1,9 +1,9 @@
-## Panel布局过程
+# Panel布局过程
 
 WPF的布局过程分三个步骤，分别是：
-1.  Measure：确定子元素的大小
-2.  Arrange：排列子元素
-3.  Render：渲染界面
+1. Measure：确定子元素的大小
+2. Arrange：排列子元素
+3. Render：渲染界面
 
 ## Measure过程
 https://learn.microsoft.com/zh-cn/dotnet/desktop/wpf/advanced/layout?view=netframeworkdesktop-4.8#LayoutSystem_Measure_Arrange
@@ -11,21 +11,19 @@ https://www.codeproject.com/Articles/1034445/Understanding-MeasureOverride-and-A
 
 MeasureOverride用来对Panel里的每个子元素进行大小的测量。
 
-MeasureOverride的输入参数是FrameworkElement所测量到的可用空间大小，输出参数是Panel所需要的实际空间大小。
-当FrameworkElement测量出来的可用空间比MeasureSize大的时候，使用FrameworkElement测量出来的大小去进行布局（Arrange）和渲染（Render）
-当Panel的大小动态改变（比如动态设置宽高，或者动态调整窗口大小）导致大小比MeasureSize小的时候，使用MeasureSize去进行布局和渲染，并且在Panel里会显示一个滚动条
-可以用一行代码来概括WPF是如何决定布局大小和渲染大小的：
-finalSize = Math.Max(MeasureSize, FrameworkElement所测量到的可用空间大小);
+MeasureOverride的输入参数是FrameworkElement所测量到的可用空间大小，输出参数是Panel所需要的实际空间大小。  
+如果实际空间大小比FrameworkElement测量到的空间大，那么WPF使用实际空间大小当做finalSize。并显示一个滚动条。  
+如果实际空间大小比FrameworkElement测量到的空间小，那么WPF使用FrameworkElement测量到的空间大小当做finalSize。  
 
 1. UIElement -> Measure（公开接口，用户可以调用）
 Clip和Visibility会影响到UIElement阶段的大小测量
 
-2. FramworkElement -> MeasureCore（由UIElement -> Measure调用）
+1. FramworkElement -> MeasureCore（由UIElement -> Measure调用）
 Height，Width，Margin，Style会影响FrameworkElement阶段的大小测量
 
-3. Panel -> MeasureOverride（由FrameworkElement -> MeasureCore调用。用户可以通过重写此方法来影响布局系统）
+1. Panel -> MeasureOverride（由FrameworkElement -> MeasureCore调用。用户可以通过重写此方法来影响布局系统）
 
-4. 重写MeasureOverride方法
+2. 重写MeasureOverride方法
 * 在MeasureOverride方法里需要对每个子元素进行大小测量（调用每个子元素的Measure方法），然后通过所有子元素的大小来计算自己所需要的实际空间大小，最后返回给WPF布局系统。
 * 在重写MeasureOverride方法的时候，需要考虑子元素和Panel的Margin等一系列有可能会影响到空间大小的值。
 * 对子元素调用Measure方法之后，会将测量后的大小保存到子元素的DesiredSize属性里，在Arrange阶段使用子元素的DesiredSize进行布局。
@@ -34,8 +32,7 @@ Height，Width，Margin，Style会影响FrameworkElement阶段的大小测量
 
 ## Arrange过程
 
-ArrangeOverride输入参数：finalSize = Math.Max(MeasureSize, FrameworkElement所测量到的可用空间大小);
-ArrangeOverride输出参数：RenderSize
+ArrangeOverride输入参数是测量过程得到的最终值（DesiredSize），输出参数是RenderSize，用来渲染的大小。
 
 Arrange用来确定子元素在Panel里的位置。
 
