@@ -1,3 +1,15 @@
+# 终端简介
+终端是一个独立的设备，看着像一个老式的大头显示器，用户通过终端来与操作系统交互。
+终端上用来显示文本，除了文本之外，制造商还希望可以通过非文本（不可见字符）的方式来控制终端执行特定的行为，即控制序列（Contro Sequence），由于没有标准，不同的制造商可以为相同的功能选择不同的控制序列。
+后来ECMA协会给终端的控制序列定义了一套标准，这套标准的代号是ECMA-48。
+
+最初是DEC（美国数字设备公司）公司生产的VT100终端，后来升级成VT220，后来又升级成VT525，最后升级成xterm。
+升级后的终端都支持更多的控制序列，并且支持ANSI标准的控制序列。
+
+xterm是vt220的超集，xterm支持vt220的所有功能，并且扩展了更多的功能，比如xterm支持显示颜色，但是vt220不支持显示颜色。和xterm一样，VT220在VT100的基础上也扩展了功能。
+
+可以使用linux命令`infocmp \<term1> \<term2>`来查看不同终端控制序列的区别。
+
 # 键盘按键映射
 
 参考：  
@@ -7,6 +19,8 @@
 * https://learn.microsoft.com/zh-cn/windows/console/console-virtual-terminal-sequences
 * https://vt100.net/docs/vt510-rm/chapter4.html
 * https://invisible-island.net/xterm/ctlseqs/ctlseqs.html
+* https://unix.stackexchange.com/questions/473599/how-to-resize-tty-console-width
+* http://xtermjs.org/docs/api/vtfeatures
 
 ## 字母键
 默认情况下，发送小写字母的ASCII码，如果按住了Shift键或者Capslock打开了，那么就发送大写字母的ASCII码
@@ -158,10 +172,10 @@ CSI 序列的动作由其最后一个字符（Final Byte）决定，\<n\>表示C
 | FinalByte | 助记符 | 描述 |FinalByte|助记符|描述|
 | :--- | ---------------| --|--|--|--|
 |@|ICH|在当前光标位置插入\<n\>个空格<br/>这会将所有现有文本移到右侧<br/>向右溢出屏幕的文本会被删除|a|HPR|光标移动到#标记的右边|
-|A|CUU|光标上移到#标识的行|c|DA|以`I am a VT102'应答 ESC [ ? 6 c:|
-|B|CUD|光标下移到#标识的行|d|VPA|光标移动到当前列指定行|
-|C|CUF|光标右移到#标识的列|e|VPR|光标移动到#标记的下一行|
-|D|CUB|光标左移到#标识的列|f|HVP|光标移动到指定的行和列|
+|A|CUU|光标上移\<n>个位置|c|DA|以`I am a VT102'应答 ESC [ ? 6 c:|
+|B|CUD|光标下移\<n>个位置|d|VPA|光标移动到当前列指定行|
+|C|CUF|光标右移\<n>个位置|e|VPR|光标移动到#标记的下一行|
+|D|CUB|光标左移\<n>个位置|f|HVP|光标移动到指定的行和列|
 |E|CNL|将光标下移到#指示的行的第一列|g|TBC|默认清除当前位置的制表站<br/>ESC [ 3 g: 删除所有制表站|
 |F|CPL|将光标上移到#指示的行的第一列|h|TBC|设置模式(见下文)|
 |G|CHA|光标移动到当前行的指定列|l|RM|重置模式(见下文)|
@@ -195,16 +209,22 @@ CSI 序列的动作由其最后一个字符（Final Byte）决定，\<n\>表示C
 
 
 
-<!-- 
-## Device Concepts
 
-实现虚拟终端所需要了解的一些概念和名词。
 
-### mplicitMovement
-隐式移动，在收到了一个可显示的字符后，活动数据的位置（Active Data Position）
+# 终端相关的指令
 
-### Active Prestation Position
-光标的位置，光标所在的行叫做Active Line，光标所在的字段叫做Active Field，光标所在的区域叫做Active Area，光标所在的纸张叫做Active Page
- -->
+* stty size：查看当前终端的行和列数
+* echo $TERM：查看当前终端类型，当一个虚拟终端被打开的时候，虚拟终端会有一个终端类型，存储在TERM环境变量里（使用SSH.Net库的时候，CreateShellStream第一个参数的值）
+* tput smam：设置DECAWM模式
+* tput rmam：取消设置DECAWM模式（DEC AutoWrapMode）
 
+# 控制序列的测试方法
+
+## DEC PrivateMode的测试方式
+1. DECAWM - AutoWrapMode
+在一行字符数量超出了该行的最大列数的时候会发生，手动在一行里输入很多字符就会出现
+使用tput rmam/smam指令可以动态设置DECAWM模式的启用和禁用
+
+## CSI序列的测试方式
+1. EL：按上下键切换历史指令的时候会触发EL指令
 
