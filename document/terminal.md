@@ -21,6 +21,7 @@ xterm是vt220的超集，xterm支持vt220的所有功能，并且扩展了更多
 * https://invisible-island.net/xterm/ctlseqs/ctlseqs.html
 * https://unix.stackexchange.com/questions/473599/how-to-resize-tty-console-width
 * http://xtermjs.org/docs/api/vtfeatures
+* 视频终端历史：https://ftp.vt100.net/dec/vt_history
 
 ## 字母键
 默认情况下，发送小写字母的ASCII码，如果按住了Shift键或者Capslock打开了，那么就发送大写字母的ASCII码

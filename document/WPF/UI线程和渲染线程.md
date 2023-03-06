@@ -1,0 +1,3 @@
+Description of the WPF render thread and how it differs from the UI thread
+
+Each WPF application may have one or more UI threads running their own message pump (Dispatcher.Run). Each UI thread is responsible for processing window messages from the thread's message queue and dispatching them to windows owned by that thread. Each WPF application has just one render thread. It's a separate thread that communicates with DirectX/D3D (and/or GDI if the software rendering pipeline is being used). For WPF content, each UI thread sends detailed instructions to the render thread on what to draw. The render thread then takes those instructions and renders the content.
