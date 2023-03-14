@@ -13,6 +13,8 @@ FullTextLine就比较复杂，FullTextLine.Draw方法里调用了UnsafeNativeMet
 我整理了一个DrawingContext.Draw方法的流程图：
 ![DrawingContext.Draw](DrawingContext.Draw.png "DrawingContext.Draw")
 
+要注意的是，DrawText方法会比较耗时，因为WPF内部会对文本进行排版操作，所以如果文本没有变化的话，最好不要每次都调用DrawText，而是用其他方式去修改DrawingVisual。
+
 # 如何使用DrawingVisual画图
 
 
@@ -20,7 +22,7 @@ FullTextLine就比较复杂，FullTextLine.Draw方法里调用了UnsafeNativeMet
 # 关于FramworkElement.OnRender方法
 
 除了用DrawingVisual来画图，还可以通过重写FrameworkElement.OnRender方法来画图，这两者本质上是一样的，最后都是使用DrawingContext去画图。
-唯一的区别就是FrameworkElement.OnRender的调用时机是WPF布局系统控制的，而DrawingVisual的画图时机是程序员自己控制的，而且DrawingVisual更轻量，速度更快，因为DrawingVisual没有布局逻辑和事件处理逻辑。
+唯一的区别就是FrameworkElement.OnRender的调用时机是WPF布局系统控制的，而DrawingVisual的画图时机是程序员自己控制的，而且DrawingVisual更轻量，速度更快，因为DrawingVisual没有参与布局逻辑和事件处理逻辑。
 
 # 对DrawingVisual做鼠标命中测试
 

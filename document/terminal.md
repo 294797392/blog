@@ -19,6 +19,7 @@ xterm是vt220的超集，xterm支持vt220的所有功能，并且扩展了更多
 * https://learn.microsoft.com/zh-cn/windows/console/console-virtual-terminal-sequences
 * https://vt100.net/docs/vt510-rm/chapter4.html
 * https://invisible-island.net/xterm/ctlseqs/ctlseqs.html
+* https://espterm.github.io/docs/VT100%20escape%20codes.html
 * https://unix.stackexchange.com/questions/473599/how-to-resize-tty-console-width
 * http://xtermjs.org/docs/api/vtfeatures
 * 视频终端历史：https://ftp.vt100.net/dec/vt_history
@@ -150,7 +151,7 @@ __ANSI模式下的辅助键盘表__
 |ESC D|IND|换行|
 |ESC E|NEL|	新的一行|
 |ESC H|HTS|设置当前列为制表位|
-|ESC M|RI|翻转换行(Reverse linefeed)|
+|ESC M|RI|反向换行(Reverse linefeed)，执行\n的反向操作，将光标向上移动一行，维护水平位置，如有必要，滚动缓冲区|
 |ESC Z|DECID|DEC 私有定义|
 |ESC 7|DECSC|存储当前状态(光标坐标,属性,字符集)|
 |ESC 8|DECRC|恢复上一次储存的状态|
@@ -166,7 +167,7 @@ __ANSI模式下的辅助键盘表__
 
 # CSI转义序列控制字符
 
-CSI转义序列格式：__ESC [ <n> FinalByte__
+CSI转义序列格式：__ESC [ \<n> FinalByte__
 
 CSI 序列的动作由其最后一个字符（Final Byte）决定，\<n\>表示CSI要执行的动作的参数。
 
@@ -183,7 +184,7 @@ CSI 序列的动作由其最后一个字符（Final Byte）决定，\<n\>表示C
 |H|CUP|光标移动到指定行和列(以1行1列为参照)|m|SGR|设置属性(见下文)|
 |J|ED|删除(默认从当前光标处到行尾的)内容<br/>ESC [ 1 J: 删除从开始到光标处的内容<br/>ESC [ 2 J: 清空整个屏幕|n|DSR|状态报告(见下文)|
 |K|EL|删除行(默认从当前光标处到结尾).<br/>ESC [ 1 K: 删除从行首到当前光标处的内容<br/>ESC [ 2 K: 删除光标所在整行|q|DECLL|设置键盘指示灯<br/>ESC [ 0 q: 熄灭所有指示灯<br/>ESC [ 1 q: 点亮 Scroll Lock 灯<br/>ESC [ 2 q: 点亮 Num Lock 灯<br/>ESC [ 3 q: 点亮 Caps Lock 灯|
-|L|IL|将\<n\>行插入光标位置的缓冲区<br/>光标所在的行及其下方的行将向下移动。|r|DECSTBM|设置滚动范围; 参数为首行和末行|
+|L|IL|将\<n\>行插入光标位置的缓冲区<br/>光标所在的行及其下方的行将向下移动。|ESC [\<t>;\<b>r|DECSTBM|设置滚动范围; 参数为首行和末行|
 |M|DL|从光标所在行开始，删除\<n\>行|s|?|存储光标位置|
 |P|DCH|删除当前光标位置的\<n\>个字符<br/>这会从屏幕右边缘以空格字符移动|u|?|恢复光标位置|
 |X|ECH|擦除当前光标位置的\<n\>个字符<br/>方法是使用空格字符覆盖它们|`|HPA|光标移动到当前行指定列|
