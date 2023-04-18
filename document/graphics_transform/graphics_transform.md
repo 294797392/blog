@@ -7,9 +7,9 @@
 
 ## 旋转变换 - RotationTransform
 
-angle：旋转角度
-centerX：旋转中心点X坐标
-centerY：旋转中心点Y坐标
+angle：旋转角度  
+centerX：旋转中心点X坐标  
+centerY：旋转中心点Y坐标  
 
 $$
 \left[

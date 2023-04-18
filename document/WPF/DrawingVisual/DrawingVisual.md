@@ -1,8 +1,9 @@
 # DrawingVisual简介
 
-DrawingVisual是一个轻量的绘图对象，之所以轻量，是因为它不提供布局或事件处理，从而可以提高性能。
+DrawingVisual是一个轻量的绘图对象，之所以轻量，是因为它不参与布局或事件处理，从而可以提高性能。
 
 通过查看WPF的源码发现，在调用DrawingContext.DrawXXX方法的时候，实际上是把要画的图形的数据拷贝到了DrawingContext自己维护的一个byte数组里。  
+发送到DrawingContext的绘图指令不会立即呈现在屏幕上，而是存储起来，然后在适当的时间传递给渲染引擎。  
 
 DrawText有点不一样，DrawText需要传进去一个FormattedText对象，DrawText内部会调用FormattedText的Draw方法，FormattedText内部使用TextFormatter来DrawText。TextFormatter是WPF的文本排版引擎，应该是属于WPF里最底层的文本控制API了。
 DrawText会调用TextFormatter.FormatLine方法去创建一个TextLine，然后调用TextLine.Draw方法去渲染文本。
