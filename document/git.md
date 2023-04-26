@@ -35,3 +35,27 @@ git branch -a
 
 
 
+
+# 解决冲突
+
+## 丢弃本地修改的代码，使用服务器的代码为准
+git checkout --theris .
+
+## 丢弃服务器修改的代码，使用本地的代码为准
+git checkout --ours .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
