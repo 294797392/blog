@@ -142,19 +142,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\source\DefaultOptions.h" />
-    <ClInclude Include="..\source\FDEventPoll\FDEventPoll.h" />
-    <ClInclude Include="..\source\FDEventPoll\FDEventPollTypes.h" />
-    <ClInclude Include="..\source\FDEvent\FDEvents.h" />
+    <ClInclude Include="..\source\evtpoll\eventpoll.h" />
     <ClInclude Include="..\source\HTTPConstants.h" />
-    <ClInclude Include="..\source\ResponseCode.h" />
-    <ClInclude Include="..\source\ServiceHost.h" />
+    <ClInclude Include="..\source\errors.h" />
+    <ClInclude Include="..\source\svchost.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\FDEventPoll\FDEventPoll.c" />
-    <ClCompile Include="..\source\FDEventPoll\SelectFDEventPoll.c" />
-    <ClCompile Include="..\source\FDEvent\AcceptClientEvent.c" />
+    <ClCompile Include="..\source\evtpoll\accept_client_event.c" />
+    <ClCompile Include="..\source\evtpoll\eventpoll.c" />
+    <ClCompile Include="..\source\evtpoll\eventpoll_actions_select.c" />
     <ClCompile Include="..\source\main.c" />
-    <ClCompile Include="..\source\ServiceHost.c" />
+    <ClCompile Include="..\source\svchost.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\service.json" />

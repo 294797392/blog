@@ -20,49 +20,61 @@
 
 #include <libY.h>
 
-#include "FDEventPoll.h"
-#include "ServiceHost.h"
+#include "errors.h"
+#include "evtpoll/eventpoll.h"
+#include "svchost.h"
 
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
 #pragma comment(lib, "Ws2_32.lib")
 #pragma comment(lib, "libY.lib")
 #endif
 
-static void Initialize()
-{
-    Y_log_init(NULL);
-
-#if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
-    WORD version = MAKEWORD(1, 1);
-    WSADATA wsaData;
-    int rc = WSAStartup(version, &wsaData);
-#endif
-}
+extern int accept_client_event(eventpoll *evpoll, eventpoll_event *evt);
 
 int main(int argc, char **argv)
 {
-    Initialize();
+	int code = YERR_SUCCESS;
 
-    FDEventPollOptions evpollOptions = 
-    {
-        .Type = FDMON_TYPE_SELECT
-    };
-    FDEventPoll *fdMonitor = FDEventPollCreate(&evpollOptions);
+	Y_log_init(NULL);
 
-    ServiceHostOptions svchostOptions = 
-    {
-        .BindAddress = "0.0.0.0",
-        .ListenPort = 1018,
-        .RootDir = "~/",
-        .FDEventPoll = fdMonitor
-    };
-    ServiceHost *svchost = ServiceHostOpen(&svchostOptions);    
+#if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
+	WORD version = MAKEWORD(1, 1);
+	WSADATA wsaData;
+	int rc = WSAStartup(version, &wsaData);
+#endif
 
-    YLOGI("start webserver success");
+	eventpoll_options evtpoll_options =
+	{
+		.type = EVENT_POLL_TYPE_SELECT
+	};
+	eventpoll *evtpoll = new_eventpoll(&evtpoll_options);
 
-    while (1)
-    {
-        FDEventPollPoll(fdMonitor);
-    }
-    return 0;
+	svchost_options svc_options =
+	{
+		.bindaddr = "0.0.0.0",
+		.port = 1018,
+		.root = "~/",
+	};
+	svchost *svc = new_svchost(&svc_options);
+	eventpoll_event *evt = new_event(evtpoll);
+	evt->sock = svc->sock;
+	evt->readable = 1;
+	evt->on_read = accept_client_event;
+	eventpoll_add_event(evtpoll, evt);
+
+	YLOGI("start svchost success");
+
+	while(1)
+	{
+		code = eventpoll_poll(evtpoll);
+		if(code != ERR_SUCCESS)
+		{
+			YLOGE("poll event failed, %d", code);
+			continue;
+		}
+
+
+	}
+
+	return 0;
 }

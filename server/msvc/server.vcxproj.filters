@@ -3,40 +3,31 @@
   <ItemGroup>
     <ClInclude Include="..\source\DefaultOptions.h" />
     <ClInclude Include="..\source\HTTPConstants.h" />
-    <ClInclude Include="..\source\ResponseCode.h" />
-    <ClInclude Include="..\source\ServiceHost.h" />
-    <ClInclude Include="..\source\FDEvent\FDEvents.h">
-      <Filter>FDEvent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\FDEventPoll\FDEventPoll.h">
-      <Filter>FDEventPoll</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\FDEventPoll\FDEventPollTypes.h">
-      <Filter>FDEventPoll</Filter>
+    <ClInclude Include="..\source\errors.h" />
+    <ClInclude Include="..\source\svchost.h" />
+    <ClInclude Include="..\source\evtpoll\eventpoll.h">
+      <Filter>evtpoll</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\main.c" />
-    <ClCompile Include="..\source\ServiceHost.c" />
-    <ClCompile Include="..\source\FDEvent\AcceptClientEvent.c">
-      <Filter>FDEvent</Filter>
+    <ClCompile Include="..\source\svchost.c" />
+    <ClCompile Include="..\source\evtpoll\eventpoll.c">
+      <Filter>evtpoll</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\FDEventPoll\FDEventPoll.c">
-      <Filter>FDEventPoll</Filter>
+    <ClCompile Include="..\source\evtpoll\accept_client_event.c">
+      <Filter>evtpoll</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\FDEventPoll\SelectFDEventPoll.c">
-      <Filter>FDEventPoll</Filter>
+    <ClCompile Include="..\source\evtpoll\eventpoll_actions_select.c">
+      <Filter>evtpoll</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\service.json" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="FDEvent">
-      <UniqueIdentifier>{8254e9e2-2d78-4dc6-8667-fcb22e388c06}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FDEventPoll">
-      <UniqueIdentifier>{28c36392-d9b8-4586-a178-b0abc02b3e19}</UniqueIdentifier>
+    <Filter Include="evtpoll">
+      <UniqueIdentifier>{4cdd21f4-01b9-447f-89a6-6048c0169aa2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
