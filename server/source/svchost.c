@@ -10,7 +10,7 @@
 
 #include <libY.h>
 
-#include "evtpoll/eventpoll.h"
+#include "event.h"
 #include "svchost.h"
 
 svchost *new_svchost(svchost_options *options)

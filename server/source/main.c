@@ -21,7 +21,7 @@
 #include <libY.h>
 
 #include "errors.h"
-#include "eventpoll/eventpoll.h"
+#include "event.h"
 #include "svchost.h"
 
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
@@ -29,7 +29,7 @@
 #pragma comment(lib, "libY.lib")
 #endif
 
-extern int accept_client_event(eventpoll *evpoll, eventpoll_event *evt);
+extern int accept_client_event(event_module *evpoll, steak_event *evt);
 
 int main(int argc, char **argv)
 {
@@ -43,11 +43,11 @@ int main(int argc, char **argv)
 	int rc = WSAStartup(version, &wsaData);
 #endif
 
-	eventpoll_options evtpoll_options =
+	event_module_options evtpoll_options =
 	{
 		.type = EVENT_POLL_TYPE_SELECT
 	};
-	eventpoll *evtpoll = new_eventpoll(&evtpoll_options);
+	event_module *evtpoll = new_eventpoll(&evtpoll_options);
 
 	svchost_options svc_options =
 	{
@@ -56,18 +56,18 @@ int main(int argc, char **argv)
 		.root = "~/",
 	};
 	svchost *svc = new_svchost(&svc_options);
-	eventpoll_event *evt = new_event(evtpoll);
+	steak_event *evt = new_event(evtpoll);
 	evt->sock = svc->sock;
 	evt->readable = 1;
 	evt->on_read = accept_client_event;
-	eventpoll_add_event(evtpoll, evt);
+	event_add(evtpoll, evt);
 
 	YLOGI("start svchost success");
 
 	while(1)
 	{
-		code = eventpoll_poll(evtpoll);
-		if(code != ERR_SUCCESS)
+		code = event_poll(evtpoll);
+		if(code != STEAK_ERR_OK)
 		{
 			YLOGE("poll event failed, %d", code);
 			continue;

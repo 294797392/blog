@@ -10,9 +10,9 @@
 #include <libY.h>
 
 #include "errors.h"
-#include "eventpoll.h"
+#include "event.h"
 
-typedef struct eventpoll_select_s
+typedef struct poll_select_s
 {
 	FD_SET master_read_fd_set;
 	FD_SET master_write_fd_set;
@@ -25,38 +25,38 @@ typedef struct eventpoll_select_s
 	int max_fd;
 
 	struct timeval timeout;
-}eventpoll_select;
+}poll_select;
 
-int eventpoll_select_initialize(eventpoll *evtpoll)
+int eventpoll_select_initialize(event_module *evm)
 {
-	eventpoll_select *evtpoll_select = (eventpoll_select *)calloc(1, sizeof(eventpoll_select));
-	if(evtpoll_select == NULL)
+	poll_select *pollselect = (poll_select *)calloc(1, sizeof(poll_select));
+	if(pollselect == NULL)
 	{
-		YLOGE("cannot create eventpoll_select instance, no memory");
+		YLOGE("cannot create poll_select instance, no memory");
 		return STEAK_ERR_NO_MEM;
 	}
 
-	evtpoll->actions_data = evtpoll_select;
+	evm->actions_data = pollselect;
 
 	// 初始化要监控的文件描述符列表
-	FD_ZERO(&evtpoll_select->master_read_fd_set);
-	FD_ZERO(&evtpoll_select->master_write_fd_set);
+	FD_ZERO(&pollselect->master_read_fd_set);
+	FD_ZERO(&pollselect->master_write_fd_set);
 
 	// 设置超时时间
-	evtpoll_select->timeout.tv_sec = 0;
-	evtpoll_select->timeout.tv_usec = evtpoll->timeout_ms * 1000;
+	pollselect->timeout.tv_sec = 0;
+	pollselect->timeout.tv_usec = evm->timeout_ms * 1000;
 
-	return ERR_SUCCESS;
+	return STEAK_ERR_OK;
 }
 
-void eventpoll_select_release(eventpoll *evtpoll)
+void eventpoll_select_release(event_module *evm)
 {
 
 }
 
-int eventpoll_select_add_event(eventpoll *evtpoll, eventpoll_event *evt)
+int eventpoll_select_add_event(event_module *evm, steak_event *evt)
 {
-	eventpoll_select *evtpoll_select = (eventpoll_select *)evtpoll->actions_data;
+	poll_select *evtpoll_select = (poll_select *)evm->actions_data;
 
 	if(evt->readable)
 	{
@@ -75,12 +75,12 @@ int eventpoll_select_add_event(eventpoll *evtpoll, eventpoll_event *evt)
 		evtpoll_select->max_fd = evt->sock;
 	}
 
-	return ERR_SUCCESS;
+	return STEAK_ERR_OK;
 }
 
-int eventpoll_select_delete_event(eventpoll *evtpoll, eventpoll_event *evt)
+int eventpoll_select_delete_event(event_module *evm, steak_event *evt)
 {
-	eventpoll_select *evtpoll_select = (eventpoll_select *)evtpoll->actions_data;
+	poll_select *evtpoll_select = (poll_select *)evm->actions_data;
 
 	if(evt->readable)
 	{
@@ -94,12 +94,12 @@ int eventpoll_select_delete_event(eventpoll *evtpoll, eventpoll_event *evt)
 		evtpoll_select->max_write--;
 	}
 
-	return ERR_SUCCESS;
+	return STEAK_ERR_OK;
 }
 
-int eventpoll_select_poll_event(eventpoll *evtpoll)
+int eventpoll_select_poll_event(event_module *evm)
 {
-	eventpoll_select *evtpoll_select = (eventpoll_select *)evtpoll->actions_data;
+	poll_select *evtpoll_select = (poll_select *)evm->actions_data;
 
 	FD_SET worker_read_fd_set = evtpoll_select->master_read_fd_set;
 
@@ -111,7 +111,7 @@ int eventpoll_select_poll_event(eventpoll *evtpoll)
 	if(ret == 0)
 	{
 		// timeout
-		return ERR_SUCCESS;
+		return STEAK_ERR_OK;
 	}
 	else if(ret < 0)
 	{
@@ -121,13 +121,13 @@ int eventpoll_select_poll_event(eventpoll *evtpoll)
 			case EINTR:
 			{
 				// 等待时捕获了一个信号，可以重新发起调用
-				return eventpoll_select_poll_event(evtpoll);
+				return eventpoll_select_poll_event(evm);
 			}
 
 			default:
 			{
 				YLOGE("select failed, %s", strerror(errno));
-				return ERR_SUCCESS;
+				return STEAK_ERR_OK;
 			}
 		}
 	}
@@ -135,19 +135,19 @@ int eventpoll_select_poll_event(eventpoll *evtpoll)
 	{
 		// one or more fd has io event
 		int events;
-		eventpoll_event **event_list = (eventpoll_event **)Y_list_to_array(evtpoll->event_list, &events);
+		steak_event **event_list = (steak_event **)Y_list_to_array(evm->event_list, &events);
 
 		for(int i = 0; i < events; i++)
 		{
-			eventpoll_event *evt = event_list[i];
+			steak_event *evt = event_list[i];
 			if(FD_ISSET(evt->sock, &worker_read_fd_set))
 			{
-				evt->on_read(evtpoll, evt);
+				evt->on_read(evm, evt);
 			}
 		}
 	}
 
-	return ERR_SUCCESS;
+	return STEAK_ERR_OK;
 }
 
 eventpoll_actions eventpoll_actions_select =

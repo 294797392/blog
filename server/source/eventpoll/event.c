@@ -5,7 +5,7 @@
 #include <libY.h>
 
 #include "errors.h"
-#include "eventpoll.h"
+#include "event.h"
 
 extern eventpoll_actions eventpoll_actions_select;
 eventpoll_actions *eventpoll_actions_list[] =
@@ -13,7 +13,7 @@ eventpoll_actions *eventpoll_actions_list[] =
 	&eventpoll_actions_select
 };
 
-static eventpoll_actions *select_evpoll_actions(eventpoll_options *options)
+static eventpoll_actions *select_evpoll_actions(event_module_options *options)
 {
 	size_t len = sizeof(eventpoll_actions_list) / sizeof(eventpoll_actions *);
 
@@ -30,9 +30,9 @@ static eventpoll_actions *select_evpoll_actions(eventpoll_options *options)
 }
 
 
-eventpoll *new_eventpoll(eventpoll_options *options)
+event_module *new_eventpoll(event_module_options *options)
 {
-	eventpoll *evpoll = (eventpoll *)calloc(1, sizeof(eventpoll));
+	event_module *evpoll = (event_module *)calloc(1, sizeof(event_module));
 	evpoll->options = options;
 	evpoll->event_list = Y_create_list();
 	evpoll->actions = select_evpoll_actions(options);
@@ -40,47 +40,47 @@ eventpoll *new_eventpoll(eventpoll_options *options)
 	return evpoll;
 }
 
-void free_eventpoll(eventpoll *evpoll)
+void free_eventpoll(event_module *evpoll)
 {
 	free(evpoll);
 }
 
-int eventpoll_add_event(eventpoll *evpoll, eventpoll_event *evt)
+int event_add(event_module *evpoll, steak_event *evt)
 {
 	eventpoll_actions *actions = evpoll->actions;
 	actions->add_event(evpoll, evt);
 
 	Y_list_add(evpoll->event_list, evt);
 
-	return ERR_SUCCESS;
+	return STEAK_ERR_OK;
 }
 
-int eventpoll_delete_event(eventpoll *evpoll, eventpoll_event *evt)
+int event_delete(event_module *evpoll, steak_event *evt)
 {
 	eventpoll_actions *actions = evpoll->actions;
 	actions->delete_event(evpoll, evt);
 
 	Y_list_remove(evpoll->event_list, evt, 0);
 
-	return ERR_SUCCESS;
+	return STEAK_ERR_OK;
 }
 
-int eventpoll_poll(eventpoll *evpoll)
+int event_poll(event_module *evpoll)
 {
-	int code = ERR_SUCCESS;
+	int code = STEAK_ERR_OK;
 	eventpoll_actions *actions = evpoll->actions;
 	code = actions->poll_event(evpoll);
 
 	return code;
 }
 
-eventpoll_event *new_event(eventpoll *evpoll)
+steak_event *new_event(event_module *evpoll)
 {
-	eventpoll_event *evt = (eventpoll_event *)calloc(1, sizeof(eventpoll_event));
+	steak_event *evt = (steak_event *)calloc(1, sizeof(steak_event));
 	return evt;
 }
 
-void free_event(eventpoll *evpoll, eventpoll_event *evt)
+void free_event(event_module *evpoll, steak_event *evt)
 {
 	free(evt);
 }

@@ -24,6 +24,7 @@
     <ProjectGuid>{15075911-52ce-418c-996a-0cec0ac84d66}</ProjectGuid>
     <RootNamespace>server</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>steak</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -88,7 +89,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;ENV_WIN32;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)../external/libY;$(SolutionDir)../external/cJSON;$(SolutionDir)../source/FDEvent;$(SolutionDir)../source/FDEventPoll;$(SolutionDir)../source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)../external/libY;$(SolutionDir)../external/cJSON;$(SolutionDir)../source;$(SolutionDir)../source/eventpoll;$(SolutionDir)../source/header;$(SolutionDir)../source/response;$(SolutionDir)../source/request;$(SolutionDir)../source/session;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -141,17 +142,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\DefaultOptions.h" />
-    <ClInclude Include="..\source\eventpoll\eventpoll.h" />
+    <ClInclude Include="..\source\app.h" />
+    <ClInclude Include="..\source\default.h" />
+    <ClInclude Include="..\source\eventpoll\event.h" />
+    <ClInclude Include="..\source\header\header.h" />
     <ClInclude Include="..\source\HTTPConstants.h" />
     <ClInclude Include="..\source\errors.h" />
+    <ClInclude Include="..\source\parser\parser.h" />
+    <ClInclude Include="..\source\request\request.h" />
+    <ClInclude Include="..\source\response\response.h" />
+    <ClInclude Include="..\source\session\session.h" />
     <ClInclude Include="..\source\svchost.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\eventpoll\eventpoll.c" />
-    <ClCompile Include="..\source\eventpoll\eventpoll_actions_select.c" />
+    <ClCompile Include="..\source\app.c" />
+    <ClCompile Include="..\source\eventpoll\event.c" />
+    <ClCompile Include="..\source\eventpoll\poll_actions_select.c" />
     <ClCompile Include="..\source\event\accept_client_event.c" />
+    <ClCompile Include="..\source\event\read_request_event.c" />
+    <ClCompile Include="..\source\event\write_response_event.c" />
+    <ClCompile Include="..\source\header\header.c" />
     <ClCompile Include="..\source\main.c" />
+    <ClCompile Include="..\source\parser\parser.c" />
+    <ClCompile Include="..\source\request\request.c" />
+    <ClCompile Include="..\source\response\response.c" />
+    <ClCompile Include="..\source\session\session.c" />
     <ClCompile Include="..\source\svchost.c" />
   </ItemGroup>
   <ItemGroup>

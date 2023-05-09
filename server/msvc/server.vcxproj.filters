@@ -1,12 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="..\source\DefaultOptions.h" />
+    <ClInclude Include="..\source\default.h" />
     <ClInclude Include="..\source\HTTPConstants.h" />
     <ClInclude Include="..\source\errors.h" />
     <ClInclude Include="..\source\svchost.h" />
-    <ClInclude Include="..\source\eventpoll\eventpoll.h">
+    <ClInclude Include="..\source\eventpoll\event.h">
       <Filter>eventpoll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\app.h" />
+    <ClInclude Include="..\source\session\session.h">
+      <Filter>session</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\response\response.h">
+      <Filter>response</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\header\header.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\request\request.h">
+      <Filter>request</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\parser\parser.h">
+      <Filter>parser</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -15,11 +31,33 @@
     <ClCompile Include="..\source\event\accept_client_event.c">
       <Filter>event</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\eventpoll\eventpoll.c">
+    <ClCompile Include="..\source\eventpoll\event.c">
       <Filter>eventpoll</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\eventpoll\eventpoll_actions_select.c">
+    <ClCompile Include="..\source\eventpoll\poll_actions_select.c">
       <Filter>eventpoll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\event\read_request_event.c">
+      <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\event\write_response_event.c">
+      <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\app.c" />
+    <ClCompile Include="..\source\session\session.c">
+      <Filter>session</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\response\response.c">
+      <Filter>response</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\header\header.c">
+      <Filter>header</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\request\request.c">
+      <Filter>request</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\parser\parser.c">
+      <Filter>parser</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -31,6 +69,21 @@
     </Filter>
     <Filter Include="eventpoll">
       <UniqueIdentifier>{4cdd21f4-01b9-447f-89a6-6048c0169aa2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="session">
+      <UniqueIdentifier>{1f5d8b23-6034-47fd-8af2-fd5d5d1669a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="request">
+      <UniqueIdentifier>{67841500-86ee-44f5-96f3-d06af98f77f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="response">
+      <UniqueIdentifier>{8c2466c1-e3b9-4d35-a84c-e5fe35f34769}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="header">
+      <UniqueIdentifier>{b93787ac-3258-4f3e-be89-0dc954fb9470}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="parser">
+      <UniqueIdentifier>{3e4f2f18-1ec8-4dfd-8934-33d216f187b5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

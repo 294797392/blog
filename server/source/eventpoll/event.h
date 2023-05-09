@@ -17,11 +17,12 @@
 extern "C" {
 #endif
 
+	typedef struct event_module_s event_module;
+	typedef struct event_module_options_s event_module_options;
+
 	typedef enum eventpoll_type_enum eventpoll_type_enum;
-	typedef struct eventpoll_s eventpoll;
-	typedef struct eventpoll_options_s eventpoll_options;
 	typedef struct eventpoll_actions_s eventpoll_actions;
-	typedef struct eventpoll_event_s eventpoll_event;
+	typedef struct steak_event_s steak_event;
 
 	enum eventpoll_type_enum
 	{
@@ -32,14 +33,14 @@ extern "C" {
 		EVENT_POLL_TYPE_KPOLL
 	};
 
-	struct eventpoll_options_s
+	struct event_module_options_s
 	{
 		eventpoll_type_enum type;
 	};
 
-	struct eventpoll_s
+	struct event_module_s
 	{
-		eventpoll_options *options;
+		event_module_options *options;
 		eventpoll_actions *actions;
 		void *actions_data;
 
@@ -51,11 +52,12 @@ extern "C" {
 
 		/// <summary>
 		/// 指定监控事件的超时时间
+		/// 单位是毫秒
 		/// </summary>
 		int timeout_ms;
 	};
 
-	struct eventpoll_event_s
+	struct steak_event_s
 	{
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
 		SOCKET sock;
@@ -63,9 +65,20 @@ extern "C" {
 		int sock;
 #endif
 
-		int(*on_read)(eventpoll *evpoll, eventpoll_event *evt);
-		int(*on_write)(eventpoll *evpoll, eventpoll_event *evt);
-		int(*on_except)(eventpoll *evpoll, eventpoll_event *evt);
+		/// <summary>
+		/// 当事件可读的时候触发
+		/// </summary>
+		int(*on_read)(event_module *evpoll, steak_event *evt);
+
+		/// <summary>
+		/// 当事件可写的时候触发
+		/// </summary>
+		int(*on_write)(event_module *evpoll, steak_event *evt);
+
+		/// <summary>
+		/// 当事件出现异常情况的时候触发
+		/// </summary>
+		int(*on_except)(event_module *evpoll, steak_event *evt);
 
 		/// <summary>
 		/// 该事件是否可读
@@ -86,17 +99,41 @@ extern "C" {
 	struct eventpoll_actions_s
 	{
 		eventpoll_type_enum type;
-		int(*initialize)(eventpoll *evpoll);
-		void(*release)(eventpoll *evpoll);
-		int(*add_event)(eventpoll *evpoll, eventpoll_event *evt);
-		int(*delete_event)(eventpoll *evpoll, eventpoll_event *evt);
-		int(*poll_event)(eventpoll *evpoll);
+		int(*initialize)(event_module *evpoll);
+		void(*release)(event_module *evpoll);
+		int(*add_event)(event_module *evpoll, steak_event *evt);
+		int(*delete_event)(event_module *evpoll, steak_event *evt);
+		int(*poll_event)(event_module *evpoll);
 	};
 
-	eventpoll *new_eventpoll(eventpoll_options *options);
-	void free_eventpoll(eventpoll *evpoll);
-	int eventpoll_add_event(eventpoll *evpoll, eventpoll_event *evt);
-	int eventpoll_delete_event(eventpoll *evpoll, eventpoll_event *evt);
+	event_module *new_eventpoll(event_module_options *options);
+	void free_eventpoll(event_module *evm);
+
+	/*
+	 * 描述：
+	 * 增加一个要监控的事件
+	 *
+	 * 参数：
+	 * @evm：事件模块
+	 * @evt：要监控的事件
+	 *
+	 * 返回值：
+	 * STEAK_ERR
+	 */
+	int event_add(event_module *evm, steak_event *evt);
+
+	/*
+	 * 描述：
+	 * 删除一个要监控的事件
+	 *
+	 * 参数：
+	 * @evm：事件模块
+	 * @evt：要删除的事件
+	 *
+	 * 返回值：
+	 * STEAK_ERR
+	 */
+	int event_delete(event_module *evm, steak_event *evt);
 
 	/*
 	 * 描述：
@@ -105,7 +142,7 @@ extern "C" {
 	 * 参数：
 	 * @evpoll：event_poll对象
 	 */
-	int eventpoll_poll(eventpoll *evpoll);
+	int event_poll(event_module *evm);
 
 	/*
 	 * 描述：
@@ -117,7 +154,7 @@ extern "C" {
 	 * 返回值：
 	 * event实例
 	 */
-	eventpoll_event *new_event(eventpoll *evpoll);
+	steak_event *new_event(event_module *evm);
 
 	/*
 	 * 描述：
@@ -128,7 +165,7 @@ extern "C" {
 	 * @evpoll：event_poll对象
 	 * @evt：要释放的event对象
 	 */
-	void free_event(eventpoll *evpoll, eventpoll_event *evt);
+	void free_event(event_module *evm, steak_event *evt);
 
 #ifdef __cplusplus
 }
