@@ -21,7 +21,7 @@
 #include <libY.h>
 
 #include "errors.h"
-#include "evtpoll/eventpoll.h"
+#include "eventpoll/eventpoll.h"
 #include "svchost.h"
 
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
@@ -72,8 +72,6 @@ int main(int argc, char **argv)
 			YLOGE("poll event failed, %d", code);
 			continue;
 		}
-
-
 	}
 
 	return 0;

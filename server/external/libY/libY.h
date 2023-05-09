@@ -150,25 +150,17 @@
 #ifndef YFILE
 #define YFILE
 
-	// 存储文件信息
-	typedef struct Yfstat_s
-	{
-		int exist;
-		uint64_t length;
-	}Yfstat;
-
-	/*
-	 * 描述：
-	 * 以字节为单位返回文件大小
-	 *
-	 * 参数：
-	 * @file_path：要读取的文件的完整路径
-	 *
-	 * 返回值：
-	 * 文件大小，以字节为单位
-	 */
-	YAPI int Y_file_stat(const char *file_path, Yfstat *stat);
-
+    /*
+     * 描述：
+     * 获取文件大小
+     *
+     * 参数：
+     * @file_path：要获取的文件的完整路径
+     *
+     * 返回值：
+     * 文件大小，-1表示文件不存在
+     */
+    YAPI int Y_file_get_size(const char *file_path);
 
 	/*
 	 * 描述：
@@ -176,16 +168,16 @@
 	 *
 	 * 参数：
 	 * @file_path：要读取的文件的完整路径
-	 * @bytes：字节缓冲区
+	 * @content：存储文件内容的缓冲区
 	 *
 	 * 返回值：
 	 * 文件内容的长度
 	 */
-	YAPI int Y_file_readbytes(const char *file_path, char **bytes, uint64_t *size);
+	YAPI int Y_file_read_all(const char *file_path, char **content, uint64_t *size);
 
 	/*
 	 * 描述：
-	 * 释放使用Y_file_readall函数开辟的内存空间
+	 * 释放使用Y_file_read_all函数开辟的内存空间
 	 *
 	 * 参数：
 	 * @content：要释放的内存空间
@@ -291,9 +283,6 @@
      * @yl：要插入的集合
      * @index：要插入的索引位置
      * @item：要插入的元素
-     * 
-     * 返回值：
-     * 存在返回元素的索引，不存在返回-1
      */
     YAPI void Y_list_insert(Ylist *yl, int index, void *item);
 
@@ -327,6 +316,20 @@
      * @yl：要移除元素的集合
      */
     YAPI void *Y_list_query(Ylist *yl, Ylist_query_func queryfunc, void *data, void *userdata);
+
+    /*
+     * 描述：
+     * 把当前的集合转换成数组并返回
+     * 注意不要修改数组，对数组的修改会影响到list的正常运行
+     *
+     * 参数：
+     * @yl：要转换的集合
+     * @count：数组里元素的数量
+     * 
+     * 返回值：
+     * 数组
+     */
+    YAPI void **Y_list_to_array(Ylist *yl, int *count);
 #endif
 
 /***************************************************************************************************************************

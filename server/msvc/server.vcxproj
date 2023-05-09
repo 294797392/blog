@@ -86,7 +86,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;ENV_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;ENV_WIN32;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)../external/libY;$(SolutionDir)../external/cJSON;$(SolutionDir)../source/FDEvent;$(SolutionDir)../source/FDEventPoll;$(SolutionDir)../source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -142,15 +142,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\source\DefaultOptions.h" />
-    <ClInclude Include="..\source\evtpoll\eventpoll.h" />
+    <ClInclude Include="..\source\eventpoll\eventpoll.h" />
     <ClInclude Include="..\source\HTTPConstants.h" />
     <ClInclude Include="..\source\errors.h" />
     <ClInclude Include="..\source\svchost.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\evtpoll\accept_client_event.c" />
-    <ClCompile Include="..\source\evtpoll\eventpoll.c" />
-    <ClCompile Include="..\source\evtpoll\eventpoll_actions_select.c" />
+    <ClCompile Include="..\source\eventpoll\eventpoll.c" />
+    <ClCompile Include="..\source\eventpoll\eventpoll_actions_select.c" />
+    <ClCompile Include="..\source\event\accept_client_event.c" />
     <ClCompile Include="..\source\main.c" />
     <ClCompile Include="..\source\svchost.c" />
   </ItemGroup>

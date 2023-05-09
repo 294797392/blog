@@ -20,8 +20,8 @@ extern "C" {
 	typedef enum eventpoll_type_enum eventpoll_type_enum;
 	typedef struct eventpoll_s eventpoll;
 	typedef struct eventpoll_options_s eventpoll_options;
-	typedef struct eventpoll_event_s eventpoll_event;
 	typedef struct eventpoll_actions_s eventpoll_actions;
+	typedef struct eventpoll_event_s eventpoll_event;
 
 	enum eventpoll_type_enum
 	{
@@ -41,7 +41,7 @@ extern "C" {
 	{
 		eventpoll_options *options;
 		eventpoll_actions *actions;
-		void *private_data;
+		void *actions_data;
 
 		//// 文件描述符缓冲池
 		//Ypool *FileDescriptorPool;
@@ -49,9 +49,10 @@ extern "C" {
 		// 监控的文件描述符列表
 		Ylist *event_list;
 
-		//// 已经有信号的待处理的文件描述符队列
-		//// 队列里的文件描述符要么是可读的，要么是可写的
-		//Ylist *event_process_queue;
+		/// <summary>
+		/// 指定监控事件的超时时间
+		/// </summary>
+		int timeout_ms;
 	};
 
 	struct eventpoll_event_s
@@ -75,6 +76,11 @@ extern "C" {
 		/// 该事件是否可写
 		/// </summary>
 		int writeable;
+
+		/// <summary>
+		/// 该事件所对应的上下文数据
+		/// </summary>
+		void *context;
 	};
 
 	struct eventpoll_actions_s
@@ -91,8 +97,37 @@ extern "C" {
 	void free_eventpoll(eventpoll *evpoll);
 	int eventpoll_add_event(eventpoll *evpoll, eventpoll_event *evt);
 	int eventpoll_delete_event(eventpoll *evpoll, eventpoll_event *evt);
+
+	/*
+	 * 描述：
+	 * 对所有事件进行一次轮询动作
+	 *
+	 * 参数：
+	 * @evpoll：event_poll对象
+	 */
 	int eventpoll_poll(eventpoll *evpoll);
+
+	/*
+	 * 描述：
+	 * 创建一个事件的实例
+	 *
+	 * 参数：
+	 * @evpoll：event_poll对象
+	 * 
+	 * 返回值：
+	 * event实例
+	 */
 	eventpoll_event *new_event(eventpoll *evpoll);
+
+	/*
+	 * 描述：
+	 * 释放一个事件的实例
+	 * 当事件不需要监控的时候调用
+	 *
+	 * 参数：
+	 * @evpoll：event_poll对象
+	 * @evt：要释放的event对象
+	 */
 	void free_event(eventpoll *evpoll, eventpoll_event *evt);
 
 #ifdef __cplusplus
