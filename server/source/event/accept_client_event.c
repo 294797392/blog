@@ -6,6 +6,7 @@
 
 #include <libY.h>
 
+#include "steak_socket.h"
 #include "errors.h"
 #include "event.h"
 #include "app.h"
@@ -17,11 +18,7 @@ int accept_client_event(event_module *evm, steak_event *evt)
 {
 	struct sockaddr addr;
 	size_t addr_len = sizeof(struct sockaddr);
-#if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
-	SOCKET sock;
-#elif (defined(ENV_UNIX))
-	int sock;
-#endif
+	steak_socket sock;
 	if((sock = accept(evt->sock, &addr, &addr_len)) == -1)
 	{
 		YLOGE("accept client failed, %s", strerror(errno));
@@ -30,15 +27,8 @@ int accept_client_event(event_module *evm, steak_event *evt)
 
 	YLOGI("client connected, new session");
 
-	steak_session *session = new_session();
-
-	steak_event *event = new_event(evm);
-	event->writeable = 1;
-	event->readable = 1;
-	event->sock = sock;
-	event->on_read = read_request_event;
-	event->on_write = write_response_event;
-	event->context = session;
+	steak_session *session = new_session(sock);
+	steak_event *event = new_session_event(evm, read_request_event, write_response_event, session);
 	event_add(evm, event);
 
 	return STEAK_ERR_OK;

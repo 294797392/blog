@@ -11,6 +11,8 @@
 
 #include <stdint.h>
 
+#include "steak_type.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -22,8 +24,8 @@ extern "C" {
 
 	struct steak_http_header_s
 	{
-		char key[128];
-		char value[128];
+		steak_string *key;
+		steak_string *value;
 
 		steak_http_header *next;
 		steak_http_header *prev;

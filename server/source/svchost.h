@@ -3,6 +3,8 @@
 
 #include <libY.h>
 
+#include "steak_socket.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -19,12 +21,7 @@ extern "C" {
 
     struct svchost_s
     {
-#if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
-        SOCKET sock;
-#elif (defined(ENV_UNIX))
-        int sock;
-#endif
-
+        steak_socket sock;
         svchost_options *options;
     };
 

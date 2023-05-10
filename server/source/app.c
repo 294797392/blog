@@ -22,11 +22,12 @@ steak_app *get_steak_app()
 	return app;
 }
 
-steak_session *new_session()
+steak_session *new_session(steak_socket sock)
 {
 	steak_session *session = (steak_session *)calloc(1, sizeof(steak_session));
 	session->request = new_request();
 	session->response = new_response();
+	session->sock = sock;
 	return session;
 }
 
@@ -40,6 +41,11 @@ steak_request *new_request()
 	steak_request *request = (steak_request *)calloc(1, sizeof(steak_request));
 	request->buffer = (char *)calloc(1, STEAK_DEFAULT_RECV_BUF_SIZE);
 	request->buffer_size = STEAK_DEFAULT_RECV_BUF_SIZE;
+	request->parser = (steak_parser *)calloc(1, sizeof(steak_parser));
+	request->parser->buffer = request->buffer;
+	request->parser->method = (steak_string *)calloc(1, sizeof(steak_string));
+	request->parser->url = (steak_string *)calloc(1, sizeof(steak_string));
+	request->parser->version = (steak_string *)calloc(1, sizeof(steak_string));
 	return request;
 }
 

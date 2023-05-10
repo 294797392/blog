@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include "steak_socket.h"
 #include "request.h"
 #include "response.h"
 
@@ -35,6 +36,11 @@ extern "C" {
 		/// 存放要响应的数据
 		/// </summary>
 		steak_response *response;
+
+		/// <summary>
+		/// 客户端的socket
+		/// </summary>
+		steak_socket sock;
 	};
 
 #ifdef __cplusplus

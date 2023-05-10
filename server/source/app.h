@@ -61,7 +61,7 @@ extern "C" {
 	 */
 	steak_app *steak_app_get();
 
-	steak_session *new_session();
+	steak_session *new_session(steak_socket sock);
 	void free_session(steak_session *session);
 
 	steak_request *new_request();

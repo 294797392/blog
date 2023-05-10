@@ -97,7 +97,7 @@ int eventpoll_select_delete_event(event_module *evm, steak_event *evt)
 	return STEAK_ERR_OK;
 }
 
-int eventpoll_select_poll_event(event_module *evm)
+int eventpoll_select_poll_event(event_module *evm, steak_event **events, int nevent)
 {
 	poll_select *evtpoll_select = (poll_select *)evm->actions_data;
 
@@ -121,7 +121,7 @@ int eventpoll_select_poll_event(event_module *evm)
 			case EINTR:
 			{
 				// 等待时捕获了一个信号，可以重新发起调用
-				return eventpoll_select_poll_event(evm);
+				return eventpoll_select_poll_event(evm, events, nevent);
 			}
 
 			default:
@@ -134,15 +134,14 @@ int eventpoll_select_poll_event(event_module *evm)
 	else
 	{
 		// one or more fd has io event
-		int events;
-		steak_event **event_list = (steak_event **)Y_list_to_array(evm->event_list, &events);
 
-		for(int i = 0; i < events; i++)
+		for(int i = 0; i < nevent; i++)
 		{
-			steak_event *evt = event_list[i];
+			steak_event *evt = events[i];
 			if(FD_ISSET(evt->sock, &worker_read_fd_set))
 			{
-				evt->on_read(evm, evt);
+				// 添加到处理列表里
+				Y_list_add(evm->process_event_list, evt);
 			}
 		}
 	}

@@ -24,6 +24,10 @@
     <ClInclude Include="..\source\parser\parser.h">
       <Filter>parser</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\utils\steak_socket.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\steak_type.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\main.c" />
@@ -59,6 +63,9 @@
     <ClCompile Include="..\source\parser\parser.c">
       <Filter>parser</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\utils\steak_socket.c">
+      <Filter>utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\service.json" />
@@ -84,6 +91,9 @@
     </Filter>
     <Filter Include="parser">
       <UniqueIdentifier>{3e4f2f18-1ec8-4dfd-8934-33d216f187b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{e4d667ce-4421-40f7-8315-5fc412f8769a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

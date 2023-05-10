@@ -23,14 +23,13 @@ int read_request_event(event_module *evm, steak_event *evt)
 	{
 		// 此时说明对方关闭了该网络通道的读取（调用shutdown(READ)）
 		// 收到了FIN，此时返回EOF
-		// 那么此时删除该读取事件
-		evt->readable = 0;
+		return STEAK_ERR_OK;
 	}
 	else if(rc == -1)
 	{
-		// socket发生错误
-		evt->readable = 0;
-		evt->writeable = 0;
+		// socket发生错误, 把event标记为无效，后面删除event
+		evt->status = STEAK_EVENT_STATUS_DELETE;
+		return STEAK_ERR_OK;
 	}
 	else
 	{
@@ -40,7 +39,13 @@ int read_request_event(event_module *evm, steak_event *evt)
 		if(request->write_offset == request->buffer_size)
 		{
 			int newsize = request->buffer_size * 2;
-			request->buffer = (char *)realloc(request->buffer, newsize);
+			char *buffer = (char *)realloc(request->buffer, newsize);
+			if(buffer == NULL)
+			{
+				YLOGE("realloc request buffer failed, %s", strerror(errno));
+				return STEAK_ERR_NO_MEM;
+			}
+			request->buffer = buffer;
 			request->buffer_size = newsize;
 		}
 
@@ -48,6 +53,7 @@ int read_request_event(event_module *evm, steak_event *evt)
 	}
 
 	// 解析http报文
+	//steak_parser_parse(request);
 
 	return STEAK_ERR_FAILED;
 }

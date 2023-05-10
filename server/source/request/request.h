@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include "header.h"
+#include "parser.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,6 +34,11 @@ extern "C" {
 		/// HTTP请求头部
 		/// </summary>
 		steak_http_header *header;
+
+		/// <summary>
+		/// HTTP请求解析器
+		/// </summary>
+		steak_parser *parser;
 
 		char full_url[256];
 		char resource_uri[128];
