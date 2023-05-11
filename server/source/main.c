@@ -45,6 +45,7 @@ int main(int argc, char **argv)
 	int code = YERR_SUCCESS;
 
 	Y_log_init(NULL);
+	Y_pool_init(65535, 8192);
 
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
 	WORD version = MAKEWORD(1, 1);

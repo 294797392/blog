@@ -70,6 +70,9 @@ extern "C" {
 	steak_response *new_response();
 	void free_response(steak_response *response);
 
+	steak_parser *new_parser();
+	void free_parser(steak_parser *parser);
+
 #ifdef __cplusplus
 }
 #endif

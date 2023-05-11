@@ -27,7 +27,9 @@
     <ClInclude Include="..\source\utils\steak_socket.h">
       <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\steak_type.h" />
+    <ClInclude Include="..\source\utils\steak_string.h">
+      <Filter>utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\main.c" />
@@ -64,6 +66,9 @@
       <Filter>parser</Filter>
     </ClCompile>
     <ClCompile Include="..\source\utils\steak_socket.c">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\utils\steak_string.c">
       <Filter>utils</Filter>
     </ClCompile>
   </ItemGroup>

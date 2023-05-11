@@ -24,8 +24,8 @@ extern "C" {
 
 	struct steak_http_header_s
 	{
-		steak_string *key;
-		steak_string *value;
+		char *key;
+		char *value;
 
 		steak_http_header *next;
 		steak_http_header *prev;

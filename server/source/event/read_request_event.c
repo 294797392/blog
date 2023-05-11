@@ -39,7 +39,7 @@ int read_request_event(event_module *evm, steak_event *evt)
 		if(request->write_offset == request->buffer_size)
 		{
 			int newsize = request->buffer_size * 2;
-			char *buffer = (char *)realloc(request->buffer, newsize);
+			char *buffer = (char *)Y_pool_resize(request->buffer, request->buffer_size, newsize);
 			if(buffer == NULL)
 			{
 				YLOGE("realloc request buffer failed, %s", strerror(errno));

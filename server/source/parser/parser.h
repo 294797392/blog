@@ -14,7 +14,7 @@
 
 #include <libY.h>
 
-#include "steak_type.h"
+#include "steak_string.h"
 #include "header.h"
 
 #ifdef __cplusplus
@@ -35,7 +35,8 @@ extern "C" {
 		STEAK_PARSER_VERSION_END,
 		STEAK_PARSER_HEADER_KEY,
 		STEAK_PARSER_HEADER_VALUE,
-		STEAK_PARSER_BODY
+		STEAK_PARSER_HEADER_VALUE_END,
+		STEAK_PARSER_BODY,
 	};
 
 	struct steak_parser_s
@@ -45,18 +46,42 @@ extern "C" {
 		/// <summary>
 		/// 请求方法
 		/// </summary>
-		steak_string *method;
-		steak_string *url;
-		steak_string *version;
-		steak_http_header *header;
+		char *method;
+		char *url;
+		char *version;
+		char *body;
+		steak_http_header *first_header;
+		steak_http_header *last_header;
+
+		/// <summary>
+		/// Content-Length标头的值
+		/// -1：没有content-length标头
+		/// 0：content-length为0，表示没有body
+		/// </summary>
+		int content_length;
 
 		/// <summary>
 		/// 当前解析到了的缓冲区的偏移量
 		/// </summary>
 		int offset;
 
-		char *buffer;
-		int buffer_size;
+		/// <summary>
+		/// 当前解析的segement的偏移量
+		/// </summary>
+		int seg_offset;
+		/// <summary>
+		/// 当前解析的segement的长度
+		/// </summary>
+		int seg_len;
+
+		/// <summary>
+		/// 从客户端接收到的原始http报文
+		/// </summary>
+		char *raw_msg;
+		/// <summary>
+		/// 从客户端接收到的原始http报文长度
+		/// </summary>
+		int raw_msg_len;
 	};
 
 	int steak_parser_parse(steak_parser *parser);

@@ -152,9 +152,9 @@
     <ClInclude Include="..\source\request\request.h" />
     <ClInclude Include="..\source\response\response.h" />
     <ClInclude Include="..\source\session\session.h" />
-    <ClInclude Include="..\source\steak_type.h" />
     <ClInclude Include="..\source\svchost.h" />
     <ClInclude Include="..\source\utils\steak_socket.h" />
+    <ClInclude Include="..\source\utils\steak_string.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\app.c" />
@@ -171,6 +171,7 @@
     <ClCompile Include="..\source\session\session.c" />
     <ClCompile Include="..\source\svchost.c" />
     <ClCompile Include="..\source\utils\steak_socket.c" />
+    <ClCompile Include="..\source\utils\steak_string.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\service.json" />
