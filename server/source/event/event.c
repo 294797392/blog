@@ -83,6 +83,15 @@ int event_delete(event_module *evm, steak_event *evt)
 int event_modify(event_module *evm, steak_event *evt, int read, int write)
 {
 	eventpoll_actions *actions = evm->actions;
+
+	if(evt->read == read && evt->write == write)
+	{
+		return STEAK_ERR_OK;
+	}
+
+	evt->read = read;
+	evt->write = write;
+
 	return actions->modify_event(evm, evt, read, write);
 }
 
@@ -110,8 +119,8 @@ steak_event *new_session_event(event_module *evm,
 	steak_session *session)
 {
 	steak_event *evt = new_event(evm);
-	evt->readable = 1;
-	evt->writeable = 1;
+	evt->read = 1;
+	evt->write = 1;
 	evt->on_read = on_read;
 	evt->on_write = on_write;
 	evt->context = session;
@@ -123,7 +132,7 @@ steak_event *new_session_event(event_module *evm,
 steak_event *new_svchost_event(event_module *evm, int(*on_read)(event_module *evpoll, steak_event *evt), svchost *svc)
 {
 	steak_event *evt = new_event(evm);
-	evt->readable = 1;
+	evt->read = 1;
 	evt->on_read = on_read;
 	evt->context = svc;
 	evt->type = STEAK_EVENT_TYPE_SVCHOST;

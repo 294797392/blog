@@ -30,7 +30,7 @@ extern "C" {
 		/// 需要轮询的事件
 		/// </summary>
 		STEAK_EVENT_STATUS_POLL,
-		
+
 		/// <summary>
 		/// 需要删除的事件
 		/// </summary>
@@ -109,12 +109,12 @@ extern "C" {
 		/// <summary>
 		/// 该事件是否可读
 		/// </summary>
-		int readable;
+		int read;
 
 		/// <summary>
 		/// 该事件是否可写
 		/// </summary>
-		int writeable;
+		int write;
 
 		/// <summary>
 		/// 该事件所对应的上下文数据
@@ -146,6 +146,7 @@ extern "C" {
 		int(*add_event)(event_module *evm, steak_event *evt);
 		int(*delete_event)(event_module *evm, steak_event *evt);
 		int(*modify_event)(event_module *evm, steak_event *evt, int read, int write);
+		int(*modify_write)(event_module *evm, steak_event *evt, int write);
 		int(*poll_event)(event_module *evm, steak_event **events, int nevent);
 	};
 
@@ -233,11 +234,11 @@ extern "C" {
 	 *
 	 * 参数：
 	 * @evpoll：event_poll对象
-	 * 
+	 *
 	 * 返回值：
 	 * event实例
 	 */
-	//steak_event *new_event(event_module *evm);
+	 //steak_event *new_event(event_module *evm);
 	steak_event *new_session_event(event_module *evm,
 		int(*on_read)(event_module *evpoll, steak_event *evt),
 		int(*on_write)(event_module *evpoll, steak_event *evt),

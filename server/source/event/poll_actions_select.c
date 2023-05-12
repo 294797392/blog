@@ -58,13 +58,13 @@ int eventpoll_select_add_event(event_module *evm, steak_event *evt)
 {
 	poll_select *pollselect = (poll_select *)evm->actions_data;
 
-	if(evt->readable)
+	if(evt->read)
 	{
 		FD_SET(evt->sock, &pollselect->master_read_fd_set);
 		pollselect->max_read++;
 	}
 
-	if(evt->writeable)
+	if(evt->write)
 	{
 		FD_SET(evt->sock, &pollselect->master_write_fd_set);
 		pollselect->max_write++;
@@ -82,19 +82,24 @@ int eventpoll_select_delete_event(event_module *evm, steak_event *evt)
 {
 	poll_select *pollselect = (poll_select *)evm->actions_data;
 
-	if(evt->readable)
+	if(evt->read)
 	{
 		FD_CLR(evt->sock, &pollselect->master_read_fd_set);
 		pollselect->max_read--;
 	}
 
-	if(evt->writeable)
+	if(evt->write)
 	{
 		FD_CLR(evt->sock, &pollselect->master_write_fd_set);
 		pollselect->max_write--;
 	}
 
 	return STEAK_ERR_OK;
+}
+
+int eventpoll_select_modify_event(event_module *evm, steak_event *evt, int read, int write)
+{
+	poll_select *pollselect = (poll_select *)evm->actions_data;
 }
 
 int eventpoll_select_poll_event(event_module *evm, steak_event **events, int nevent)
@@ -158,5 +163,6 @@ eventpoll_actions eventpoll_actions_select =
 	.release = eventpoll_select_release,
 	.add_event = eventpoll_select_add_event,
 	.delete_event = eventpoll_select_delete_event,
+	.modify_event = eventpoll_select_modify_event,
 	.poll_event = eventpoll_select_poll_event
 };
