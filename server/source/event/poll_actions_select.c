@@ -56,23 +56,23 @@ void eventpoll_select_release(event_module *evm)
 
 int eventpoll_select_add_event(event_module *evm, steak_event *evt)
 {
-	poll_select *evtpoll_select = (poll_select *)evm->actions_data;
+	poll_select *pollselect = (poll_select *)evm->actions_data;
 
 	if(evt->readable)
 	{
-		FD_SET(evt->sock, &evtpoll_select->master_read_fd_set);
-		evtpoll_select->max_read++;
+		FD_SET(evt->sock, &pollselect->master_read_fd_set);
+		pollselect->max_read++;
 	}
 
 	if(evt->writeable)
 	{
-		FD_SET(evt->sock, &evtpoll_select->master_write_fd_set);
-		evtpoll_select->max_write++;
+		FD_SET(evt->sock, &pollselect->master_write_fd_set);
+		pollselect->max_write++;
 	}
 
-	if(evt->sock > evtpoll_select->max_fd)
+	if(evt->sock > pollselect->max_fd)
 	{
-		evtpoll_select->max_fd = evt->sock;
+		pollselect->max_fd = evt->sock;
 	}
 
 	return STEAK_ERR_OK;
@@ -80,18 +80,18 @@ int eventpoll_select_add_event(event_module *evm, steak_event *evt)
 
 int eventpoll_select_delete_event(event_module *evm, steak_event *evt)
 {
-	poll_select *evtpoll_select = (poll_select *)evm->actions_data;
+	poll_select *pollselect = (poll_select *)evm->actions_data;
 
 	if(evt->readable)
 	{
-		FD_CLR(evt->sock, &evtpoll_select->master_read_fd_set);
-		evtpoll_select->max_read--;
+		FD_CLR(evt->sock, &pollselect->master_read_fd_set);
+		pollselect->max_read--;
 	}
 
 	if(evt->writeable)
 	{
-		FD_CLR(evt->sock, &evtpoll_select->master_write_fd_set);
-		evtpoll_select->max_write--;
+		FD_CLR(evt->sock, &pollselect->master_write_fd_set);
+		pollselect->max_write--;
 	}
 
 	return STEAK_ERR_OK;
@@ -99,14 +99,15 @@ int eventpoll_select_delete_event(event_module *evm, steak_event *evt)
 
 int eventpoll_select_poll_event(event_module *evm, steak_event **events, int nevent)
 {
-	poll_select *evtpoll_select = (poll_select *)evm->actions_data;
+	poll_select *pollselect = (poll_select *)evm->actions_data;
 
-	FD_SET worker_read_fd_set = evtpoll_select->master_read_fd_set;
+	FD_SET readfds = pollselect->master_read_fd_set;
+	FD_SET writefds = pollselect->master_write_fd_set;
 
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
-	int ret = select(0, &worker_read_fd_set, NULL, NULL, &evtpoll_select->timeout);
+	int ret = select(0, &readfds, &writefds, NULL, &pollselect->timeout);
 #elif (defined(ENV_UNIX))
-	int ret = select(evtpoll_select->max_fd + 1, &worker_read_fd_set, NULL, NULL, &evtpoll_select->timeout);
+	int ret = select(pollselect->max_fd + 1, &readfds, &writefds, NULL, &pollselect->timeout);
 #endif
 	if(ret == 0)
 	{
@@ -138,7 +139,8 @@ int eventpoll_select_poll_event(event_module *evm, steak_event **events, int nev
 		for(int i = 0; i < nevent; i++)
 		{
 			steak_event *evt = events[i];
-			if(FD_ISSET(evt->sock, &worker_read_fd_set))
+
+			if(FD_ISSET(evt->sock, &readfds))
 			{
 				// 添加到处理列表里
 				Y_list_add(evm->process_event_list, evt);

@@ -5,9 +5,6 @@
     <ClInclude Include="..\source\HTTPConstants.h" />
     <ClInclude Include="..\source\errors.h" />
     <ClInclude Include="..\source\svchost.h" />
-    <ClInclude Include="..\source\eventpoll\event.h">
-      <Filter>eventpoll</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\app.h" />
     <ClInclude Include="..\source\session\session.h">
       <Filter>session</Filter>
@@ -33,18 +30,15 @@
     <ClInclude Include="..\source\module\steak_module.h">
       <Filter>module</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\event\event.h">
+      <Filter>event</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\main.c" />
     <ClCompile Include="..\source\svchost.c" />
     <ClCompile Include="..\source\event\accept_client_event.c">
       <Filter>event</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\eventpoll\event.c">
-      <Filter>eventpoll</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\eventpoll\poll_actions_select.c">
-      <Filter>eventpoll</Filter>
     </ClCompile>
     <ClCompile Include="..\source\event\read_request_event.c">
       <Filter>event</Filter>
@@ -77,6 +71,12 @@
     <ClCompile Include="..\source\module\steak_module.c">
       <Filter>module</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\event\event.c">
+      <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\event\poll_actions_select.c">
+      <Filter>event\poll</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\service.json" />
@@ -84,9 +84,6 @@
   <ItemGroup>
     <Filter Include="event">
       <UniqueIdentifier>{af99e035-932d-42e3-b1ea-a7ef3460a25b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="eventpoll">
-      <UniqueIdentifier>{4cdd21f4-01b9-447f-89a6-6048c0169aa2}</UniqueIdentifier>
     </Filter>
     <Filter Include="session">
       <UniqueIdentifier>{1f5d8b23-6034-47fd-8af2-fd5d5d1669a2}</UniqueIdentifier>
@@ -108,6 +105,9 @@
     </Filter>
     <Filter Include="module">
       <UniqueIdentifier>{45e3ca55-d0e2-487a-bdd6-c44edae08e41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="event\poll">
+      <UniqueIdentifier>{3c1d6f97-d3f6-405c-b3e2-71a3b6138d2a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

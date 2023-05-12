@@ -12,7 +12,6 @@
 #include <stdint.h>
 
 #include "header.h"
-#include "parser.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,13 +34,8 @@ extern "C" {
 		/// </summary>
 		steak_http_header *header;
 
-		/// <summary>
-		/// HTTP请求解析器
-		/// </summary>
-		steak_parser *parser;
-
-		char full_url[256];
-		char resource_uri[128];
+		char *full_url;
+		char *resource_uri;
 
 		int content_length;
 
@@ -53,7 +47,7 @@ extern "C" {
 		/// <summary>
 		/// HTTP报文接收缓冲区的大小
 		/// </summary>
-		int raw_msg_size;
+		int raw_msg_len;
 
 		/// <summary>
 		/// HTTP报文接收缓冲区的偏移量

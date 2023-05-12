@@ -169,7 +169,7 @@ static void action_header_value_end(steak_parser *parser, char c, int c_offset)
 		{
 			// 说明没有body
 			YLOGI("content-length == 0, no body");
-			enter_state(parser, STEAK_PARSER_END);
+			parser->completed = 1;
 		}
 		else
 		{

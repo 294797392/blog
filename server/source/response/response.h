@@ -36,7 +36,7 @@ extern "C" {
 		/// 保存要发送的数据
 		/// </summary>
 		char *raw_msg;
-		int raw_msg_size;
+		int raw_msg_len;
 		int raw_msg_offset;
 	};
 

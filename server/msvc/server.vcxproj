@@ -89,7 +89,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;ENV_WIN32;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)../external/libY;$(SolutionDir)../external/cJSON;$(SolutionDir)../source;$(SolutionDir)../source/eventpoll;$(SolutionDir)../source/header;$(SolutionDir)../source/response;$(SolutionDir)../source/request;$(SolutionDir)../source/session;$(SolutionDir)../source/utils;$(SolutionDir)../source/parser;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)../external/libY;$(SolutionDir)../external/cJSON;$(SolutionDir)../source;$(SolutionDir)../source/event;$(SolutionDir)../source/header;$(SolutionDir)../source/response;$(SolutionDir)../source/request;$(SolutionDir)../source/session;$(SolutionDir)../source/utils;$(SolutionDir)../source/parser;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,7 +144,7 @@
   <ItemGroup>
     <ClInclude Include="..\source\app.h" />
     <ClInclude Include="..\source\default.h" />
-    <ClInclude Include="..\source\eventpoll\event.h" />
+    <ClInclude Include="..\source\event\event.h" />
     <ClInclude Include="..\source\header\header.h" />
     <ClInclude Include="..\source\HTTPConstants.h" />
     <ClInclude Include="..\source\errors.h" />
@@ -159,9 +159,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\app.c" />
-    <ClCompile Include="..\source\eventpoll\event.c" />
-    <ClCompile Include="..\source\eventpoll\poll_actions_select.c" />
     <ClCompile Include="..\source\event\accept_client_event.c" />
+    <ClCompile Include="..\source\event\event.c" />
+    <ClCompile Include="..\source\event\poll_actions_select.c" />
     <ClCompile Include="..\source\event\read_request_event.c" />
     <ClCompile Include="..\source\event\write_response_event.c" />
     <ClCompile Include="..\source\header\header.c" />

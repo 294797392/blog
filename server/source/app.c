@@ -27,6 +27,9 @@ steak_session *new_session(steak_socket sock)
 	steak_session *session = (steak_session *)Y_pool_obtain(sizeof(steak_session));
 	session->request = new_request();
 	session->response = new_response();
+	session->parser = new_parser();
+	session->parser->raw_msg = session->request->raw_msg;
+	session->parser->raw_msg_len = session->request->raw_msg_len;
 	session->sock = sock;
 	return session;
 }
@@ -35,31 +38,29 @@ void free_session(steak_session *session)
 {
 	free_request(session->request);
 	free_response(session->response);
-	Y_pool_recycle(session, sizeof(session));
+	free_parser(session->parser);
+	Y_pool_recycle(session, sizeof(steak_session));
 }
 
 steak_request *new_request()
 {
 	steak_request *request = (steak_request *)Y_pool_obtain(sizeof(steak_request));
 	request->raw_msg = (char *)Y_pool_obtain(STEAK_DEFAULT_RECV_BUF_SIZE);
-	request->raw_msg_size = STEAK_DEFAULT_RECV_BUF_SIZE;
-	request->parser = new_parser();
-	request->parser->raw_msg = request->raw_msg;
-	request->parser->raw_msg_len = request->raw_msg_size;
+	request->raw_msg_len = STEAK_DEFAULT_RECV_BUF_SIZE;
 	return request;
 }
 
 void free_request(steak_request *request)
 {
-	Y_pool_recycle(request->raw_msg, request->raw_msg_size);
-	free(request);
+	Y_pool_recycle(request->raw_msg, request->raw_msg_len);
+	Y_pool_recycle(request, sizeof(steak_request));
 }
 
 steak_response *new_response()
 {
 	steak_response *response = (steak_response *)Y_pool_obtain(sizeof(steak_response));
 	response->raw_msg = (char *)Y_pool_obtain(STEAK_DEFAULT_SEND_BUF_SIZE);
-	response->raw_msg_size = STEAK_DEFAULT_SEND_BUF_SIZE;
+	response->raw_msg_len = STEAK_DEFAULT_SEND_BUF_SIZE;
 	return response;
 }
 

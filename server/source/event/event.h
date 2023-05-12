@@ -70,10 +70,9 @@ extern "C" {
 		eventpoll_actions *actions;
 		void *actions_data;
 
-		//// 文件描述符缓冲池
-		//Ypool *FileDescriptorPool;
-
-		// 监控的文件描述符列表
+		/// <summary>
+		/// 监控的文件描述符列表
+		/// </summary>
 		Ylist *event_list;
 
 		/// <summary>
@@ -95,17 +94,17 @@ extern "C" {
 		/// <summary>
 		/// 当事件可读的时候触发
 		/// </summary>
-		int(*on_read)(event_module *evpoll, steak_event *evt);
+		int(*on_read)(event_module *evm, steak_event *evt);
 
 		/// <summary>
 		/// 当事件可写的时候触发
 		/// </summary>
-		int(*on_write)(event_module *evpoll, steak_event *evt);
+		int(*on_write)(event_module *evm, steak_event *evt);
 
 		/// <summary>
 		/// 当事件出现异常情况的时候触发
 		/// </summary>
-		int(*on_except)(event_module *evpoll, steak_event *evt);
+		int(*on_except)(event_module *evm, steak_event *evt);
 
 		/// <summary>
 		/// 该事件是否可读
@@ -131,6 +130,12 @@ extern "C" {
 		/// 事件类型
 		/// </summary>
 		steak_event_types type;
+
+		/// <summary>
+		/// 该事件的超时时间
+		/// 当该事件在该超时时间内没有网络活动，那么就判断为超时事件并删除该事件
+		/// </summary>
+		int timeout_ms;
 	};
 
 	struct eventpoll_actions_s
@@ -140,11 +145,24 @@ extern "C" {
 		void(*release)(event_module *evm);
 		int(*add_event)(event_module *evm, steak_event *evt);
 		int(*delete_event)(event_module *evm, steak_event *evt);
+		int(*modify_event)(event_module *evm, steak_event *evt, int read, int write);
 		int(*poll_event)(event_module *evm, steak_event **events, int nevent);
 	};
 
-	event_module *new_eventpoll(event_module_options *options);
-	void free_eventpoll(event_module *evm);
+	/*
+	 * 描述：
+	 * 创建一个事件模块的实例
+	 *
+	 * 返回值：
+	 * 事件模块实例
+	 */
+	event_module *new_event_module();
+
+	/*
+	 * 描述：
+	 * 释放事件模块占用的资源
+	 */
+	void free_event_module(event_module *evm);
 
 	/*
 	 * 描述：
@@ -171,6 +189,19 @@ extern "C" {
 	 * STEAK_ERR
 	 */
 	int event_delete(event_module *evm, steak_event *evt);
+
+	/*
+	 * 描述：
+	 * 更改事件要监控的读或者写
+	 *
+	 * 参数：
+	 * @evm：事件模块
+	 * @evt：要删除的事件
+	 *
+	 * 返回值：
+	 * STEAK_ERR
+	 */
+	int event_modify(event_module *evm, steak_event *evt, int read, int write);
 
 	/*
 	 * 描述：

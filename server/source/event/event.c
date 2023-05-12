@@ -5,6 +5,7 @@
 #include <libY.h>
 
 #include "errors.h"
+#include "default.h"
 #include "event.h"
 
 extern eventpoll_actions eventpoll_actions_select;
@@ -12,6 +13,8 @@ eventpoll_actions *eventpoll_actions_list[] =
 {
 	&eventpoll_actions_select
 };
+
+
 
 static eventpoll_actions *select_evpoll_actions(event_module_options *options)
 {
@@ -29,41 +32,58 @@ static eventpoll_actions *select_evpoll_actions(event_module_options *options)
 	return NULL;
 }
 
-
-event_module *new_eventpoll(event_module_options *options)
+steak_event *new_event(event_module *evm)
 {
-	event_module *evpoll = (event_module *)calloc(1, sizeof(event_module));
-	evpoll->options = options;
-	evpoll->event_list = Y_create_list();
-	evpoll->process_event_list = Y_create_list();
-	evpoll->actions = select_evpoll_actions(options);
-	evpoll->actions->initialize(evpoll);
-	return evpoll;
+	steak_event *evt = (steak_event *)Y_pool_obtain(sizeof(steak_event));
+	return evt;
 }
 
-void free_eventpoll(event_module *evm)
+
+
+event_module *new_event_module()
+{
+	event_module_options *evmops = (event_module_options *)calloc(1, sizeof(event_module_options));
+	evmops->type = EVENT_POLL_TYPE_SELECT;
+
+	event_module *evm = (event_module *)calloc(1, sizeof(event_module));
+	evm->options = evmops;
+	evm->timeout_ms = STEAK_DEFAULT_POLL_TIMEOUT;
+	evm->event_list = Y_create_list();
+	evm->process_event_list = Y_create_list();
+	evm->actions = select_evpoll_actions(evmops);
+	evm->actions->initialize(evm);
+	return evm;
+}
+
+void free_event_module(event_module *evm)
 {
 	free(evm);
 }
 
-int event_add(event_module *evpoll, steak_event *evt)
+int event_add(event_module *evm, steak_event *evt)
 {
-	eventpoll_actions *actions = evpoll->actions;
-	actions->add_event(evpoll, evt);
+	eventpoll_actions *actions = evm->actions;
+	actions->add_event(evm, evt);
 
-	Y_list_add(evpoll->event_list, evt);
+	Y_list_add(evm->event_list, evt);
 
 	return STEAK_ERR_OK;
 }
 
-int event_delete(event_module *evpoll, steak_event *evt)
+int event_delete(event_module *evm, steak_event *evt)
 {
-	eventpoll_actions *actions = evpoll->actions;
-	actions->delete_event(evpoll, evt);
+	eventpoll_actions *actions = evm->actions;
+	actions->delete_event(evm, evt);
 
-	Y_list_remove(evpoll->event_list, evt);
+	Y_list_remove(evm->event_list, evt);
 
 	return STEAK_ERR_OK;
+}
+
+int event_modify(event_module *evm, steak_event *evt, int read, int write)
+{
+	eventpoll_actions *actions = evm->actions;
+	return actions->modify_event(evm, evt, read, write);
 }
 
 int event_poll(event_module *evm, steak_event **events, int nevent)
@@ -82,12 +102,6 @@ int event_process(event_module *evm, steak_event **events, int nevent)
 		evt->on_read(evm, evt);
 	}
 	return STEAK_ERR_OK;
-}
-
-steak_event *new_event(event_module *evm)
-{
-	steak_event *evt = (steak_event *)calloc(1, sizeof(steak_event));
-	return evt;
 }
 
 steak_event *new_session_event(event_module *evm,
@@ -119,6 +133,6 @@ steak_event *new_svchost_event(event_module *evm, int(*on_read)(event_module *ev
 
 void free_event(event_module *evm, steak_event *evt)
 {
-	free(evt);
+	Y_pool_recycle(evt, sizeof(steak_event));
 }
 

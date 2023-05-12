@@ -16,11 +16,11 @@ int read_request_event(event_module *evm, steak_event *evt)
 {
 	steak_session *session = (steak_session *)evt->context;
 	steak_request *request = session->request;
-	steak_parser *parser = request->parser;
+	steak_parser *parser = session->parser;
 
 	// 准备接收缓冲区
 	char *recv_buf = request->raw_msg + request->raw_msg_offset;
-	int recv_buf_size = request->raw_msg_size - request->raw_msg_offset;
+	int recv_buf_size = request->raw_msg_len - request->raw_msg_offset;
 
 	// 获取当前socket缓冲区里的数据大小
 	int data_size = steak_socket_get_avaliable_size(evt->sock);
@@ -35,11 +35,13 @@ int read_request_event(event_module *evm, steak_event *evt)
 	if(recv_buf_size < data_size)
 	{
 		int size1 = request->raw_msg_offset + data_size;
-		int size2 = request->raw_msg_size * 2;
+		int size2 = request->raw_msg_len * 2;
 		int newsize = size1 > size2 ? size1 : size2;
 
-		request->raw_msg = Y_pool_resize(request->raw_msg, request->raw_msg_size, newsize);
-		request->raw_msg_size = newsize;
+		request->raw_msg = Y_pool_resize(request->raw_msg, request->raw_msg_len, newsize);
+		request->raw_msg_len = newsize;
+		parser->raw_msg = request->raw_msg;
+		parser->raw_msg_len = newsize;
 
 		recv_buf = request->raw_msg + request->raw_msg_offset;
 	}
@@ -65,6 +67,11 @@ int read_request_event(event_module *evm, steak_event *evt)
 		// 解析http报文
 		parser->readsize = data_size;
 		steak_parser_parse(parser);
+
+		if(parser->completed)
+		{
+			YLOGI("http request receive completed");
+		}
 	}
 
 	return STEAK_ERR_OK;

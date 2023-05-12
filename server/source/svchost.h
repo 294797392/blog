@@ -14,9 +14,9 @@ extern "C" {
 
     struct svchost_options_s
     {
-        char *bindaddr;
+        char bindaddr[64];
         int port;
-        char *root;
+        char root[256];
     };
 
     struct svchost_s
@@ -25,7 +25,7 @@ extern "C" {
         svchost_options *options;
     };
 
-    svchost *new_svchost(svchost_options *options);
+    svchost *new_svchost();
     void free_svchost(svchost *svc);
 
 #ifdef __cplusplus

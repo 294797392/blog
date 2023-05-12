@@ -23,6 +23,7 @@
 #include "errors.h"
 #include "event.h"
 #include "svchost.h"
+#include "app.h"
 
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
 #pragma comment(lib, "Ws2_32.lib")
@@ -53,19 +54,10 @@ int main(int argc, char **argv)
 	int rc = WSAStartup(version, &wsaData);
 #endif
 
-	event_module_options evtpoll_options =
-	{
-		.type = EVENT_POLL_TYPE_SELECT
-	};
-	event_module *evm = new_eventpoll(&evtpoll_options);
+	steak_app_init();
 
-	svchost_options svc_options =
-	{
-		.bindaddr = "0.0.0.0",
-		.port = 1018,
-		.root = "~/",
-	};
-	svchost *svc = new_svchost(&svc_options);
+	event_module *evm = new_event_module();
+	svchost *svc = new_svchost();
 	steak_event *evt = new_svchost_event(evm, accept_client_event, svc);
 	event_add(evm, evt);
 

@@ -14,6 +14,7 @@
 #include "steak_socket.h"
 #include "request.h"
 #include "response.h"
+#include "parser.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,12 +29,17 @@ extern "C" {
 	struct steak_session_s
 	{
 		/// <summary>
-		/// 存放浏览器请求的数据
+		/// HTTP报文解析器
+		/// </summary>
+		steak_parser *parser;
+
+		/// <summary>
+		/// 当前正在处理的请求
 		/// </summary>
 		steak_request *request;
 
 		/// <summary>
-		/// 存放要响应的数据
+		/// 当前正在处理的响应
 		/// </summary>
 		steak_response *response;
 

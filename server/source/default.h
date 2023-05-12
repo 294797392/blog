@@ -18,4 +18,13 @@
 // 发送缓冲区的大小
 #define STEAK_DEFAULT_SEND_BUF_SIZE							16384
 
+// 轮询事件的超时时间，单位是毫秒
+#define STEAK_DEFAULT_POLL_TIMEOUT							50
+
+// 默认的HTTP根目录
+#define STEAK_DEFAULT_ROOT									"/"
+
+// 默认监听端口
+#define STEAK_DEFAULT_LISTEN_PORT							1018
+
 #endif
