@@ -36,7 +36,7 @@ extern "C" {
 		STEAK_PARSER_HEADER_KEY,
 		STEAK_PARSER_HEADER_VALUE,
 		STEAK_PARSER_HEADER_VALUE_END,
-		STEAK_PARSER_BODY,
+		STEAK_PARSER_BODY
 	};
 
 	struct steak_parser_s
@@ -61,12 +61,12 @@ extern "C" {
 		int content_length;
 
 		/// <summary>
-		/// 当前解析到了的缓冲区的偏移量
+		/// 本次从客户端读取到的数据长度
 		/// </summary>
-		int offset;
+		int readsize;
 
 		/// <summary>
-		/// 当前解析的segement的偏移量
+		/// 当前解析的segement相对于raw_msg的偏移量
 		/// </summary>
 		int seg_offset;
 		/// <summary>
@@ -82,6 +82,15 @@ extern "C" {
 		/// 从客户端接收到的原始http报文长度
 		/// </summary>
 		int raw_msg_len;
+		/// <summary>
+		/// 当前解析到了的缓冲区的偏移量
+		/// </summary>
+		int raw_msg_offset;
+
+		/// <summary>
+		/// HTTP报文是否解析完毕
+		/// </summary>
+		int completed;
 	};
 
 	int steak_parser_parse(steak_parser *parser);

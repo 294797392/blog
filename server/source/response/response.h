@@ -35,9 +35,9 @@ extern "C" {
 		/// <summary>
 		/// 保存要发送的数据
 		/// </summary>
-		char *buffer;
-		int buffer_size;
-		int write_offset;
+		char *raw_msg;
+		int raw_msg_size;
+		int raw_msg_offset;
 	};
 
 #ifdef __cplusplus

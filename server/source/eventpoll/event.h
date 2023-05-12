@@ -187,6 +187,7 @@ extern "C" {
 	/*
 	 * 描述：
 	 * 处理收到信号了的事件
+	 * 处理完之后，需要清空process_event_list
 	 *
 	 * 参数：
 	 * @evm：event_module对象

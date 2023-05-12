@@ -61,7 +61,7 @@ int event_delete(event_module *evpoll, steak_event *evt)
 	eventpoll_actions *actions = evpoll->actions;
 	actions->delete_event(evpoll, evt);
 
-	Y_list_remove(evpoll->event_list, evt, 0);
+	Y_list_remove(evpoll->event_list, evt);
 
 	return STEAK_ERR_OK;
 }
@@ -81,7 +81,6 @@ int event_process(event_module *evm, steak_event **events, int nevent)
 		steak_event *evt = events[i];
 		evt->on_read(evm, evt);
 	}
-
 	return STEAK_ERR_OK;
 }
 

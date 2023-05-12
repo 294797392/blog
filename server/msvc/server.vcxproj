@@ -148,6 +148,7 @@
     <ClInclude Include="..\source\header\header.h" />
     <ClInclude Include="..\source\HTTPConstants.h" />
     <ClInclude Include="..\source\errors.h" />
+    <ClInclude Include="..\source\module\steak_module.h" />
     <ClInclude Include="..\source\parser\parser.h" />
     <ClInclude Include="..\source\request\request.h" />
     <ClInclude Include="..\source\response\response.h" />
@@ -165,6 +166,7 @@
     <ClCompile Include="..\source\event\write_response_event.c" />
     <ClCompile Include="..\source\header\header.c" />
     <ClCompile Include="..\source\main.c" />
+    <ClCompile Include="..\source\module\steak_module.c" />
     <ClCompile Include="..\source\parser\parser.c" />
     <ClCompile Include="..\source\request\request.c" />
     <ClCompile Include="..\source\response\response.c" />

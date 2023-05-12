@@ -30,6 +30,9 @@
     <ClInclude Include="..\source\utils\steak_string.h">
       <Filter>utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\module\steak_module.h">
+      <Filter>module</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\main.c" />
@@ -71,6 +74,9 @@
     <ClCompile Include="..\source\utils\steak_string.c">
       <Filter>utils</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\module\steak_module.c">
+      <Filter>module</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\service.json" />
@@ -99,6 +105,9 @@
     </Filter>
     <Filter Include="utils">
       <UniqueIdentifier>{e4d667ce-4421-40f7-8315-5fc412f8769a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="module">
+      <UniqueIdentifier>{45e3ca55-d0e2-487a-bdd6-c44edae08e41}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

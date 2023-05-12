@@ -199,15 +199,11 @@
     
     typedef struct Ylist_s Ylist;
 
-    typedef void (*Ylist_free_func)(void *item);
-
 	typedef int (*Ylist_foreach_func)(Ylist *yl, void *item, void *userdata);
 
     typedef int (*Ylist_query_func)(Ylist *yl, void *item, void *data, void *userdata);
 
     YAPI Ylist *Y_create_list();
-
-    YAPI Ylist *Y_create_list2(Ylist_free_func freefunc);
 
     /*
      * 描述：
@@ -293,9 +289,8 @@
      * 参数：
      * @yl：要移除元素的集合
      * @item：要移除的元素
-     * @free：如果free == 1，并且你指定了freefunc，那么该函数会帮你free掉item
      */
-    YAPI void Y_list_remove(Ylist *yl, void *item, int free);
+    YAPI void Y_list_remove(Ylist *yl, void *item);
 
     /*
      * 描述：
@@ -304,9 +299,8 @@
      * 参数：
      * @yl：要移除元素的集合
      * @at：要移除的元素的索引
-     * @free：如果free == 1，并且你指定了freefunc，那么该函数会帮你free掉item
      */
-    YAPI void Y_list_removeat(Ylist *yl, int at, int free);
+    YAPI void Y_list_removeat(Ylist *yl, int at);
 
     /*
      * 描述：

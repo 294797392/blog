@@ -41,25 +41,25 @@ void free_session(steak_session *session)
 steak_request *new_request()
 {
 	steak_request *request = (steak_request *)Y_pool_obtain(sizeof(steak_request));
-	request->buffer = (char *)Y_pool_obtain(STEAK_DEFAULT_RECV_BUF_SIZE);
-	request->buffer_size = STEAK_DEFAULT_RECV_BUF_SIZE;
+	request->raw_msg = (char *)Y_pool_obtain(STEAK_DEFAULT_RECV_BUF_SIZE);
+	request->raw_msg_size = STEAK_DEFAULT_RECV_BUF_SIZE;
 	request->parser = new_parser();
-	request->parser->raw_msg = request->buffer;
-	request->parser->raw_msg_len = request->buffer_size;
+	request->parser->raw_msg = request->raw_msg;
+	request->parser->raw_msg_len = request->raw_msg_size;
 	return request;
 }
 
 void free_request(steak_request *request)
 {
-	Y_pool_recycle(request->buffer, request->buffer_size);
+	Y_pool_recycle(request->raw_msg, request->raw_msg_size);
 	free(request);
 }
 
 steak_response *new_response()
 {
 	steak_response *response = (steak_response *)Y_pool_obtain(sizeof(steak_response));
-	response->buffer = (char *)Y_pool_obtain(STEAK_DEFAULT_SEND_BUF_SIZE);
-	response->buffer_size = STEAK_DEFAULT_SEND_BUF_SIZE;
+	response->raw_msg = (char *)Y_pool_obtain(STEAK_DEFAULT_SEND_BUF_SIZE);
+	response->raw_msg_size = STEAK_DEFAULT_SEND_BUF_SIZE;
 	return response;
 }
 
@@ -74,7 +74,6 @@ steak_parser *new_parser()
 	parser->state = STEAK_PARSER_INITIAL;
 	parser->first_header = (steak_http_header *)Y_pool_obtain(sizeof(steak_http_header));
 	parser->last_header = parser->first_header;
-	parser->content_length = -1;
 	return parser;
 }
 

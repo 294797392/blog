@@ -1,11 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #include <WinSock2.h>
 
 #include <libY.h>
 
+#include "steak_socket.h"
 #include "errors.h"
 #include "event.h"
 #include "app.h"
@@ -14,15 +16,41 @@ int read_request_event(event_module *evm, steak_event *evt)
 {
 	steak_session *session = (steak_session *)evt->context;
 	steak_request *request = session->request;
+	steak_parser *parser = request->parser;
 
-	char *recv_buf = request->buffer + request->write_offset;
-	int recv_buf_size = request->buffer_size - request->write_offset;
+	// 准备接收缓冲区
+	char *recv_buf = request->raw_msg + request->raw_msg_offset;
+	int recv_buf_size = request->raw_msg_size - request->raw_msg_offset;
 
-	int rc = recv(evt->sock, recv_buf, recv_buf_size, 0);
+	// 获取当前socket缓冲区里的数据大小
+	int data_size = steak_socket_get_avaliable_size(evt->sock);
+	if(data_size == -1)
+	{
+		evt->status = STEAK_EVENT_STATUS_DELETE;
+		return STEAK_ERR_OK;
+	}
+
+	// 要接收的数据比缓冲区大
+	// 扩容缓冲区
+	if(recv_buf_size < data_size)
+	{
+		int size1 = request->raw_msg_offset + data_size;
+		int size2 = request->raw_msg_size * 2;
+		int newsize = size1 > size2 ? size1 : size2;
+
+		request->raw_msg = Y_pool_resize(request->raw_msg, request->raw_msg_size, newsize);
+		request->raw_msg_size = newsize;
+
+		recv_buf = request->raw_msg + request->raw_msg_offset;
+	}
+
+	// 接收数据
+	int rc = recv(evt->sock, recv_buf, data_size, 0);
 	if(rc == 0)
 	{
 		// 此时说明对方关闭了该网络通道的读取（调用shutdown(READ)）
 		// 收到了FIN，此时返回EOF
+		evt->status = STEAK_EVENT_STATUS_DELETE;
 		return STEAK_ERR_OK;
 	}
 	else if(rc == -1)
@@ -34,26 +62,10 @@ int read_request_event(event_module *evm, steak_event *evt)
 	else
 	{
 		// 读到了一些字节数
-
-		// 如果缓冲区读取位置达到了缓冲区末尾，那么就扩容
-		if(request->write_offset == request->buffer_size)
-		{
-			int newsize = request->buffer_size * 2;
-			char *buffer = (char *)Y_pool_resize(request->buffer, request->buffer_size, newsize);
-			if(buffer == NULL)
-			{
-				YLOGE("realloc request buffer failed, %s", strerror(errno));
-				return STEAK_ERR_NO_MEM;
-			}
-			request->buffer = buffer;
-			request->buffer_size = newsize;
-		}
-
-		request->write_offset += rc;
+		// 解析http报文
+		parser->readsize = data_size;
+		steak_parser_parse(parser);
 	}
 
-	// 解析http报文
-	//steak_parser_parse(request);
-
-	return STEAK_ERR_FAILED;
+	return STEAK_ERR_OK;
 }

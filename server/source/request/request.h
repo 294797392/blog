@@ -43,15 +43,23 @@ extern "C" {
 		char full_url[256];
 		char resource_uri[128];
 
-		char *content;
 		int content_length;
 
 		/// <summary>
-		/// 保存接收到的数据
+		/// HTTP报文接收缓冲区
 		/// </summary>
-		char *buffer;
-		int buffer_size;
-		int write_offset;
+		char *raw_msg;
+
+		/// <summary>
+		/// HTTP报文接收缓冲区的大小
+		/// </summary>
+		int raw_msg_size;
+
+		/// <summary>
+		/// HTTP报文接收缓冲区的偏移量
+		/// 也就是报文的总长度
+		/// </summary>
+		int raw_msg_offset;
 	};
 
 #ifdef __cplusplus
