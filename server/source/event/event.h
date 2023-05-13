@@ -9,6 +9,7 @@
 
 #include "steak_socket.h"
 #include "session.h"
+#include "connection.h"
 #include "svchost.h"
 
 #ifdef __cplusplus
@@ -47,7 +48,7 @@ extern "C" {
 		/// <summary>
 		/// session事件
 		/// </summary>
-		STEAK_EVENT_TYPE_SESSION
+		STEAK_EVENT_TYPE_CONNECTION
 	};
 
 	enum eventpoll_type_enum
@@ -239,11 +240,8 @@ extern "C" {
 	 * event实例
 	 */
 	 //steak_event *new_event(event_module *evm);
-	steak_event *new_session_event(event_module *evm,
-		int(*on_read)(event_module *evpoll, steak_event *evt),
-		int(*on_write)(event_module *evpoll, steak_event *evt),
-		steak_session *session);
-	steak_event *new_svchost_event(event_module *evm, int(*on_read)(event_module *evpoll, steak_event *evt), svchost *svc);
+	steak_event *new_connection_event(event_module *evm, int(*on_read)(event_module *evm, steak_event *evt), int(*on_write)(event_module *evm, steak_event *evt), steak_connection *conn);
+	steak_event *new_svchost_event(event_module *evm, int(*on_read)(event_module *evm, steak_event *evt), svchost *svc);
 
 
 	/*

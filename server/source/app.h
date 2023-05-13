@@ -61,18 +61,6 @@ extern "C" {
 	 */
 	steak_app *steak_app_get();
 
-	steak_session *new_session(steak_socket sock);
-	void free_session(steak_session *session);
-
-	steak_request *new_request();
-	void free_request(steak_request *request);
-
-	steak_response *new_response();
-	void free_response(steak_response *response);
-
-	steak_parser *new_parser();
-	void free_parser(steak_parser *parser);
-
 #ifdef __cplusplus
 }
 #endif

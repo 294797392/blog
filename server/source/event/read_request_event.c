@@ -14,13 +14,12 @@
 
 int read_request_event(event_module *evm, steak_event *evt)
 {
-	steak_session *session = (steak_session *)evt->context;
-	steak_request *request = session->request;
-	steak_parser *parser = session->parser;
+	steak_connection *connection = (steak_connection *)evt->context;
+	steak_parser *parser = &connection->parser;
 
 	// 准备接收缓冲区
-	char *recv_buf = request->raw_msg + request->raw_msg_offset;
-	int recv_buf_size = request->raw_msg_len - request->raw_msg_offset;
+	char *recv_buf = parser->raw_msg + parser->raw_msg_offset;
+	int recv_buf_size = parser->raw_msg_len - parser->raw_msg_offset;
 
 	// 获取当前socket缓冲区里的数据大小
 	int data_size = steak_socket_get_avaliable_size(evt->sock);
@@ -34,16 +33,14 @@ int read_request_event(event_module *evm, steak_event *evt)
 	// 扩容缓冲区
 	if(recv_buf_size < data_size)
 	{
-		int size1 = request->raw_msg_offset + data_size;
-		int size2 = request->raw_msg_len * 2;
+		int size1 = parser->raw_msg_offset + data_size;
+		int size2 = parser->raw_msg_len * 2;
 		int newsize = size1 > size2 ? size1 : size2;
 
-		request->raw_msg = Y_pool_resize(request->raw_msg, request->raw_msg_len, newsize);
-		request->raw_msg_len = newsize;
-		parser->raw_msg = request->raw_msg;
+		parser->raw_msg = Y_pool_resize(parser->raw_msg, parser->raw_msg_len, newsize);
 		parser->raw_msg_len = newsize;
 
-		recv_buf = request->raw_msg + request->raw_msg_offset;
+		recv_buf = parser->raw_msg + parser->raw_msg_offset;
 	}
 
 	// 接收数据

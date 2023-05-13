@@ -3,7 +3,7 @@
  * @ author  : oheiheiheiheihei
  * @ version : 0.9
  * @ date    : 2023.05.09 19:11
- * @ brief   : 定义session对象
+ * @ brief   : 定义session对象。请求 - 响应的过程表示为一个session。
  ************************************************************************************/
 
 #ifndef __STEAK_SESSION_H__
@@ -14,7 +14,6 @@
 #include "steak_socket.h"
 #include "request.h"
 #include "response.h"
-#include "parser.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,24 +28,14 @@ extern "C" {
 	struct steak_session_s
 	{
 		/// <summary>
-		/// HTTP报文解析器
+		/// 该会话的请求状态
 		/// </summary>
-		steak_parser *parser;
+		steak_request request;
 
 		/// <summary>
-		/// 当前正在处理的请求
+		/// 该会话的响应状态
 		/// </summary>
-		steak_request *request;
-
-		/// <summary>
-		/// 当前正在处理的响应
-		/// </summary>
-		steak_response *response;
-
-		/// <summary>
-		/// 客户端的socket
-		/// </summary>
-		steak_socket sock;
+		steak_response response;
 	};
 
 #ifdef __cplusplus

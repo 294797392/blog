@@ -13,10 +13,7 @@
 #define STEAK_DEFAULT_MAX_SESSIONS							1024
 
 // 接收缓冲区的大小
-#define STEAK_DEFAULT_RECV_BUF_SIZE							16384
-
-// 发送缓冲区的大小
-#define STEAK_DEFAULT_SEND_BUF_SIZE							16384
+#define STEAK_DEFAULT_HTTP_MSG_SIZE							16384
 
 // 轮询事件的超时时间，单位是毫秒
 #define STEAK_DEFAULT_POLL_TIMEOUT							50

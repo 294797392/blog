@@ -113,19 +113,16 @@ int event_process(event_module *evm, steak_event **events, int nevent)
 	return STEAK_ERR_OK;
 }
 
-steak_event *new_session_event(event_module *evm,
-	int(*on_read)(event_module *evpoll, steak_event *evt),
-	int(*on_write)(event_module *evpoll, steak_event *evt),
-	steak_session *session)
+steak_event *new_connection_event(event_module *evm, int(*on_read)(event_module *evm, steak_event *evt), int(*on_write)(event_module *evm, steak_event *evt), steak_connection *conn)
 {
 	steak_event *evt = new_event(evm);
 	evt->read = 1;
 	evt->write = 1;
 	evt->on_read = on_read;
 	evt->on_write = on_write;
-	evt->context = session;
-	evt->type = STEAK_EVENT_TYPE_SESSION;
-	evt->sock = session->sock;
+	evt->context = conn;
+	evt->type = STEAK_EVENT_TYPE_CONNECTION;
+	evt->sock = conn->sock;
 	return evt;
 }
 

@@ -7,9 +7,11 @@
 #include <libY.h>
 
 #include "steak_socket.h"
+#include "factory.h"
 #include "errors.h"
 #include "event.h"
 #include "app.h"
+#include "connection.h"
 
 extern int read_request_event(event_module *evm, steak_event *evt);
 extern int write_response_event(event_module *evm, steak_event *evt);
@@ -27,8 +29,9 @@ int accept_client_event(event_module *evm, steak_event *evt)
 
 	YLOGI("client connected, new session");
 
-	steak_session *session = new_session(sock);
-	steak_event *event = new_session_event(evm, read_request_event, write_response_event, session);
+	// 客户端连接成功，把客户端socket加到待监控的事件列表里
+	steak_connection *conn = new_connection(sock);
+	steak_event *event = new_connection_event(evm, read_request_event, write_response_event, conn);
 	event_add(evm, event);
 
 	return STEAK_ERR_OK;
