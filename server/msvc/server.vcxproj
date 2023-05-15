@@ -89,7 +89,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;ENV_WIN32;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)../external/libY;$(SolutionDir)../external/cJSON;$(SolutionDir)../source;$(SolutionDir)../source/event;$(SolutionDir)../source/header;$(SolutionDir)../source/response;$(SolutionDir)../source/request;$(SolutionDir)../source/session;$(SolutionDir)../source/utils;$(SolutionDir)../source/parser;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)../external/libY;$(SolutionDir)../external/cJSON;$(SolutionDir)../source;$(SolutionDir)../source/event;$(SolutionDir)../source/header;$(SolutionDir)../source/response;$(SolutionDir)../source/request;$(SolutionDir)../source/session;$(SolutionDir)../source/utils;$(SolutionDir)../source/parser;$(SolutionDir)../source/module;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,9 +148,9 @@
     <ClInclude Include="..\source\event\event.h" />
     <ClInclude Include="..\source\factory.h" />
     <ClInclude Include="..\source\header\header.h" />
-    <ClInclude Include="..\source\HTTPConstants.h" />
+    <ClInclude Include="..\source\protocol.h" />
     <ClInclude Include="..\source\errors.h" />
-    <ClInclude Include="..\source\module\steak_module.h" />
+    <ClInclude Include="..\source\module\steak_http_handler.h" />
     <ClInclude Include="..\source\parser\parser.h" />
     <ClInclude Include="..\source\request\request.h" />
     <ClInclude Include="..\source\response\response.h" />
@@ -170,7 +170,7 @@
     <ClCompile Include="..\source\factory.c" />
     <ClCompile Include="..\source\header\header.c" />
     <ClCompile Include="..\source\main.c" />
-    <ClCompile Include="..\source\module\steak_module.c" />
+    <ClCompile Include="..\source\module\steak_http_handler.c" />
     <ClCompile Include="..\source\parser\parser.c" />
     <ClCompile Include="..\source\request\request.c" />
     <ClCompile Include="..\source\response\response.c" />

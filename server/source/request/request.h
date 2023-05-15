@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include "header.h"
+#include "protocol.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,30 +31,20 @@ extern "C" {
 		uint64_t timestamp;
 
 		/// <summary>
-		/// HTTP请求头部
+		/// Content-Length标头的值
+		/// 0：content-length为0，表示没有body
 		/// </summary>
-		steak_http_header *header;
-
-		char *full_url;
-		char *resource_uri;
-
 		int content_length;
 
 		/// <summary>
-		/// HTTP报文接收缓冲区
+		/// 请求方法
 		/// </summary>
-		char *raw_msg;
-
-		/// <summary>
-		/// HTTP报文接收缓冲区的大小
-		/// </summary>
-		int raw_msg_len;
-
-		/// <summary>
-		/// HTTP报文接收缓冲区的偏移量
-		/// 也就是报文的总长度
-		/// </summary>
-		int raw_msg_offset;
+		http_method_enum method;
+		char *url;
+		char *version;
+		char *content;
+		steak_http_header *first_header;
+		steak_http_header *last_header;
 	};
 
 #ifdef __cplusplus

@@ -41,9 +41,20 @@ static void cleanup_timeout_events(event_module *evm, steak_event **events, int 
 
 }
 
+/// <summary>
+/// 初始化所有的模块
+/// </summary>
+/// <returns></returns>
+static int init_modules()
+{
+	return STEAK_ERR_OK;
+}
+
+
+
 int main(int argc, char **argv)
 {
-	int code = YERR_SUCCESS;
+	int rc = YERR_SUCCESS;
 
 	Y_log_init(NULL);
 	Y_pool_init(65535, 8192);
@@ -51,10 +62,18 @@ int main(int argc, char **argv)
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
 	WORD version = MAKEWORD(1, 1);
 	WSADATA wsaData;
-	int rc = WSAStartup(version, &wsaData);
+	rc = WSAStartup(version, &wsaData);
 #endif
 
-	steak_app_init();
+	if((rc = steak_app_init()) != STEAK_ERR_OK)
+	{
+		return 0;
+	}
+
+	if((rc = init_modules()) != STEAK_ERR_OK)
+	{
+		return 0;
+	}
 
 	event_module *evm = new_event_module();
 	svchost *svc = new_svchost();
@@ -70,10 +89,10 @@ int main(int argc, char **argv)
 	{
 		// 轮询事件列表
 		events = (steak_event **)Y_list_to_array(evm->event_list, &nevent);
-		code = event_poll(evm, events, nevent);
-		if(code != STEAK_ERR_OK)
+		rc = event_poll(evm, events, nevent);
+		if(rc != STEAK_ERR_OK)
 		{
-			YLOGE("poll event failed, %d", code);
+			YLOGE("poll event failed, %d", rc);
 			continue;
 		}
 
@@ -82,7 +101,7 @@ int main(int argc, char **argv)
 		if(nevent > 0)
 		{
 			// 开始处理事件
-			code = event_process(evm, events, nevent);
+			rc = event_process(evm, events, nevent);
 			Y_list_clear(evm->process_event_list);
 		}
 

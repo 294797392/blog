@@ -11,11 +11,57 @@
 #include "errors.h"
 #include "event.h"
 #include "app.h"
+#include "factory.h"
+
+static steak_response *process_request(steak_session *session)
+{
+	steak_request *request = &session->request;
+
+	switch(request->method)
+	{
+		case STEAK_HTTP_METHOD_GET:
+		{
+			char path[1024] = { '\0' };
+			snprintf(path, sizeof(path), "%s\\%s", request->url, request->url);
+			char *content = NULL;
+			uint64_t size = 0;
+			int rc = Y_file_read_all(path, &content, &size);
+			if(rc != YERR_SUCCESS)
+			{
+
+			}
+			break;
+		}
+
+		default:
+			break;
+	}
+
+	//char filepath[1024] = { '\0' };
+	//snprintf(resuri)
+
+	//switch(request->method)
+	//{
+	//	case STEAK_HTTP_METHOD_GET:
+	//	{
+	//		break;
+	//	}
+
+	//	default:
+	//		break;
+	//}
+}
 
 int read_request_event(event_module *evm, steak_event *evt)
 {
 	steak_connection *connection = (steak_connection *)evt->context;
 	steak_parser *parser = &connection->parser;
+	if(connection->active_session == NULL)
+	{
+		steak_session *session = new_session(evt->sock);
+		connection->active_session = session;
+	}
+	steak_session *active_session = connection->active_session;
 
 	// 准备接收缓冲区
 	char *recv_buf = parser->raw_msg + parser->raw_msg_offset;
@@ -25,7 +71,6 @@ int read_request_event(event_module *evm, steak_event *evt)
 	int data_size = steak_socket_get_avaliable_size(evt->sock);
 	if(data_size == -1)
 	{
-		evt->status = STEAK_EVENT_STATUS_DELETE;
 		return STEAK_ERR_OK;
 	}
 
@@ -49,13 +94,11 @@ int read_request_event(event_module *evm, steak_event *evt)
 	{
 		// 此时说明对方关闭了该网络通道的读取（调用shutdown(READ)）
 		// 收到了FIN，此时返回EOF
-		evt->status = STEAK_EVENT_STATUS_DELETE;
 		return STEAK_ERR_OK;
 	}
 	else if(rc == -1)
 	{
 		// socket发生错误, 把event标记为无效，后面删除event
-		evt->status = STEAK_EVENT_STATUS_DELETE;
 		return STEAK_ERR_OK;
 	}
 	else
@@ -63,11 +106,43 @@ int read_request_event(event_module *evm, steak_event *evt)
 		// 读到了一些字节数
 		// 解析http报文
 		parser->readsize = data_size;
-		steak_parser_parse(parser);
-
-		if(parser->completed)
+		steak_parser_parse(parser, &active_session->request);
+		switch(parser->state)
 		{
-			YLOGI("http request receive completed");
+			case STEAK_PARSER_COMPLETED:
+			{
+				YLOGI("http request receive completed, begin process request");
+
+				// 当前session设置为空，说明本次请求已经解析完了
+				// 下次收到数据的时候直接创建新的session
+				connection->active_session = NULL;
+
+				// 将active_session加到待发送会话的队尾
+				if(connection->last_session == NULL)
+				{
+					connection->first_session = active_session;
+					connection->last_session = active_session;
+				}
+				else
+				{
+					connection->last_session->next = active_session;
+					active_session->prev = connection->last_session;
+					connection->last_session = active_session;
+				}
+
+				process_request(&active_session);
+
+				break;
+			}
+
+			case STEAK_PARSER_ERROR:
+			{
+				YLOGE("http request parse error, invalid http request");
+				break;
+			}
+
+			default:
+				break;
 		}
 	}
 

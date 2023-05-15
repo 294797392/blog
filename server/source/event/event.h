@@ -31,11 +31,6 @@ extern "C" {
 		/// 需要轮询的事件
 		/// </summary>
 		STEAK_EVENT_STATUS_POLL,
-
-		/// <summary>
-		/// 需要删除的事件
-		/// </summary>
-		STEAK_EVENT_STATUS_DELETE
 	};
 
 	enum steak_event_types_e

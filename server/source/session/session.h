@@ -36,6 +36,16 @@ extern "C" {
 		/// 该会话的响应状态
 		/// </summary>
 		steak_response response;
+
+		/// <summary>
+		/// 上一个会话
+		/// </summary>
+		steak_session *prev;
+
+		/// <summary>
+		/// 下一个会话
+		/// </summary>
+		steak_session *next;
 	};
 
 #ifdef __cplusplus

@@ -32,7 +32,7 @@ static eventpoll_actions *select_evpoll_actions(event_module_options *options)
 	return NULL;
 }
 
-steak_event *new_event(event_module *evm)
+static steak_event *new_event(event_module *evm)
 {
 	steak_event *evt = (steak_event *)Y_pool_obtain(sizeof(steak_event));
 	return evt;
@@ -42,10 +42,10 @@ steak_event *new_event(event_module *evm)
 
 event_module *new_event_module()
 {
-	event_module_options *evmops = (event_module_options *)calloc(1, sizeof(event_module_options));
+	event_module_options *evmops = (event_module_options *)Y_pool_obtain(sizeof(event_module_options));
 	evmops->type = EVENT_POLL_TYPE_SELECT;
 
-	event_module *evm = (event_module *)calloc(1, sizeof(event_module));
+	event_module *evm = (event_module *)Y_pool_obtain(sizeof(event_module));
 	evm->options = evmops;
 	evm->timeout_ms = STEAK_DEFAULT_POLL_TIMEOUT;
 	evm->event_list = Y_create_list();
@@ -57,7 +57,6 @@ event_module *new_event_module()
 
 void free_event_module(event_module *evm)
 {
-	free(evm);
 }
 
 int event_add(event_module *evm, steak_event *evt)

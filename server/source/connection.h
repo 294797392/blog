@@ -9,6 +9,8 @@
 #ifndef __STEAK_CONNECTION_H__
 #define __STEAK_CONNECTION_H__
 
+#include <libY.h>
+
 #include "session.h"
 #include "parser.h"
 #include "steak_socket.h"
@@ -26,15 +28,25 @@ extern "C" {
 		steak_socket sock;
 
 		/// <summary>
-		/// 该链接当前所有的会话列表
-		/// 一个会话就是请求 - 响应的过程
-		/// </summary>
-		Ylist *session_list;
-
-		/// <summary>
 		/// HTTP报文解析器
 		/// </summary>
 		steak_parser parser;
+
+		/// <summary>
+		/// 当接收很快，发送很慢的时候，可能会出现有多个响应没发送出去的情况
+		/// 该队列存储待发送的响应
+		/// </summary>
+		steak_session *first_session;
+
+		/// <summary>
+		/// session列表里的最后一个会话，也是正在处理的会话
+		/// </summary>
+		steak_session *last_session;
+
+		/// <summary>
+		/// 当前正在接收的HTTP请求
+		/// </summary>
+		steak_session *active_session;
 	};
 
 #ifdef __cplusplus

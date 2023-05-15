@@ -16,6 +16,7 @@
 
 #include "steak_string.h"
 #include "header.h"
+#include "request.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,29 +37,25 @@ extern "C" {
 		STEAK_PARSER_HEADER_KEY,
 		STEAK_PARSER_HEADER_VALUE,
 		STEAK_PARSER_HEADER_VALUE_END,
-		STEAK_PARSER_BODY
+		STEAK_PARSER_BODY,
+
+		/// <summary>
+		/// HTTP报文解析完毕
+		/// </summary>
+		STEAK_PARSER_COMPLETED,
+
+		/// <summary>
+		/// 报文解析失败，HTTP报文格式不正确
+		/// </summary>
+		STEAK_PARSER_ERROR
 	};
 
 	struct steak_parser_s
 	{
+		/// <summary>
+		/// HTTP报文的解析状态
+		/// </summary>
 		steak_parser_state state;
-
-		/// <summary>
-		/// 请求方法
-		/// </summary>
-		char *method;
-		char *url;
-		char *version;
-		char *body;
-		steak_http_header *first_header;
-		steak_http_header *last_header;
-
-		/// <summary>
-		/// Content-Length标头的值
-		/// -1：没有content-length标头
-		/// 0：content-length为0，表示没有body
-		/// </summary>
-		int content_length;
 
 		/// <summary>
 		/// 本次从客户端读取到的数据长度
@@ -86,14 +83,9 @@ extern "C" {
 		/// 当前解析到了的缓冲区的偏移量
 		/// </summary>
 		int raw_msg_offset;
-
-		/// <summary>
-		/// HTTP报文是否解析完毕
-		/// </summary>
-		int completed;
 	};
 
-	int steak_parser_parse(steak_parser *parser);
+	int steak_parser_parse(steak_parser *parser, steak_request *request);
 
 #ifdef __cplusplus
 }
