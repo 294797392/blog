@@ -13,7 +13,8 @@
 
 默认情况下，VisualStudio会链接libcmt.lib, libvcruntime.lib, libucrt.lib这三个库
 
-CRT被封装在一个可在发行的DLL里，这个DLL就是MSVCRT.dll。可在发行的意思就是不同版本的VC++编译器可以使用不同的MSVCRT.dll。并且不同版本的VC++编译器对应的MSVCRT.dll的名字也是不一样的，例如MSVCRT10.dll or MSVCRT20.dll。
+CRT被封装在一个可在发行的DLL里，这个DLL就是MSVCRT.dll。可在发行的意思就是不同版本的VC++编译器使用的MSVCRT.dll版本也不同。
+并且不同版本的VC++编译器对应的MSVCRT.dll的名字也是不一样的，例如MSVCRT10.dll or MSVCRT20.dll。
 注意如果你的程序是多线程程序，那么一定要使用多线程版本的CRT，不然可能会出现重大问题。
 
 # 使用CRT库来构建dll

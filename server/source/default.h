@@ -24,4 +24,6 @@
 // 默认监听端口
 #define STEAK_DEFAULT_LISTEN_PORT							1018
 
+#define STEAK_DEFAULT_CONFIG_FILE							"service.json"
+
 #endif

@@ -16,9 +16,6 @@
 extern "C" {
 #endif
 
-	steak_connection *new_connection(steak_socket sock);
-	void free_connection(steak_connection *conn);
-
 	steak_session *new_session(steak_socket sock);
 	void free_session(steak_session *session);
 

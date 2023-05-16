@@ -1,12 +1,17 @@
 ﻿{
-    "listens":[
+    "svc_hosts": [
         {
+            "id": "",
+            "name": "",
+            "bind_addr": "0.0.0.0",
             "port": 1018,
-            "root": "conf"
+            "root:": "",
+            "index_page": "index.html"
         }
     ],
 
-    "event_poll":{
-        "action":"select"
+    "event": {
+        "type": 0,
+        "timeout": 50
     }
 }

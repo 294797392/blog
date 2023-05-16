@@ -37,6 +37,12 @@ extern "C" {
 
 	/*
 	 * 描述：
+	 * 初始化socket
+	 */
+	int steak_socket_init();
+
+	/*
+	 * 描述：
 	 * 获取已经从网络接收可供读取的数据量
 	 *
 	 * 参数：
@@ -46,6 +52,8 @@ extern "C" {
 	 * 可读取的数据量
 	 */
 	int steak_socket_get_avaliable_size(steak_socket sock);
+
+	void steak_socket_close(steak_socket sock);
 
 #ifdef __cplusplus
 }

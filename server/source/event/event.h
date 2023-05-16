@@ -22,10 +22,10 @@ extern "C" {
 	typedef enum eventpoll_type_enum eventpoll_type_enum;
 	typedef struct eventpoll_actions_s eventpoll_actions;
 	typedef struct steak_event_s steak_event;
-	typedef enum steak_event_status_e steak_event_status;
-	typedef enum steak_event_types_e steak_event_types;
+	typedef enum steak_event_status_enum steak_event_status_enum;
+	typedef enum steak_event_type_enum steak_event_type_enum;
 
-	enum steak_event_status_e
+	enum steak_event_status_enum
 	{
 		/// <summary>
 		/// 需要轮询的事件
@@ -33,7 +33,7 @@ extern "C" {
 		STEAK_EVENT_STATUS_POLL,
 	};
 
-	enum steak_event_types_e
+	enum steak_event_type_enum
 	{
 		/// <summary>
 		/// svchost事件
@@ -41,7 +41,7 @@ extern "C" {
 		STEAK_EVENT_TYPE_SVCHOST,
 
 		/// <summary>
-		/// session事件
+		/// HTTP客户端链接事件
 		/// </summary>
 		STEAK_EVENT_TYPE_CONNECTION
 	};
@@ -62,7 +62,7 @@ extern "C" {
 
 	struct event_module_s
 	{
-		event_module_options *options;
+		event_module_options options;
 		eventpoll_actions *actions;
 		void *actions_data;
 
@@ -85,6 +85,9 @@ extern "C" {
 
 	struct steak_event_s
 	{
+		/// <summary>
+		/// 该事件所监控的socket
+		/// </summary>
 		steak_socket sock;
 
 		/// <summary>
@@ -120,12 +123,12 @@ extern "C" {
 		/// <summary>
 		/// 该事件的状态
 		/// </summary>
-		steak_event_status status;
+		steak_event_status_enum status;
 
 		/// <summary>
 		/// 事件类型
 		/// </summary>
-		steak_event_types type;
+		steak_event_type_enum type;
 
 		/// <summary>
 		/// 该事件的超时时间
@@ -145,21 +148,6 @@ extern "C" {
 		int(*modify_write)(event_module *evm, steak_event *evt, int write);
 		int(*poll_event)(event_module *evm, steak_event **events, int nevent);
 	};
-
-	/*
-	 * 描述：
-	 * 创建一个事件模块的实例
-	 *
-	 * 返回值：
-	 * 事件模块实例
-	 */
-	event_module *new_event_module();
-
-	/*
-	 * 描述：
-	 * 释放事件模块占用的资源
-	 */
-	void free_event_module(event_module *evm);
 
 	/*
 	 * 描述：
@@ -229,26 +217,17 @@ extern "C" {
 	 * 创建一个事件的实例
 	 *
 	 * 参数：
-	 * @evpoll：event_poll对象
+	 * @evm：event_module对象
+	 * @sock：客户端socket
+	 * @svc：该链接所属的service
 	 *
 	 * 返回值：
 	 * event实例
 	 */
-	 //steak_event *new_event(event_module *evm);
-	steak_event *new_connection_event(event_module *evm, int(*on_read)(event_module *evm, steak_event *evt), int(*on_write)(event_module *evm, steak_event *evt), steak_connection *conn);
-	steak_event *new_svchost_event(event_module *evm, int(*on_read)(event_module *evm, steak_event *evt), svchost *svc);
-
-
-	/*
-	 * 描述：
-	 * 释放一个事件的实例
-	 * 当事件不需要监控的时候调用
-	 *
-	 * 参数：
-	 * @evpoll：event_poll对象
-	 * @evt：要释放的event对象
-	 */
-	void free_event(event_module *evm, steak_event *evt);
+	steak_event *new_connection_event(event_module *evm, steak_socket sock, svchost *svc);
+	void free_connection_event(event_module *evm, steak_event *evt);
+	
+	steak_event *new_svchost_event(event_module *evm, svchost *svc);
 
 #ifdef __cplusplus
 }

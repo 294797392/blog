@@ -24,6 +24,7 @@
 #include "event.h"
 #include "svchost.h"
 #include "app.h"
+#include "default.h"
 
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
 #pragma comment(lib, "Ws2_32.lib")
@@ -58,14 +59,13 @@ int main(int argc, char **argv)
 
 	Y_log_init(NULL);
 	Y_pool_init(65535, 8192);
+	
+	if((rc = steak_socket_init()) != STEAK_ERR_OK)
+	{
+		return 0;
+	}
 
-#if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
-	WORD version = MAKEWORD(1, 1);
-	WSADATA wsaData;
-	rc = WSAStartup(version, &wsaData);
-#endif
-
-	if((rc = steak_app_init()) != STEAK_ERR_OK)
+	if((rc = steak_app_init(STEAK_DEFAULT_CONFIG_FILE)) != STEAK_ERR_OK)
 	{
 		return 0;
 	}
@@ -74,11 +74,6 @@ int main(int argc, char **argv)
 	{
 		return 0;
 	}
-
-	event_module *evm = new_event_module();
-	svchost *svc = new_svchost();
-	steak_event *evt = new_svchost_event(evm, accept_client_event, svc);
-	event_add(evm, evt);
 
 	YLOGI("start svchost success");
 

@@ -35,10 +35,12 @@
     </ClInclude>
     <ClInclude Include="..\source\connection.h" />
     <ClInclude Include="..\source\factory.h" />
+    <ClInclude Include="..\source\utils\steak_utils.h">
+      <Filter>utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\main.c" />
-    <ClCompile Include="..\source\svchost.c" />
     <ClCompile Include="..\source\event\accept_client_event.c">
       <Filter>event</Filter>
     </ClCompile>
@@ -81,9 +83,9 @@
     </ClCompile>
     <ClCompile Include="..\source\connection.c" />
     <ClCompile Include="..\source\factory.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\source\service.json" />
+    <ClCompile Include="..\source\utils\steak_utils.c">
+      <Filter>utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="event">
@@ -113,5 +115,8 @@
     <Filter Include="handler">
       <UniqueIdentifier>{45e3ca55-d0e2-487a-bdd6-c44edae08e41}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\source\service.json" />
   </ItemGroup>
 </Project>

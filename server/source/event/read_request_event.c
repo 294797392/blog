@@ -13,16 +13,17 @@
 #include "app.h"
 #include "factory.h"
 
-static steak_response *process_request(steak_session *session)
+static steak_response *process_request(steak_connection *conn, steak_session *session)
 {
 	steak_request *request = &session->request;
+	svchost *svc = conn->svc;
 
 	switch(request->method)
 	{
 		case STEAK_HTTP_METHOD_GET:
 		{
 			char path[1024] = { '\0' };
-			snprintf(path, sizeof(path), "%s\\%s", request->url, request->url);
+			snprintf(path, sizeof(path), "%s\\%s", svc->options.root, request->url);
 			char *content = NULL;
 			uint64_t size = 0;
 			int rc = Y_file_read_all(path, &content, &size);
@@ -92,13 +93,20 @@ int read_request_event(event_module *evm, steak_event *evt)
 	int rc = recv(evt->sock, recv_buf, data_size, 0);
 	if(rc == 0)
 	{
-		// 此时说明对方关闭了该网络通道的读取（调用shutdown(READ)）
-		// 收到了FIN，此时返回EOF
+		// 此时对方有两种情况：
+		// 1. 调用了close。对方发送了FIN
+		// 2. 调用了shutdown(WRITE)
+		// 此时说明对方不会再发送数据了
+		// 目前还不知道对方到底是调用了close还是shutdown，应该继续尝试发送响应给对方，如果发送也失败，那么说明对方可能是调用了close，那么我们也调用close
+		event_modify(evm, evt, 0, evt->write);
 		return STEAK_ERR_OK;
 	}
 	else if(rc == -1)
 	{
-		// socket发生错误, 把event标记为无效，后面删除event
+		// socket发生错误, 直接关闭该链接
+		steak_socket_close(evt->sock);
+		event_delete(evm, evt);
+		free_connection_event(evm, evt);
 		return STEAK_ERR_OK;
 	}
 	else
@@ -130,7 +138,7 @@ int read_request_event(event_module *evm, steak_event *evt)
 					connection->last_session = active_session;
 				}
 
-				process_request(&active_session);
+				process_request(connection, active_session);
 
 				break;
 			}

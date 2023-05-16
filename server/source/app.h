@@ -18,6 +18,8 @@
 #include "response.h"
 #include "request.h"
 #include "session.h"
+#include "svchost.h"
+#include "event.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,6 +41,18 @@ extern "C" {
 		/// app运行时间
 		/// </summary>
 		int running_time;
+
+		/// <summary>
+		/// 服务主机列表
+		/// 一个svchost实例维护着一个HTTP服务器的状态
+		/// </summary>
+		svchost **svchosts;
+		int nsvchost;
+
+		/// <summary>
+		/// 事件轮询模块
+		/// </summary>
+		event_module *evm;
 	};
 
 	/*
@@ -50,7 +64,13 @@ extern "C" {
 	 * 返回值：
 	 * STEAK_ERR
 	 */
-	int steak_app_init();
+	int steak_app_init(const char *config);
+
+	/// <summary>
+	/// 运行app
+	/// </summary>
+	/// <returns></returns>
+	int steak_app_start();
 
 	/*
 	 * 描述：

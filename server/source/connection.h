@@ -14,6 +14,7 @@
 #include "session.h"
 #include "parser.h"
 #include "steak_socket.h"
+#include "svchost.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -47,6 +48,11 @@ extern "C" {
 		/// 当前正在接收的HTTP请求
 		/// </summary>
 		steak_session *active_session;
+
+		/// <summary>
+		/// 该链接所属的service
+		/// </summary>
+		svchost *svc;
 	};
 
 #ifdef __cplusplus

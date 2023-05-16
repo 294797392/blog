@@ -16,13 +16,10 @@
 
 svchost *new_svchost()
 {
-	svchost_options *svcopt = (svchost_options *)calloc(1, sizeof(svchost_options));
-	strncpy(svcopt->bindaddr, "0.0.0.0", strlen("0.0.0.0"));
-	strncpy(svcopt->root, STEAK_DEFAULT_ROOT, strlen(STEAK_DEFAULT_ROOT));
-	svcopt->port = STEAK_DEFAULT_LISTEN_PORT;
-
 	svchost *svc = (svchost *)calloc(1, sizeof(svchost));
-	svc->options = svcopt;
+	strncpy(svc->options.bindaddr, "0.0.0.0", strlen("0.0.0.0"));
+	strncpy(svc->options.root, STEAK_DEFAULT_ROOT, strlen(STEAK_DEFAULT_ROOT));
+	svc->options.port = STEAK_DEFAULT_LISTEN_PORT;
 
 	if((svc->sock = socket(PF_INET, SOCK_STREAM, 0)) < 0)
 	{
@@ -41,7 +38,7 @@ svchost *new_svchost()
 	// 设置要侦听的网络接口和端口
 	struct sockaddr_in bdaddr;
 	bdaddr.sin_family = PF_INET;
-	bdaddr.sin_port = htons(svcopt->port);
+	bdaddr.sin_port = htons(svc->options.port);
 	bdaddr.sin_addr.s_addr = INADDR_ANY;
 	memset(&(bdaddr.sin_zero), 0, sizeof(bdaddr.sin_zero));
 
