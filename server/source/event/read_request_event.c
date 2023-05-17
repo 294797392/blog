@@ -3,7 +3,10 @@
 #include <string.h>
 #include <math.h>
 
+#if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
 #include <WinSock2.h>
+#elif (defined(ENV_UNIX))
+#endif
 
 #include <libY.h>
 
@@ -67,40 +70,76 @@ static steak_response *process_request(svchost *svc, steak_session *session)
 	return NULL;
 }
 
-static void on_parser_event(steak_parser *parser, steak_parser_event_enum evt, char *data1, int data1len, char *data2, int data2len)
+
+
+
+
+void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt, char *data1, int data1len, char *data2, int data2len)
 {
+	steak_connection *conn = (steak_connection *)parser->userdata;
+	steak_session *active_session = conn->active_session;
+	steak_request *request = &active_session->request;
+
 	switch(evt)
 	{
 		case STEAK_PARSER_EVENT_METHOD:
 		{
-			//size_t len = sizeof(http_method_list) / sizeof(text2enum);
-			//for(size_t i = 0; i < len; i++)
-			//{
-			//	if(!strcasecmp(http_method_list[i].text, method, method_len))
-			//	{
-			//		request->method = http_method_list[i].value;
-			//	}
-			//}
+			size_t len = sizeof(http_method_list) / sizeof(text2enum);
+			for(size_t i = 0; i < len; i++)
+			{
+				if(!strcasecmp(http_method_list[i].text, data1, data1len))
+				{
+					request->method = http_method_list[i].value;
+				}
+			}
+			YLOGI("method = %d", request->method);
 			break;
 		}
 
 		case STEAK_PARSER_EVENT_URI:
 		{
+			request->url = (char *)Y_pool_obtain(data1len + 1);
+			strncpy(request->url, data1, data1len);
+			YLOGI("uri = %s", request->url);
 			break;
 		}
 
 		case STEAK_PARSER_EVENT_VERSION:
 		{
+			request->version = (char *)Y_pool_obtain(data1len + 1);
+			strncpy(request->version, data1, data1len);
+			YLOGI("http_version = %s", request->version);
 			break;
 		}
 
 		case STEAK_PARSER_EVENT_HEADER:
 		{
+			steak_http_header *header = (steak_http_header *)Y_pool_obtain(sizeof(steak_http_header));
+			header->key = (char *)Y_pool_obtain(data1len + 1);
+			strncpy(header->key, data1, data1len);
+			header->value = (char *)Y_pool_obtain(data2len + 1);
+			strncpy(header->value, data2, data2len);
+
+			if(request->first_header == NULL)
+			{
+				request->first_header = header;
+				request->last_header = header;
+			}
+			else
+			{
+				request->last_header->next = header;
+				header->prev = request->last_header;
+				request->last_header = header;
+			}
+			YLOGI("%s = %s", header->key, header->value);
 			break;
 		}
 
-		case STEAK_PARSER_EVENT_BODY: 
+		case STEAK_PARSER_EVENT_BODY:
 		{
+			request->body = (char *)Y_pool_obtain(data1len + 1);
+			strncpy(request->body, data1, data1len);
+			YLOGI("body = %s", request->body);
 			break;
 		}
 
@@ -109,19 +148,15 @@ static void on_parser_event(steak_parser *parser, steak_parser_event_enum evt, c
 	}
 }
 
-
-
-
 int read_request_event(event_module *evm, steak_event *evt)
 {
 	steak_connection *conn = (steak_connection *)evt->context;
 	steak_parser *parser = &conn->parser;
-	parser->on_event = on_parser_event;
-	// 要解析的HTTP报文偏移
-	char *recv_buf = NULL;
-
-	// 剩余的缓冲区大小
-	int remain_buf_size = conn->recv_buf_len - conn->recv_buf_offset;
+	if(conn->active_session == NULL)
+	{
+		conn->active_session = (steak_session *)Y_pool_obtain(sizeof(steak_session));
+	}
+	steak_session *active_session = conn->active_session;
 
 	// 获取当前socket缓冲区里的数据大小
 	int recv_len = steak_socket_get_avaliable_size(evt->sock);
@@ -131,7 +166,8 @@ int read_request_event(event_module *evm, steak_event *evt)
 	}
 
 	// 剩余缓冲区大小比要接收的数据大小小，扩容缓冲区
-	if(remain_buf_size < recv_len)
+	int left_buf_len = conn->recv_buf_len - conn->recv_buf_offset;
+	if(left_buf_len < recv_len)
 	{
 		int size1 = conn->recv_buf_offset + recv_len;
 		int size2 = conn->recv_buf_len * 2;
@@ -141,7 +177,8 @@ int read_request_event(event_module *evm, steak_event *evt)
 		conn->recv_buf_len = newsize;
 	}
 
-	recv_buf = conn->recv_buf + conn->recv_buf_offset;
+	// 接收缓冲区
+	char *recv_buf = conn->recv_buf + conn->recv_buf_offset;
 
 	// 接收数据
 	int rc = recv(evt->sock, recv_buf, recv_len, 0);
@@ -169,14 +206,15 @@ int read_request_event(event_module *evm, steak_event *evt)
 	{
 		// 解析http报文
 		int count = 0;
-parse:
+	parse:
 		count = steak_parser_parse(parser, conn->recv_buf, conn->recv_buf_offset, recv_len);
 		if(count == 0)
 		{
 			// 本次报文接收完毕，并且缓冲区里的数据也都用完了
 			// 重置接收缓冲区
 			conn->recv_buf_offset = 0;
-			process_request(conn->svc, NULL);
+			process_request(conn->svc, active_session);
+			conn->active_session = NULL;
 		}
 		else if(count < recv_len)
 		{
@@ -185,8 +223,8 @@ parse:
 			conn->recv_buf_offset = 0;
 			conn->recv_buf_len = recv_len - count;
 			memmove(conn->recv_buf, conn->recv_buf + conn->recv_buf_offset + count, conn->recv_buf_len);
-
-			process_request(conn->svc, NULL);
+			process_request(conn->svc, active_session);
+			conn->active_session = (steak_session *)Y_pool_obtain(sizeof(steak_session));
 
 			// 继续调用parser
 			goto parse;

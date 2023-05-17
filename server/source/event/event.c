@@ -8,6 +8,7 @@
 #include "default.h"
 #include "event.h"
 
+extern void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt, char *data1, int data1len, char *data2, int data2len);
 extern int read_request_event(event_module *evm, steak_event *evt);
 extern int write_response_event(event_module *evm, steak_event *evt);
 extern int accept_client_event(event_module *evm, steak_event *evt);
@@ -76,6 +77,8 @@ steak_event *new_connection_event(event_module *evm, steak_socket sock, svchost 
 
 	steak_parser *parser = &conn->parser;
 	parser->state = STEAK_PARSER_INITIAL;
+	parser->userdata = conn;
+	parser->on_event = http_parser_event_handler;
 
 	steak_event *evt = (steak_event *)Y_pool_obtain(sizeof(steak_event));
 	evt->read = 1;

@@ -13,7 +13,7 @@
 
 static void enter_state(steak_parser *parser, steak_parser_state state)
 {
-	YLOGI("enter state, %d -> %d", parser->state, state);
+	//YLOGI("enter state, %d -> %d", parser->state, state);
 	parser->state = state;
 }
 
@@ -154,7 +154,7 @@ state_action(action_header_value)
 		parser->seg2_offset = 0;
 		enter_state(parser, STEAK_PARSER_HEADER_VALUE_END);
 	}
-	else if(isprint(character))
+	else if(character != ' ' && isprint(character))
 	{
 		if(parser->seg2_offset == 0)
 		{

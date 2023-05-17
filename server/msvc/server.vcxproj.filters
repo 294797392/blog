@@ -117,6 +117,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\source\service.json" />
+    <CopyFileToFolders Include="..\source\service.json" />
   </ItemGroup>
 </Project>

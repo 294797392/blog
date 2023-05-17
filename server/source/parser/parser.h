@@ -81,6 +81,8 @@ extern "C" {
 		/// 当解析到HTTP报文的时候的回调函数
 		/// </summary>
 		steak_parser_event_callback on_event;
+
+		void *userdata;
 	};
 
 	/// <summary>

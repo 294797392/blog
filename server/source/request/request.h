@@ -42,7 +42,7 @@ extern "C" {
 		http_method_enum method;
 		char *url;
 		char *version;
-		char *content;
+		char *body;
 		steak_http_header *first_header;
 		steak_http_header *last_header;
 	};
