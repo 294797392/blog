@@ -70,11 +70,12 @@ steak_event *new_connection_event(event_module *evm, steak_socket sock, svchost 
 	steak_connection *conn = (steak_connection *)Y_pool_obtain(sizeof(steak_connection));
 	conn->sock = sock;
 	conn->svc = svc;
+	conn->recv_buf = (char *)Y_pool_obtain(STEAK_DEFAULT_HTTP_MSG_SIZE);
+	conn->recv_buf_len = STEAK_DEFAULT_HTTP_MSG_SIZE;
+	conn->recv_buf_offset = 0;
+
 	steak_parser *parser = &conn->parser;
 	parser->state = STEAK_PARSER_INITIAL;
-	parser->raw_msg = (char *)Y_pool_obtain(STEAK_DEFAULT_HTTP_MSG_SIZE);
-	parser->raw_msg_len = STEAK_DEFAULT_HTTP_MSG_SIZE;
-	parser->raw_msg_offset = 0;
 
 	steak_event *evt = (steak_event *)Y_pool_obtain(sizeof(steak_event));
 	evt->read = 1;
@@ -91,7 +92,7 @@ void free_connection_event(event_module *evm, steak_event *evt)
 {
 	// 释放connection
 	steak_connection *conn = (steak_connection *)evt->context;
-	Y_pool_recycle(conn->parser.raw_msg, conn->parser.raw_msg_len);
+	Y_pool_recycle(conn->recv_buf, conn->recv_buf_len);
 	Y_pool_recycle(conn, sizeof(steak_connection));
 
 	// 释放event

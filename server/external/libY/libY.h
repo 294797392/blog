@@ -35,12 +35,18 @@
 // Yerrno
 #ifndef YERRNO
 #define YERRNO
+
+    // generic 0 - 2000
     #define YERR_SUCCESS						0
     #define YERR_FILE_NOT_FOUND                 1
     #define YERR_FAILED							2
     #define YERR_INVALID_JSON					3
     #define YERR_FILE_STAT_FAILED				4				// 读取文件属性失败
-    #define YERR_VIDEO_FORMAT_NOT_SUPPORTED     5               // 不支持的视频格式
+    #define YERR_NO_MEM                         5               // 内存不足，调用calloc或malloc失败
+
+
+    // video 2000 - 5000
+    #define YERR_VIDEO_FORMAT_NOT_SUPPORTED     2000               // 不支持的视频格式
 #endif
 
 #ifndef YLOCK
@@ -161,6 +167,18 @@
      * 文件大小，-1表示文件不存在
      */
     YAPI int Y_file_get_size(const char *file_path);
+
+    /*
+     * 描述：
+     * 判断文件是否存在
+     *
+     * 参数：
+     * @file_path：要判断的文件的完整路径
+     *
+     * 返回值：
+     * 0表示存在，-1表示文件不存在
+     */
+    YAPI int Y_file_exist(const char *file_path);
 
 	/*
 	 * 描述：

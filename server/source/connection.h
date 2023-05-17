@@ -53,6 +53,27 @@ extern "C" {
 		/// 该链接所属的service
 		/// </summary>
 		svchost *svc;
+
+		/// <summary>
+		/// 接收缓冲区
+		/// </summary>
+		char *recv_buf;
+		/// <summary>
+		/// 接收缓冲区长度
+		/// </summary>
+		int recv_buf_len;
+		/// <summary>
+		/// 已经使用了的缓冲区长度
+		/// 也就是从客户端接收到的原始http报文长度
+		/// </summary>
+		int recv_buf_offset;
+
+		/// <summary>
+		/// 发送缓冲区
+		/// </summary>
+		char *send_msg;
+		int send_msg_len;
+		int send_msg_offset;
 	};
 
 #ifdef __cplusplus

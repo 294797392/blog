@@ -5,27 +5,11 @@
 
 #include "errors.h"
 #include "steak_string.h"
+#include "connection.h"
 #include "parser.h"
 
-typedef struct text2enum_s
-{
-	char *text;
-	int value;
-}text2enum;
-
-static text2enum http_method_list[] =
-{
-	{.text = "GET",		.value = STEAK_HTTP_METHOD_GET },
-	{.text = "POST",	.value = STEAK_HTTP_METHOD_POST },
-	{.text = "HEAD",	.value = STEAK_HTTP_METHOD_HEAD },
-	{.text = "PUT",		.value = STEAK_HTTP_METHOD_PUT },
-	{.text = "TRACE",	.value = STEAK_HTTP_METHOD_TRACE },
-	{.text = "OPTIONS", .value = STEAK_HTTP_METHOD_OPTIONS },
-	{.text = "DELETE",	.value = STEAK_HTTP_METHOD_DELETE }
-};
-
-#define state_action(name) static void name(steak_parser *parser, steak_request *request, char c, int c_offset)
-#define invoke_state_action(name) name(parser, request, c, c_offset)
+#define state_action(name) static void name(steak_parser *parser, char *http_msg, char character, int character_offset)
+#define invoke_state_action(name) name(parser, http_msg, c, c_offset)
 
 static void enter_state(steak_parser *parser, steak_parser_state state)
 {
@@ -35,9 +19,9 @@ static void enter_state(steak_parser *parser, steak_parser_state state)
 
 state_action(action_initial)
 {
-	if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
+	if((character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z'))
 	{
-		parser->seg_offset = c_offset;
+		parser->seg_offset = character_offset;
 		parser->seg_len = 1;
 		enter_state(parser, STEAK_PARSER_METHOD);
 	}
@@ -49,19 +33,10 @@ state_action(action_initial)
 
 state_action(action_method_content)
 {
-	if(c == ' ')
+	if(character == ' ')
 	{
 		// method结束
-		char *method = parser->raw_msg + parser->seg_offset;
-		int method_len = parser->seg_len;
-		size_t len = sizeof(http_method_list) / sizeof(text2enum);
-		for(size_t i = 0; i < len; i++)
-		{
-			if(!strcasecmp(http_method_list[i].text, method, method_len))
-			{
-				request->method = http_method_list[i].value;
-			}
-		}
+		parser->on_event(parser, STEAK_PARSER_EVENT_METHOD, http_msg + parser->seg_offset, parser->seg_len, NULL, 0);
 		enter_state(parser, STEAK_PARSER_METHOD_END);
 	}
 	else
@@ -72,9 +47,9 @@ state_action(action_method_content)
 
 state_action(action_method_end)
 {
-	if(isprint(c))
+	if(isprint(character))
 	{
-		parser->seg_offset = c_offset;
+		parser->seg_offset = character_offset;
 		parser->seg_len = 1;
 		enter_state(parser, STEAK_PARSER_URL);
 	}
@@ -82,10 +57,10 @@ state_action(action_method_end)
 
 state_action(action_url_content)
 {
-	if(c == ' ')
+	if(character == ' ')
 	{
-		request->url = (char *)Y_pool_obtain(parser->seg_len + 1);
-		strncpy(request->url, parser->raw_msg + parser->seg_offset, parser->seg_len);
+		// uri结束
+		parser->on_event(parser, STEAK_PARSER_EVENT_URI, http_msg + parser->seg_offset, parser->seg_len, NULL, 0);
 		enter_state(parser, STEAK_PARSER_URL_END);
 	}
 	else
@@ -96,9 +71,9 @@ state_action(action_url_content)
 
 state_action(action_url_end)
 {
-	if(isprint(c))
+	if(isprint(character))
 	{
-		parser->seg_offset = c_offset;
+		parser->seg_offset = character_offset;
 		parser->seg_len = 1;
 		enter_state(parser, STEAK_PARSER_VERSION);
 	}
@@ -106,13 +81,12 @@ state_action(action_url_end)
 
 state_action(action_version_content)
 {
-	if(c == '\n')
+	if(character == '\n')
 	{
-		request->version = (char *)Y_pool_obtain(parser->seg_len + 1);
-		strncpy(request->version, parser->raw_msg + parser->seg_offset, parser->seg_len);
+		parser->on_event(parser, STEAK_PARSER_EVENT_VERSION, http_msg + parser->seg_offset, parser->seg_len, NULL, 0);
 		enter_state(parser, STEAK_PARSER_VERSION_END);
 	}
-	else if(isprint(c))
+	else if(isprint(character))
 	{
 		parser->seg_len++;
 	}
@@ -124,10 +98,10 @@ state_action(action_version_content)
 
 state_action(action_version_end)
 {
-	if(isprint(c))
+	if(isprint(character))
 	{
 		// header key begin
-		parser->seg_offset = c_offset;
+		parser->seg_offset = character_offset;
 		parser->seg_len = 1;
 		enter_state(parser, STEAK_PARSER_HEADER_KEY);
 	}
@@ -139,13 +113,11 @@ state_action(action_version_end)
 
 state_action(action_header_key)
 {
-	if(c == ':')
+	if(character == ':')
 	{
 		// header_key结束了，开始header_value
-		request->last_header->key = (char *)Y_pool_obtain(parser->seg_len + 1);
-		strncpy(request->last_header->key, parser->raw_msg + parser->seg_offset, parser->seg_len);
-		parser->seg_len = 0;
-		parser->seg_offset = 0;
+		parser->seg2_len = 0;
+		parser->seg2_offset = 0;
 		enter_state(parser, STEAK_PARSER_HEADER_VALUE);
 	}
 	else
@@ -156,30 +128,39 @@ state_action(action_header_key)
 
 state_action(action_header_value)
 {
-	if(c == '\n')
+	if(character == '\n')
 	{
 		// header_value结束了
-		request->last_header->value = (char *)Y_pool_obtain(parser->seg_len + 1);
-		strncpy(request->last_header->value, parser->raw_msg + parser->seg_offset, parser->seg_len);
-		parser->seg_len = 0;
-		parser->seg_offset = 0;
 
-		if(!strcasecmp(request->last_header->key, "content-length", strlen("content-length")))
+		char *key = http_msg + parser->seg_offset;
+		int keylen = parser->seg_len;
+		char *value = http_msg + parser->seg2_offset;
+		int valuelen = parser->seg2_len;
+		if(keylen == strlen("content-length") && !strcasecmp(key, "content-length", keylen))
 		{
 			// 此时的http标头是Content-Length
-			request->content_length = atoi(request->last_header->value);
-			YLOGI("content_length = %d", request->content_length);
+			char length_buffer[64] = { '\0' };
+			strncpy(length_buffer, value, sizeof(length_buffer));
+			parser->content_length = atoi(length_buffer);
+			YLOGI("content_length = %d", parser->content_length);
 		}
 
+		// 触发事件
+		parser->on_event(parser, STEAK_PARSER_EVENT_HEADER, key, keylen, value, valuelen);
+
+		parser->seg_len = 0;
+		parser->seg_offset = 0;
+		parser->seg2_len = 0;
+		parser->seg2_offset = 0;
 		enter_state(parser, STEAK_PARSER_HEADER_VALUE_END);
 	}
-	else if(isprint(c))
+	else if(isprint(character))
 	{
-		if(parser->seg_offset == 0)
+		if(parser->seg2_offset == 0)
 		{
-			parser->seg_offset = c_offset;
+			parser->seg2_offset = character_offset;
 		}
-		parser->seg_len++;
+		parser->seg2_len++;
 	}
 	else
 	{
@@ -189,35 +170,29 @@ state_action(action_header_value)
 
 state_action(action_header_value_end)
 {
-	if(c == '\n')
+	if(character == '\n')
 	{
 		// 此时说明所有的header都解析完了
 		// 下面开始解析body。注意要处理body为0的情况
-
-		if(request->content_length == 0)
+		if(parser->content_length == 0)
 		{
-			// 说明没有body
-			YLOGI("content-length == 0, no body");
-			enter_state(parser, STEAK_PARSER_COMPLETED);
+			// 没有body
+			parser->on_event(parser, STEAK_PARSER_EVENT_BODY, NULL, 0, NULL, 0);
+			
+			// 恢复到初始状态
+			enter_state(parser, STEAK_PARSER_INITIAL);
 		}
 		else
 		{
-			parser->seg_len = 0;
-			parser->seg_offset = 0;
+			// 有body，进入解析body状态
 			enter_state(parser, STEAK_PARSER_BODY);
 		}
 	}
-	else if(isprint(c))
+	else if(isprint(character))
 	{
 		// 此时说明又是header
-		steak_http_header *newhead = (steak_http_header *)Y_pool_obtain(sizeof(steak_http_header));
-		request->last_header->next = newhead;
-		newhead->prev = request->last_header;
-		request->last_header = newhead;
-
-		parser->seg_offset = c_offset;
+		parser->seg_offset = character_offset;
 		parser->seg_len = 1;
-
 		enter_state(parser, STEAK_PARSER_HEADER_KEY);
 	}
 	else
@@ -226,38 +201,21 @@ state_action(action_header_value_end)
 	}
 }
 
-state_action(action_body)
+
+
+
+int steak_parser_parse(steak_parser *parser, char *http_msg, int offset, int size)
 {
-	if(parser->seg_offset == 0)
-	{
-		parser->seg_offset = c_offset;
-	}
-	parser->seg_len++;
-
-	// seg_len等于content_length，说明body接收完毕
-	if(parser->seg_len == request->content_length)
-	{
-		// 此时说明body接收完毕
-		request->content = (char *)Y_pool_obtain(parser->seg_len + 1);
-		strncpy(request->content, parser->raw_msg + parser->seg_offset, parser->seg_len);
-		enter_state(parser, STEAK_PARSER_COMPLETED);
-	}
-}
-
-
-
-int steak_parser_parse(steak_parser *parser, steak_request *request)
-{
-	char *msg = parser->raw_msg + parser->raw_msg_offset;
-	int msg_size = parser->readsize;
+	char *msg = http_msg + offset;
+	int msg_size = size;
 
 	for(int i = 0; i < msg_size; i++)
 	{
 		// 当前解析的字符
 		char c = *(msg + i);
 
-		// 基于raw_msg的当前字符的偏移量
-		int c_offset = parser->raw_msg_offset + i;
+		// 基于http_msg的当前字符的偏移量
+		int c_offset = offset + i;
 
 		switch(parser->state)
 		{
@@ -323,13 +281,39 @@ int steak_parser_parse(steak_parser *parser, steak_request *request)
 
 			case STEAK_PARSER_BODY:
 			{
-				invoke_state_action(action_body);
-				break;
-			}
+				if(parser->seg_offset == 0)
+				{
+					parser->seg_offset = c_offset;
+				}
 
-			case STEAK_PARSER_ERROR:
-			{
-				return STEAK_ERR_REQUEST_INVALID;
+				// 还需要接收的字节数
+				int left = parser->content_length - parser->seg_len;
+				// 当前收到的字节数
+				int size = msg_size - i;
+				if(size == left)
+				{
+					// 收到的字节数等于需要接收的字节数，本次解析完毕
+					parser->seg_len = parser->content_length;
+					parser->on_event(parser, STEAK_PARSER_EVENT_BODY, http_msg + parser->seg_offset, parser->seg_len, NULL, 0);
+					enter_state(parser, STEAK_PARSER_INITIAL);
+					return 0;
+				}
+				else if(size < left)
+				{
+					// 收到的字节数小于要接收的字节数
+					// 需要外部继续接收请求数据。直接返回
+					return size;
+				}
+				else
+				{
+					// 收到的字节数大于要接收的字节数
+					// 有可能数据里包含下一次请求
+					parser->seg_len = parser->content_length;
+					parser->on_event(parser, STEAK_PARSER_EVENT_BODY, http_msg + parser->seg_offset, parser->seg_len, NULL, 0);
+					enter_state(parser, STEAK_PARSER_INITIAL);
+					return i + left;
+				}
+				break;
 			}
 
 			default:
@@ -337,8 +321,6 @@ int steak_parser_parse(steak_parser *parser, steak_request *request)
 		}
 	}
 
-	parser->raw_msg_offset += msg_size;
-
-	return STEAK_ERR_OK;
+	return size;
 }
 

@@ -83,26 +83,26 @@ int main(int argc, char **argv)
 	while(1)
 	{
 		// 轮询事件列表
-		events = (steak_event **)Y_list_to_array(evm->event_list, &nevent);
-		rc = event_poll(evm, events, nevent);
-		if(rc != STEAK_ERR_OK)
-		{
-			YLOGE("poll event failed, %d", rc);
-			continue;
-		}
+		//events = (steak_event **)Y_list_to_array(evm->event_list, &nevent);
+		//rc = event_poll(evm, events, nevent);
+		//if(rc != STEAK_ERR_OK)
+		//{
+		//	YLOGE("poll event failed, %d", rc);
+		//	continue;
+		//}
 
-		// 处理有信号的事件
-		events = (steak_event **)Y_list_to_array(evm->process_event_list, &nevent);
-		if(nevent > 0)
-		{
-			// 开始处理事件
-			rc = event_process(evm, events, nevent);
-			Y_list_clear(evm->process_event_list);
-		}
+		//// 处理有信号的事件
+		//events = (steak_event **)Y_list_to_array(evm->process_event_list, &nevent);
+		//if(nevent > 0)
+		//{
+		//	// 开始处理事件
+		//	rc = event_process(evm, events, nevent);
+		//	Y_list_clear(evm->process_event_list);
+		//}
 
-		// 处理超时了的事件
-		events = (steak_event **)Y_list_to_array(evm->event_list, &nevent);
-		cleanup_timeout_events(evm, events, nevent);
+		//// 处理超时了的事件
+		//events = (steak_event **)Y_list_to_array(evm->event_list, &nevent);
+		//cleanup_timeout_events(evm, events, nevent);
 	}
 
 	return 0;

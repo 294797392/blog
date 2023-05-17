@@ -31,13 +31,6 @@ extern "C" {
 
 		char *content;
 		int content_length;
-
-		/// <summary>
-		/// 保存要发送的数据
-		/// </summary>
-		char *raw_msg;
-		int raw_msg_len;
-		int raw_msg_offset;
 	};
 
 #ifdef __cplusplus

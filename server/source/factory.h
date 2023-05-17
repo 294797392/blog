@@ -16,8 +16,6 @@
 extern "C" {
 #endif
 
-	steak_session *new_session(steak_socket sock);
-	void free_session(steak_session *session);
 
 #ifdef __cplusplus
 }
