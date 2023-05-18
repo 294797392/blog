@@ -14,12 +14,8 @@
 
 #include <libY.h>
 
-#include "header.h"
-#include "response.h"
-#include "request.h"
-#include "session.h"
-#include "svchost.h"
 #include "event.h"
+#include "cblog_types.h"
 
 #ifdef __cplusplus
 extern "C" {

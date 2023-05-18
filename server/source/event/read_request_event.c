@@ -14,8 +14,9 @@
 #include "errors.h"
 #include "event.h"
 #include "app.h"
-#include "factory.h"
 #include "protocol.h"
+#include "cblog_types.h"
+#include "steak_string.h"
 
 typedef struct text2enum_s
 {
@@ -34,38 +35,38 @@ static text2enum http_method_list[] =
 	{.text = "DELETE",	.value = STEAK_HTTP_METHOD_DELETE }
 };
 
-static steak_response *process_request(svchost *svc, steak_session *session)
+static steak_response *process_request(svchost *svc, steak_connection *conn)
 {
-	steak_request *request = &session->request;
-	steak_response *response = &session->response;
+	//steak_request *request = &session->request;
+	//steak_response *response = &session->response;
 
-	switch(request->method)
-	{
-		case STEAK_HTTP_METHOD_GET:
-		{
-			char path[1024] = { '\0' };
-			snprintf(path, sizeof(path), "%s\\%s", svc->options.root, svc->options.index_page);
-			if(Y_file_exist(path) == -1)
-			{
-				// 文件不存在，显示404
-				return NULL;
-			}
+	//switch(request->method)
+	//{
+	//	case STEAK_HTTP_METHOD_GET:
+	//	{
+	//		char path[1024] = { '\0' };
+	//		snprintf(path, sizeof(path), "%s\\%s", svc->options.root, svc->options.index_page);
+	//		if(Y_file_exist(path) == -1)
+	//		{
+	//			// 文件不存在，显示404
+	//			return NULL;
+	//		}
 
-			char *content = NULL;
-			uint64_t size = 0;
-			int rc = Y_file_read_all(path, &content, &size);
-			if(rc != YERR_SUCCESS)
-			{
-				// 文件不存在，显示404
-				return NULL;
-			}
+	//		char *content = NULL;
+	//		uint64_t size = 0;
+	//		int rc = Y_file_read_all(path, &content, &size);
+	//		if(rc != YERR_SUCCESS)
+	//		{
+	//			// 文件不存在，显示404
+	//			return NULL;
+	//		}
 
-			break;
-		}
+	//		break;
+	//	}
 
-		default:
-			break;
-	}
+	//	default:
+	//		break;
+	//}
 
 	return NULL;
 }
@@ -74,11 +75,12 @@ static steak_response *process_request(svchost *svc, steak_session *session)
 
 
 
-void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt, char *data1, int data1len, char *data2, int data2len)
+void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt)
 {
 	steak_connection *conn = (steak_connection *)parser->userdata;
-	steak_session *active_session = conn->active_session;
-	steak_request *request = &active_session->request;
+	steak_request *request = conn->request;
+	// 原始HTTP报文
+	char *raw_msg = conn->recv_buf;
 
 	switch(evt)
 	{
@@ -87,59 +89,43 @@ void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt
 			size_t len = sizeof(http_method_list) / sizeof(text2enum);
 			for(size_t i = 0; i < len; i++)
 			{
-				if(!strcasecmp(http_method_list[i].text, data1, data1len))
+				if(!strcasecmp(http_method_list[i].text, raw_msg + parser->seg_offset, parser->seg_len))
 				{
 					request->method = http_method_list[i].value;
 				}
 			}
-			YLOGI("method = %d", request->method);
 			break;
 		}
 
 		case STEAK_PARSER_EVENT_URI:
 		{
-			request->url = (char *)Y_pool_obtain(data1len + 1);
-			strncpy(request->url, data1, data1len);
-			YLOGI("uri = %s", request->url);
+			request->url.offset = parser->seg_offset;
+			request->url.length = parser->seg_len;
 			break;
 		}
 
 		case STEAK_PARSER_EVENT_VERSION:
 		{
-			request->version = (char *)Y_pool_obtain(data1len + 1);
-			strncpy(request->version, data1, data1len);
-			YLOGI("http_version = %s", request->version);
+			request->version.offset = parser->seg_offset;
+			request->version.length = parser->seg_len;
 			break;
 		}
 
 		case STEAK_PARSER_EVENT_HEADER:
 		{
-			steak_http_header *header = (steak_http_header *)Y_pool_obtain(sizeof(steak_http_header));
-			header->key = (char *)Y_pool_obtain(data1len + 1);
-			strncpy(header->key, data1, data1len);
-			header->value = (char *)Y_pool_obtain(data2len + 1);
-			strncpy(header->value, data2, data2len);
-
-			if(request->first_header == NULL)
-			{
-				request->first_header = header;
-				request->last_header = header;
-			}
-			else
-			{
-				request->last_header->next = header;
-				header->prev = request->last_header;
-				request->last_header = header;
-			}
-			YLOGI("%s = %s", header->key, header->value);
+			int nheader = request->nheader;
+			request->headers[nheader].key.offset = parser->seg_offset;
+			request->headers[nheader].key.length = parser->seg_len;
+			request->headers[nheader].value.offset = parser->seg2_offset;
+			request->headers[nheader].value.length = parser->seg2_len;
+			request->nheader++;
 			break;
 		}
 
 		case STEAK_PARSER_EVENT_BODY:
 		{
-			request->body = (char *)Y_pool_obtain(data1len + 1);
-			strncpy(request->body, data1, data1len);
-			YLOGI("body = %s", request->body);
+			request->body.offset = parser->seg_offset;
+			request->body.length = parser->seg_len;
 			break;
 		}
 
@@ -152,11 +138,6 @@ int read_request_event(event_module *evm, steak_event *evt)
 {
 	steak_connection *conn = (steak_connection *)evt->context;
 	steak_parser *parser = &conn->parser;
-	if(conn->active_session == NULL)
-	{
-		conn->active_session = (steak_session *)Y_pool_obtain(sizeof(steak_session));
-	}
-	steak_session *active_session = conn->active_session;
 
 	// 获取当前socket缓冲区里的数据大小
 	int recv_len = steak_socket_get_avaliable_size(evt->sock);
@@ -182,39 +163,42 @@ int read_request_event(event_module *evm, steak_event *evt)
 
 	// 接收数据
 	int rc = recv(evt->sock, recv_buf, recv_len, 0);
+
+	// socket返回0，此时对方有两种情况：
+	// 1. 调用了close。对方发送了FIN
+	// 2. 调用了shutdown(WRITE)
+	// 此时说明对方不会再发送数据了
+	// 目前还不知道对方到底是调用了close还是shutdown，应该继续尝试发送响应给对方，如果发送也失败，那么说明对方可能是调用了close，那么我们也调用close
 	if(rc == 0)
 	{
-		// 此时对方有两种情况：
-		// 1. 调用了close。对方发送了FIN
-		// 2. 调用了shutdown(WRITE)
-		// 此时说明对方不会再发送数据了
-		// 目前还不知道对方到底是调用了close还是shutdown，应该继续尝试发送响应给对方，如果发送也失败，那么说明对方可能是调用了close，那么我们也调用close
-		YLOGE("read socket zero, close read");
+		YLOGE("recv socket zero, close read");
 		event_modify(evm, evt, 0, evt->write);
 		return STEAK_ERR_OK;
 	}
-	else if(rc == -1)
+
+	// socket发生错误, 直接关闭该链接
+	if(rc == -1)
 	{
-		// socket发生错误, 直接关闭该链接
-		YLOGE("read socket failed, %s, close connection", strerror(errno));
+		YLOGE("recv socket failed, %s, close connection", strerror(errno));
 		steak_socket_close(evt->sock);
-		event_delete(evm, evt);
+		event_remove(evm, evt);
 		free_connection_event(evm, evt);
 		return STEAK_ERR_OK;
 	}
-	else
+
+	// 解析http报文
+	// 有可能本次读取的数据里包含下一次的HTTP报文（HTTP流水线模型）
+	// 所以使用while循环去解析报文
+	while(1)
 	{
-		// 解析http报文
-		int count = 0;
-	parse:
-		count = steak_parser_parse(parser, conn->recv_buf, conn->recv_buf_offset, recv_len);
+		int count = steak_parser_parse(parser, conn->recv_buf, conn->recv_buf_offset, recv_len);
 		if(count == 0)
 		{
 			// 本次报文接收完毕，并且缓冲区里的数据也都用完了
 			// 重置接收缓冲区
 			conn->recv_buf_offset = 0;
-			process_request(conn->svc, active_session);
-			conn->active_session = NULL;
+			process_request(conn->svc, conn);
+			break;
 		}
 		else if(count < recv_len)
 		{
@@ -223,59 +207,21 @@ int read_request_event(event_module *evm, steak_event *evt)
 			conn->recv_buf_offset = 0;
 			conn->recv_buf_len = recv_len - count;
 			memmove(conn->recv_buf, conn->recv_buf + conn->recv_buf_offset + count, conn->recv_buf_len);
-			process_request(conn->svc, active_session);
-			conn->active_session = (steak_session *)Y_pool_obtain(sizeof(steak_session));
-
+			process_request(conn->svc, conn);
 			// 继续调用parser
-			goto parse;
+			continue;
 		}
 		else if(count == recv_len)
 		{
 			// 本次报文还没解析完毕，需要继续接收并解析
+			break;
 		}
 		else
 		{
 			// count > recv_len，不可能出现
 			YLOGE("http parser result = %d, size = %d", count, recv_len);
+			break;
 		}
-
-		//switch(parser->state)
-		//{
-		//	case STEAK_PARSER_COMPLETED:
-		//	{
-		//		YLOGI("http request receive completed, begin process request");
-
-		//		// 当前session设置为空，说明本次请求已经解析完了
-		//		// 下次收到数据的时候直接创建新的session
-		//		conn->active_session = NULL;
-
-		//		// 将active_session加到待发送会话的队尾
-		//		if(conn->last_session == NULL)
-		//		{
-		//			conn->first_session = active_session;
-		//			conn->last_session = active_session;
-		//		}
-		//		else
-		//		{
-		//			conn->last_session->next = active_session;
-		//			active_session->prev = conn->last_session;
-		//			conn->last_session = active_session;
-		//		}
-
-		//		process_request(conn, active_session);
-
-		//		break;
-		//	}
-
-		//	case STEAK_PARSER_ERROR:
-		//	{
-		//		YLOGE("http request parse error, invalid http request");
-		//		break;
-		//	}
-
-		//	default:
-		//		break;
-		//}
 	}
 
 	return STEAK_ERR_OK;

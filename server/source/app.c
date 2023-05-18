@@ -16,7 +16,7 @@
 #include "errors.h"
 #include "app.h"
 #include "steak_utils.h"
-#include "event.h"
+#include "steak_socket.h"
 
 extern eventpoll_actions eventpoll_actions_select;
 eventpoll_actions *eventpoll_actions_list[] =
@@ -65,7 +65,7 @@ static int start_svchost(svchost *svc)
 {
 	if((svc->sock = socket(PF_INET, SOCK_STREAM, 0)) < 0)
 	{
-		YLOGE("create socket failed, %s", strerror(errno));
+		YLOGE("create socket failed, %d", steak_socket_error());
 		return STEAK_ERR_SYSERR;
 	}
 
@@ -73,7 +73,7 @@ static int start_svchost(svchost *svc)
 	int on = 1;
 	if(setsockopt(svc->sock, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on)) < 0)
 	{
-		YLOGE("setsockopt failed SO_REUSEADDR, %s", strerror(errno));
+		YLOGE("setsockopt failed SO_REUSEADDR, %d", steak_socket_error());
 		return STEAK_ERR_SYSERR;
 	}
 
@@ -87,14 +87,14 @@ static int start_svchost(svchost *svc)
 	// °ó¶¨
 	if(bind(svc->sock, (struct sockaddr *)&bdaddr, sizeof(struct sockaddr)) < 0)
 	{
-		YLOGE("bind failed, %s", strerror(errno));
+		YLOGE("bind failed, %d", steak_socket_error());
 		return STEAK_ERR_SYSERR;
 	}
 
 	// ¼àÌý
 	if(listen(svc->sock, 5) < 0)
 	{
-		YLOGE("listen failed, %s", strerror(errno));
+		YLOGE("listen failed, %d", steak_socket_error());
 		return STEAK_ERR_SYSERR;
 	}
 

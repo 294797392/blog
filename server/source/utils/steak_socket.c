@@ -52,3 +52,12 @@ void steak_socket_close(steak_socket sock)
 	close(sock);
 #endif
 }
+
+int steak_socket_error()
+{
+#if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
+	return WSAGetLastError();
+#elif (defined(ENV_UNIX))
+	return errno;
+#endif
+}

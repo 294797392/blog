@@ -7,11 +7,10 @@
 #include <libY.h>
 
 #include "steak_socket.h"
-#include "factory.h"
 #include "errors.h"
 #include "event.h"
 #include "app.h"
-#include "connection.h"
+#include "cblog_types.h"
 
 int accept_client_event(event_module *evm, steak_event *evt)
 {

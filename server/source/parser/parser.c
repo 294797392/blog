@@ -4,8 +4,6 @@
 #include <ctype.h>
 
 #include "errors.h"
-#include "steak_string.h"
-#include "connection.h"
 #include "parser.h"
 
 #define state_action(name) static void name(steak_parser *parser, char *http_msg, char character, int character_offset)
@@ -36,7 +34,7 @@ state_action(action_method_content)
 	if(character == ' ')
 	{
 		// method结束
-		parser->on_event(parser, STEAK_PARSER_EVENT_METHOD, http_msg + parser->seg_offset, parser->seg_len, NULL, 0);
+		parser->on_event(parser, STEAK_PARSER_EVENT_METHOD);
 		enter_state(parser, STEAK_PARSER_METHOD_END);
 	}
 	else
@@ -60,7 +58,7 @@ state_action(action_url_content)
 	if(character == ' ')
 	{
 		// uri结束
-		parser->on_event(parser, STEAK_PARSER_EVENT_URI, http_msg + parser->seg_offset, parser->seg_len, NULL, 0);
+		parser->on_event(parser, STEAK_PARSER_EVENT_URI);
 		enter_state(parser, STEAK_PARSER_URL_END);
 	}
 	else
@@ -83,7 +81,7 @@ state_action(action_version_content)
 {
 	if(character == '\n')
 	{
-		parser->on_event(parser, STEAK_PARSER_EVENT_VERSION, http_msg + parser->seg_offset, parser->seg_len, NULL, 0);
+		parser->on_event(parser, STEAK_PARSER_EVENT_VERSION);
 		enter_state(parser, STEAK_PARSER_VERSION_END);
 	}
 	else if(isprint(character))
@@ -146,7 +144,7 @@ state_action(action_header_value)
 		}
 
 		// 触发事件
-		parser->on_event(parser, STEAK_PARSER_EVENT_HEADER, key, keylen, value, valuelen);
+		parser->on_event(parser, STEAK_PARSER_EVENT_HEADER);
 
 		parser->seg_len = 0;
 		parser->seg_offset = 0;
@@ -176,8 +174,8 @@ state_action(action_header_value_end)
 		// 下面开始解析body。注意要处理body为0的情况
 		if(parser->content_length == 0)
 		{
-			// 没有body
-			parser->on_event(parser, STEAK_PARSER_EVENT_BODY, NULL, 0, NULL, 0);
+			// 没有body，触发请求结束事件
+			parser->on_event(parser, STEAK_PARSER_EVENT_BODY);
 			
 			// 恢复到初始状态
 			enter_state(parser, STEAK_PARSER_INITIAL);
@@ -294,13 +292,13 @@ int steak_parser_parse(steak_parser *parser, char *http_msg, int offset, int siz
 				{
 					// 收到的字节数等于需要接收的字节数，本次解析完毕
 					parser->seg_len = parser->content_length;
-					parser->on_event(parser, STEAK_PARSER_EVENT_BODY, http_msg + parser->seg_offset, parser->seg_len, NULL, 0);
+					parser->on_event(parser, STEAK_PARSER_EVENT_BODY);
 					enter_state(parser, STEAK_PARSER_INITIAL);
 					return 0;
 				}
 				else if(size < left)
 				{
-					// 收到的字节数小于要接收的字节数
+					// 收到的字节数小于要接收的字节数，本次请求还没解析完
 					// 需要外部继续接收请求数据。直接返回
 					return size;
 				}
@@ -309,7 +307,7 @@ int steak_parser_parse(steak_parser *parser, char *http_msg, int offset, int siz
 					// 收到的字节数大于要接收的字节数
 					// 有可能数据里包含下一次请求
 					parser->seg_len = parser->content_length;
-					parser->on_event(parser, STEAK_PARSER_EVENT_BODY, http_msg + parser->seg_offset, parser->seg_len, NULL, 0);
+					parser->on_event(parser, STEAK_PARSER_EVENT_BODY);
 					enter_state(parser, STEAK_PARSER_INITIAL);
 					return i + left;
 				}

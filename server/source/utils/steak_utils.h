@@ -13,13 +13,6 @@
 
 #include <libY.h>
 
-#include "header.h"
-#include "response.h"
-#include "request.h"
-#include "session.h"
-#include "svchost.h"
-#include "event.h"
-
 #define new_object(struct_type, var) struct_type *var = (struct_type *)calloc(1, sizeof(struct_type));		\
 									if(var == NULL)															\
 									{																		\
@@ -38,9 +31,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-
-
 
 
 

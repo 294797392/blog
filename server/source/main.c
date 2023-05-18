@@ -22,9 +22,9 @@
 
 #include "errors.h"
 #include "event.h"
-#include "svchost.h"
 #include "app.h"
 #include "default.h"
+#include "cblog_types.h"
 
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
 #pragma comment(lib, "Ws2_32.lib")

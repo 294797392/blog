@@ -7,8 +7,9 @@
 #include "errors.h"
 #include "default.h"
 #include "event.h"
+#include "parser.h"
 
-extern void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt, char *data1, int data1len, char *data2, int data2len);
+extern void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt);
 extern int read_request_event(event_module *evm, steak_event *evt);
 extern int write_response_event(event_module *evm, steak_event *evt);
 extern int accept_client_event(event_module *evm, steak_event *evt);
@@ -23,7 +24,7 @@ int event_add(event_module *evm, steak_event *evt)
 	return STEAK_ERR_OK;
 }
 
-int event_delete(event_module *evm, steak_event *evt)
+int event_remove(event_module *evm, steak_event *evt)
 {
 	eventpoll_actions *actions = evm->actions;
 	actions->delete_event(evm, evt);
@@ -71,6 +72,7 @@ steak_event *new_connection_event(event_module *evm, steak_socket sock, svchost 
 	steak_connection *conn = (steak_connection *)Y_pool_obtain(sizeof(steak_connection));
 	conn->sock = sock;
 	conn->svc = svc;
+	conn->request = (steak_request *)Y_pool_obtain(sizeof(steak_request));
 	conn->recv_buf = (char *)Y_pool_obtain(STEAK_DEFAULT_HTTP_MSG_SIZE);
 	conn->recv_buf_len = STEAK_DEFAULT_HTTP_MSG_SIZE;
 	conn->recv_buf_offset = 0;
@@ -95,6 +97,7 @@ void free_connection_event(event_module *evm, steak_event *evt)
 {
 	// 释放connection
 	steak_connection *conn = (steak_connection *)evt->context;
+	Y_pool_recycle(conn->request, sizeof(steak_request));
 	Y_pool_recycle(conn->recv_buf, conn->recv_buf_len);
 	Y_pool_recycle(conn, sizeof(steak_connection));
 

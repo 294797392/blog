@@ -14,10 +14,6 @@
 
 #include <libY.h>
 
-#include "steak_string.h"
-#include "header.h"
-#include "request.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -26,7 +22,7 @@ extern "C" {
 	typedef enum steak_parser_event_enum steak_parser_event_enum;
 	typedef struct steak_parser_s steak_parser;
 
-	typedef void(*steak_parser_event_callback)(steak_parser *parser, steak_parser_event_enum evt, char *data1, int data1len, char *data2, int data2len);
+	typedef void(*steak_parser_event_callback)(steak_parser *parser, steak_parser_event_enum evt);
 
 	enum steak_parser_state_e
 	{
@@ -49,7 +45,7 @@ extern "C" {
 		STEAK_PARSER_EVENT_URI,
 		STEAK_PARSER_EVENT_VERSION,
 		STEAK_PARSER_EVENT_HEADER,
-		STEAK_PARSER_EVENT_BODY
+		STEAK_PARSER_EVENT_BODY,
 	};
 
 	struct steak_parser_s
@@ -82,6 +78,9 @@ extern "C" {
 		/// </summary>
 		steak_parser_event_callback on_event;
 
+		/// <summary>
+		/// 该解析器的用户数据
+		/// </summary>
 		void *userdata;
 	};
 

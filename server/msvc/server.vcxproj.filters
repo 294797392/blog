@@ -4,20 +4,7 @@
     <ClInclude Include="..\source\default.h" />
     <ClInclude Include="..\source\protocol.h" />
     <ClInclude Include="..\source\errors.h" />
-    <ClInclude Include="..\source\svchost.h" />
     <ClInclude Include="..\source\app.h" />
-    <ClInclude Include="..\source\session\session.h">
-      <Filter>session</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\response\response.h">
-      <Filter>response</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\header\header.h">
-      <Filter>header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\request\request.h">
-      <Filter>request</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\parser\parser.h">
       <Filter>parser</Filter>
     </ClInclude>
@@ -33,11 +20,10 @@
     <ClInclude Include="..\source\event\event.h">
       <Filter>event</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\connection.h" />
-    <ClInclude Include="..\source\factory.h" />
     <ClInclude Include="..\source\utils\steak_utils.h">
       <Filter>utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\cblog_types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\main.c" />
@@ -51,18 +37,6 @@
       <Filter>event</Filter>
     </ClCompile>
     <ClCompile Include="..\source\app.c" />
-    <ClCompile Include="..\source\session\session.c">
-      <Filter>session</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\response\response.c">
-      <Filter>response</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\header\header.c">
-      <Filter>header</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\request\request.c">
-      <Filter>request</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\parser\parser.c">
       <Filter>parser</Filter>
     </ClCompile>
@@ -81,8 +55,6 @@
     <ClCompile Include="..\source\event\poll_actions_select.c">
       <Filter>event\poll</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\connection.c" />
-    <ClCompile Include="..\source\factory.c" />
     <ClCompile Include="..\source\utils\steak_utils.c">
       <Filter>utils</Filter>
     </ClCompile>
@@ -90,18 +62,6 @@
   <ItemGroup>
     <Filter Include="event">
       <UniqueIdentifier>{af99e035-932d-42e3-b1ea-a7ef3460a25b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="session">
-      <UniqueIdentifier>{1f5d8b23-6034-47fd-8af2-fd5d5d1669a2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="request">
-      <UniqueIdentifier>{67841500-86ee-44f5-96f3-d06af98f77f4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="response">
-      <UniqueIdentifier>{8c2466c1-e3b9-4d35-a84c-e5fe35f34769}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="header">
-      <UniqueIdentifier>{b93787ac-3258-4f3e-be89-0dc954fb9470}</UniqueIdentifier>
     </Filter>
     <Filter Include="parser">
       <UniqueIdentifier>{3e4f2f18-1ec8-4dfd-8934-33d216f187b5}</UniqueIdentifier>

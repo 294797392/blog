@@ -8,9 +8,7 @@
 #include <libY.h>
 
 #include "steak_socket.h"
-#include "session.h"
-#include "connection.h"
-#include "svchost.h"
+#include "cblog_types.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -173,7 +171,7 @@ extern "C" {
 	 * 返回值：
 	 * STEAK_ERR
 	 */
-	int event_delete(event_module *evm, steak_event *evt);
+	int event_remove(event_module *evm, steak_event *evt);
 
 	/*
 	 * 描述：

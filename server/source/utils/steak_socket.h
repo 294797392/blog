@@ -11,25 +11,9 @@
 
 #include <stdint.h>
 
-#if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
-#include <WinSock2.h>
-#include <Windows.h>
-#elif (defined(ENV_UNIX))
-#include <sys/types.h> 
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <fcntl.h>
-#endif
-
 #include <libY.h>
 
-#if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
-typedef SOCKET steak_socket;
-#elif (defined(ENV_UNIX))
-typedef int steak_socket;
-#endif
+#include "cblog_types.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -54,6 +38,12 @@ extern "C" {
 	int steak_socket_get_avaliable_size(steak_socket sock);
 
 	void steak_socket_close(steak_socket sock);
+
+	/*
+	 * ÃèÊö£º
+	 * »ñÈ¡socket´íÎóÂë
+	 */
+	int steak_socket_error();
 
 #ifdef __cplusplus
 }

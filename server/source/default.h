@@ -26,4 +26,6 @@
 
 #define STEAK_DEFAULT_CONFIG_FILE							"service.json"
 
+#define STEAK_DEFAULT_HEADER_COUNT							16
+
 #endif
