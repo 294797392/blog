@@ -3,8 +3,9 @@
 #include <string.h>
 
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
+#include <WinSock2.h>
+#include <Windows.h>
 #elif (defined(ENV_UNIX))
-#include <sys/ioctl.h>
 #endif
 
 #include <libY.h>

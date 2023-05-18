@@ -100,6 +100,36 @@ int eventpoll_select_delete_event(event_module *evm, steak_event *evt)
 int eventpoll_select_modify_event(event_module *evm, steak_event *evt, int read, int write)
 {
 	poll_select *pollselect = (poll_select *)evm->actions_data;
+
+	if(read)
+	{
+		if(!FD_ISSET(evt->sock, &pollselect->master_read_fd_set))
+		{
+			FD_SET(evt->sock, &pollselect->master_read_fd_set);
+			pollselect->max_read++;
+		}
+	}
+	else
+	{
+		FD_CLR(evt->sock, &pollselect->master_read_fd_set);
+		pollselect->max_read--;
+	}
+
+	if(write)
+	{
+		if(!FD_ISSET(evt->sock, &pollselect->master_write_fd_set))
+		{
+			FD_SET(evt->sock, &pollselect->master_write_fd_set);
+			pollselect->max_write++;
+		}
+	}
+	else
+	{
+		FD_CLR(evt->sock, &pollselect->master_write_fd_set);
+		pollselect->max_write--;
+	}
+
+	return STEAK_ERR_OK;
 }
 
 int eventpoll_select_poll_event(event_module *evm, steak_event **events, int nevent)
@@ -145,7 +175,21 @@ int eventpoll_select_poll_event(event_module *evm, steak_event **events, int nev
 		{
 			steak_event *evt = events[i];
 
+			int got_signal = 0;
+
 			if(FD_ISSET(evt->sock, &readfds))
+			{
+				evt->sigread = 1;
+				got_signal = 1;
+			}
+
+			if(FD_ISSET(evt->sock, &writefds))
+			{
+				evt->sigwrite = 1;
+				got_signal = 1;
+			}
+
+			if(got_signal)
 			{
 				// 添加到处理列表里
 				Y_list_add(evm->process_event_list, evt);

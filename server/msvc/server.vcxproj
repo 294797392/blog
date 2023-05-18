@@ -143,6 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\source\app.h" />
+    <ClInclude Include="..\source\cblog_sockbuf.h" />
     <ClInclude Include="..\source\cblog_types.h" />
     <ClInclude Include="..\source\default.h" />
     <ClInclude Include="..\source\event\event.h" />
@@ -156,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\app.c" />
+    <ClCompile Include="..\source\cblog_sockbuf.c" />
     <ClCompile Include="..\source\event\accept_client_event.c" />
     <ClCompile Include="..\source\event\event.c" />
     <ClCompile Include="..\source\event\poll_actions_select.c" />

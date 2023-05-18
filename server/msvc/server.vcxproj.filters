@@ -24,6 +24,7 @@
       <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="..\source\cblog_types.h" />
+    <ClInclude Include="..\source\cblog_sockbuf.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\main.c" />
@@ -58,6 +59,7 @@
     <ClCompile Include="..\source\utils\steak_utils.c">
       <Filter>utils</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\cblog_sockbuf.c" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="event">

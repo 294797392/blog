@@ -11,9 +11,19 @@
 
 #include <stdint.h>
 
+#if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
+#include <WinSock2.h>
+#include <Windows.h>
+#elif (defined(ENV_UNIX))
+#endif
+
 #include <libY.h>
 
-#include "cblog_types.h"
+#if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
+typedef SOCKET steak_socket;
+#elif (defined(ENV_UNIX))
+typedef int steak_socket;
+#endif
 
 #ifdef __cplusplus
 extern "C" {

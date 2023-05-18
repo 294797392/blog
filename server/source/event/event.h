@@ -113,6 +113,9 @@ extern "C" {
 		/// </summary>
 		int write;
 
+		int sigread;
+		int sigwrite;
+
 		/// <summary>
 		/// 该事件所对应的上下文数据
 		/// </summary>

@@ -9,40 +9,24 @@
 #ifndef __CBLOG_TYPES_H__
 #define __CBLOG_TYPES_H__
 
-#if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
-#include <WinSock2.h>
-#include <Windows.h>
-#elif (defined(ENV_UNIX))
-#include <sys/types.h> 
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <fcntl.h>
-#endif
-
 #include "parser.h"
 #include "default.h"
 #include "protocol.h"
-
-#if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
-typedef SOCKET steak_socket;
-#elif (defined(ENV_UNIX))
-typedef int steak_socket;
-#endif
+#include "steak_socket.h"
+#include "cblog_sockbuf.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 	typedef struct steak_string_s steak_string;
+	typedef struct steak_http_header_s steak_http_header;
 	typedef struct svchost_s svchost;
 	typedef struct svchost_options_s svchost_options;
 	typedef struct steak_connection_s steak_connection;
 	typedef struct steak_response_s steak_response;
-	typedef struct steak_session_s steak_session;
 	typedef struct steak_request_s steak_request;
-	typedef struct steak_http_header_s steak_http_header;
+	typedef struct steak_session_s steak_session;
 
 	struct steak_string_s
 	{
@@ -73,6 +57,9 @@ extern "C" {
 		steak_string value;
 	};
 
+	/// <summary>
+	/// 记录与客户端的HTTP连接状态
+	/// </summary>
 	struct steak_connection_s
 	{
 		/// <summary>
@@ -96,25 +83,21 @@ extern "C" {
 		steak_request *request;
 
 		/// <summary>
+		/// 保存该连接最后一次响应的信息
+		/// </summary>
+		steak_response *response;
+
+		/// <summary>
 		/// 接收缓冲区
+		/// 保存当前request的原始HTTP报文
 		/// </summary>
-		char *recv_buf;
-		/// <summary>
-		/// 接收缓冲区长度
-		/// </summary>
-		int recv_buf_len;
-		/// <summary>
-		/// 已经使用了的缓冲区长度
-		/// 也就是从客户端接收到的原始http报文长度
-		/// </summary>
-		int recv_buf_offset;
+		cblog_sockbuf *recvbuf;
 
 		/// <summary>
 		/// 发送缓冲区
+		/// 保存当前需要发送给客户端的原始HTTP报文
 		/// </summary>
-		char *send_msg;
-		int send_msg_len;
-		int send_msg_offset;
+		cblog_sockbuf *sendbuf;
 	};
 
 	/// <summary>
