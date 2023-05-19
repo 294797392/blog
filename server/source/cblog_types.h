@@ -30,6 +30,7 @@ extern "C" {
 
 	struct cblog_string_s
 	{
+		cblog_socket_buffer *buffer;
 		int offset;
 		int length;
 	};
@@ -131,6 +132,11 @@ extern "C" {
 		/// 该连接的状态
 		/// </summary>
 		cblog_conn_status_enum status;
+
+		/// <summary>
+		/// Connection标头是否需要keep-alive
+		/// </summary>
+		int keep_alive;
 	};
 
 	/// <summary>
@@ -154,8 +160,13 @@ extern "C" {
 		/// </summary>
 		http_method_enum method;
 		cblog_string method_string;
+
+		/// <summary>
+		/// HTTP版本号
+		/// </summary>
+		cblog_http_version_enum version;
+		cblog_string version_string;
 		cblog_string url;
-		cblog_string version;
 		cblog_string body;
 
 		/// <summary>

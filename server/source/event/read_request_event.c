@@ -19,13 +19,13 @@
 #include "cblog_parser.h"
 #include "cblog_event_module.h"
 
-typedef struct text2enum_s
+typedef struct textvalue_s
 {
 	char *text;
 	int value;
-}text2enum;
+}textvalue;
 
-static text2enum http_method_list[] =
+static textvalue http_method_list[] =
 {
 	{.text = "GET",		.value = STEAK_HTTP_METHOD_GET },
 	{.text = "POST",	.value = STEAK_HTTP_METHOD_POST },
@@ -33,26 +33,56 @@ static text2enum http_method_list[] =
 	{.text = "PUT",		.value = STEAK_HTTP_METHOD_PUT },
 	{.text = "TRACE",	.value = STEAK_HTTP_METHOD_TRACE },
 	{.text = "OPTIONS", .value = STEAK_HTTP_METHOD_OPTIONS },
-	{.text = "DELETE",	.value = STEAK_HTTP_METHOD_DELETE }
+	{.text = "DELETE",	.value = STEAK_HTTP_METHOD_DELETE },
+	{.text = NULL }
 };
 
-static void dump_request(cblog_socket_buffer *buf, cblog_request *request)
+static textvalue http_version_list[] =
 {
-	cblog_string_print2("method: ", buf->ptr, &request->method_string);
-	cblog_string_print2("uri: ", buf->ptr, &request->url);
-	cblog_string_print2("version: ", buf->ptr, &request->version);
+	{.text = "HTTP/1.1", .value = CBLOG_HTTP_VERSION_1DOT1 },
+	{.text = NULL }
+};
+
+static void dump_request(cblog_request *request)
+{
+	cblog_string_print2("method: ", &request->method_string);
+	cblog_string_print2("uri: ", &request->url);
+	cblog_string_print2("version: ", &request->version_string);
 	for(int i = 0; i < request->nheader; i++)
 	{
-		cblog_string_print_header(buf->ptr, &request->headers[i]);
+		cblog_string_print_header(&request->headers[i]);
 	}
 }
 
-static void process_request(svchost *svc, cblog_connection *conn)
+static int text2value(cblog_string *str, textvalue *tvs)
 {
+	for(int i = 0; ; i++)
+	{
+		textvalue *tv = &tvs[i];
+
+		if(tv->text == NULL)
+		{
+			return 0;
+		}
+
+		if(!cblog_string_casecmp(str, tv->text))
+		{
+			return tv->value;
+		}
+	}
+
+	return 0;
+}
+
+static void process_request(event_module *evm, cblog_event *evt)
+{
+	cblog_connection *conn = (cblog_connection *)evt->context;
 	cblog_request *request = conn->request;
 	cblog_response *response = conn->response;
 
-	dump_request(conn->recvbuf, request);
+	dump_request(request);
+
+	event_modify(evm, evt, evt->read, 1);
 
 	switch(request->method)
 	{
@@ -90,8 +120,6 @@ void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt
 	cblog_connection *conn = (cblog_connection *)parser->userdata;
 	cblog_request *request = conn->request;
 	cblog_socket_buffer *recvbuf = conn->recvbuf;
-	// 原始HTTP报文
-	char *raw_msg = recvbuf->ptr;
 
 	switch(evt)
 	{
@@ -99,15 +127,8 @@ void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt
 		{
 			request->method_string.offset = parser->seg_offset;
 			request->method_string.length = parser->seg_len;
-
-			size_t len = sizeof(http_method_list) / sizeof(text2enum);
-			for(size_t i = 0; i < len; i++)
-			{
-				if(!cblog_string_casecmp(http_method_list[i].text, raw_msg + parser->seg_offset, parser->seg_len))
-				{
-					request->method = http_method_list[i].value;
-				}
-			}
+			request->method_string.buffer = recvbuf;
+			request->method = text2value(&request->method_string, http_method_list);
 			break;
 		}
 
@@ -115,13 +136,16 @@ void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt
 		{
 			request->url.offset = parser->seg_offset;
 			request->url.length = parser->seg_len;
+			request->url.buffer = recvbuf;
 			break;
 		}
 
 		case STEAK_PARSER_EVENT_VERSION:
 		{
-			request->version.offset = parser->seg_offset;
-			request->version.length = parser->seg_len;
+			request->version_string.offset = parser->seg_offset;
+			request->version_string.length = parser->seg_len;
+			request->version_string.buffer = recvbuf;
+			request->version = text2value(&request->version_string, http_version_list);
 			break;
 		}
 
@@ -130,9 +154,33 @@ void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt
 			int nheader = request->nheader;
 			request->headers[nheader].key.offset = parser->seg_offset;
 			request->headers[nheader].key.length = parser->seg_len;
+			request->headers[nheader].key.buffer = recvbuf;
 			request->headers[nheader].value.offset = parser->seg2_offset;
 			request->headers[nheader].value.length = parser->seg2_len;
+			request->headers[nheader].value.buffer = recvbuf;
+
+			cblog_string *key = &request->headers[nheader].key;
+			cblog_string *value = &request->headers[nheader].value;
+
+			if(!cblog_string_casecmp(key, CBLOG_HTTP_HEADER_CONNECTION))
+			{
+				// Connection标头
+				if(!cblog_string_casecmp(value, "close") && conn->keep_alive != 0)
+				{
+					conn->keep_alive = 0;
+				}
+			}
+			else if(!cblog_string_casecmp(key, CBLOG_HTTP_HEADER_CONTENT_LENGTH))
+			{
+				// Content-Length标头
+				int content_length = cblog_string_to_int32(value);
+				// 给parser的content_length字段赋值，才能正确解析HTTP报文
+				parser->content_length = content_length;
+				request->content_length = content_length;
+			}
+
 			request->nheader++;
+
 			break;
 		}
 
@@ -140,6 +188,7 @@ void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt
 		{
 			request->body.offset = parser->seg_offset;
 			request->body.length = parser->seg_len;
+			request->body.buffer = recvbuf;
 			break;
 		}
 
@@ -187,14 +236,14 @@ int read_request_event(event_module *evm, cblog_event *evt)
 		if(count == -1)
 		{
 			// 报文还没解析结束，还需要更多数据
+			recvbuf->offset += rc;
 			break;
 		}
 		else if(count == 0)
 		{
 			// 本次报文接收完毕，并且缓冲区里的数据也都用完了
 			// 重置接收缓冲区
-			process_request(conn->svc, conn);
-			event_modify(evm, evt, evt->read, 1);
+			process_request(evm, evt);
 			cblog_sockbuf_reset(recvbuf);
 			break;
 		}
@@ -202,8 +251,7 @@ int read_request_event(event_module *evm, cblog_event *evt)
 		{
 			// 处理的字节数小于接收的字节数，说明本次接收到了新的HTTP请求
 			// 把新的HTTP请求报文偏移量移动到接收缓冲区的开头
-			process_request(conn->svc, conn);
-			event_modify(evm, evt, evt->read, 1);
+			process_request(evm, evt);
 			memmove(recvbuf->ptr, recvbuf->ptr + old_offset + count, rc - count);
 			recvbuf->offset = rc - count;
 			recvbuf->left = recvbuf->size - recvbuf->offset;

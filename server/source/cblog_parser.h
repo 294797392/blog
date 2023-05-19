@@ -86,6 +86,7 @@ extern "C" {
 
 	/// <summary>
 	/// 解析HTTP报文
+	/// 注意外部模块需要为parser的content_length字段赋值，不然parser不知道到底要解析多少数据
 	/// </summary>
 	/// <param name="parser">解析器对象</param>
 	/// <param name="http_msg">完整的从客户端收到的HTTP请求报文</param>

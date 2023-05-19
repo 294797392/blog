@@ -131,19 +131,6 @@ state_action(action_header_value)
 	{
 		// header_value结束了
 
-		char *key = http_msg + parser->seg_offset;
-		int keylen = parser->seg_len;
-		char *value = http_msg + parser->seg2_offset;
-		int valuelen = parser->seg2_len;
-		if(keylen == strlen("content-length") && !cblog_string_casecmp(key, "content-length", keylen))
-		{
-			// 此时的http标头是Content-Length
-			char length_buffer[64] = { '\0' };
-			strncpy(length_buffer, value, sizeof(length_buffer));
-			parser->content_length = atoi(length_buffer);
-			YLOGI("content_length = %d", parser->content_length);
-		}
-
 		// 触发事件
 		parser->on_event(parser, STEAK_PARSER_EVENT_HEADER);
 

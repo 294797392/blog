@@ -27,7 +27,14 @@ int write_response_event(event_module *evm, cblog_event *evt)
 
 	send_hello_cblog(conn);
 
-	Y_queue_enqueue(evm->except_events, evt);
+	event_modify(evm, evt, evt->read, 0);
+
+	// 发送完响应，不需要keep-alive
+	// 直接关闭连接
+	if(!conn->keep_alive)
+	{
+		Y_queue_enqueue(evm->except_events, evt);
+	}
 
 	return STEAK_ERR_OK;
 }

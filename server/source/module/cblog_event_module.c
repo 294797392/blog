@@ -76,6 +76,7 @@ cblog_event *new_connection_event(event_module *evm, cblog_socket sock, svchost 
 	conn->response = (cblog_response *)calloc(1, sizeof(cblog_response));
 	conn->recvbuf = new_cblog_sockbuf(sock, CBLOG_DEFAULT_RECV_BUF_SIZE);
 	conn->status = CBLOG_CONN_STATUS_CONNECTED;
+	conn->keep_alive = 1; // 默认开始keep-alive
 
 	steak_parser *parser = &conn->parser;
 	parser->state = STEAK_PARSER_INITIAL;
