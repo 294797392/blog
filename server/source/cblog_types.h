@@ -9,11 +9,10 @@
 #ifndef __CBLOG_TYPES_H__
 #define __CBLOG_TYPES_H__
 
-#include "parser.h"
-#include "default.h"
 #include "protocol.h"
-#include "steak_socket.h"
-#include "cblog_sockbuf.h"
+#include "cblog_default.h"
+#include "cblog_socket.h"
+#include "cblog_parser.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -120,13 +119,13 @@ extern "C" {
 		/// 接收缓冲区
 		/// 保存当前request的原始HTTP报文
 		/// </summary>
-		cblog_sockbuf *recvbuf;
+		cblog_socket_buffer *recvbuf;
 
 		/// <summary>
 		/// 发送缓冲区
 		/// 保存当前需要发送给客户端的原始HTTP报文
 		/// </summary>
-		cblog_sockbuf *sendbuf;
+		cblog_socket_buffer *sendbuf;
 
 		/// <summary>
 		/// 该连接的状态

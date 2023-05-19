@@ -1,5 +1,5 @@
 /***********************************************************************************
- * @ file    : parser.h
+ * @ file    : cblog_parser.h
  * @ author  : oheiheiheiheihei
  * @ version : 0.9
  * @ date    : 2023.05.09 21:15
@@ -7,8 +7,8 @@
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
  ************************************************************************************/
 
-#ifndef __STEAK_PARSER__H__
-#define __STEAK_PARSER__H__
+#ifndef __CBLOG_PARSER__H__
+#define __CBLOG_PARSER__H__
 
 #include <stdint.h>
 

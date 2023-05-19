@@ -10,14 +10,14 @@
 
 #include <libY.h>
 
-#include "steak_socket.h"
-#include "errors.h"
-#include "event.h"
-#include "app.h"
 #include "protocol.h"
+#include "cblog_app.h"
+#include "cblog_errors.h"
+#include "cblog_socket.h"
 #include "cblog_string.h"
 #include "cblog_types.h"
-#include "cblog_sockbuf.h"
+#include "cblog_parser.h"
+#include "cblog_event_module.h"
 
 typedef struct text2enum_s
 {
@@ -36,7 +36,7 @@ static text2enum http_method_list[] =
 	{.text = "DELETE",	.value = STEAK_HTTP_METHOD_DELETE }
 };
 
-static void dump_request(cblog_sockbuf *buf, cblog_request *request)
+static void dump_request(cblog_socket_buffer *buf, cblog_request *request)
 {
 	cblog_string_print2("method: ", buf->ptr, &request->method_string);
 	cblog_string_print2("uri: ", buf->ptr, &request->url);
@@ -89,7 +89,7 @@ void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt
 {
 	cblog_connection *conn = (cblog_connection *)parser->userdata;
 	cblog_request *request = conn->request;
-	cblog_sockbuf *recvbuf = conn->recvbuf;
+	cblog_socket_buffer *recvbuf = conn->recvbuf;
 	// 原始HTTP报文
 	char *raw_msg = recvbuf->ptr;
 
@@ -152,7 +152,7 @@ int read_request_event(event_module *evm, cblog_event *evt)
 {
 	cblog_connection *conn = (cblog_connection *)evt->context;
 	steak_parser *parser = &conn->parser;
-	cblog_sockbuf *recvbuf = conn->recvbuf;
+	cblog_socket_buffer *recvbuf = conn->recvbuf;
 	int old_offset = recvbuf->offset;
 
 	// 接收socket数据

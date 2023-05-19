@@ -6,9 +6,9 @@
 
 #include <libY.h>
 
-#include "errors.h"
-#include "event.h"
-#include "app.h"
+#include "cblog_errors.h"
+#include "cblog_app.h"
+#include "cblog_event_module.h"
 
 /// <summary>
 /// 2023-5-18 20:17

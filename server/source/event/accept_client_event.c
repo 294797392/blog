@@ -6,11 +6,11 @@
 
 #include <libY.h>
 
-#include "steak_socket.h"
-#include "errors.h"
-#include "event.h"
-#include "app.h"
+#include "cblog_app.h"
+#include "cblog_errors.h"
 #include "cblog_types.h"
+#include "cblog_socket.h"
+#include "cblog_event_module.h"
 
 int accept_client_event(event_module *evm, cblog_event *evt)
 {

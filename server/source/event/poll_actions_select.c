@@ -9,16 +9,13 @@
 
 #include <libY.h>
 
-#include "errors.h"
-#include "event.h"
+#include "cblog_errors.h"
+#include "cblog_event_module.h"
 
 typedef struct poll_select_s
 {
 	FD_SET master_read_fd_set;
 	FD_SET master_write_fd_set;
-	//FD_SET work_read_fd_set;
-	//FD_SET work_write_fd_set;
-	//FD_SET work_except_fd_set;
 	int max_read;
 	int max_write;
 	int nevents;

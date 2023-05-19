@@ -4,12 +4,11 @@
 
 #include <libY.h>
 
-#include "errors.h"
-#include "default.h"
-#include "event.h"
-#include "parser.h"
+#include "cblog_default.h"
+#include "cblog_errors.h"
 #include "cblog_types.h"
-#include "cblog_sockbuf.h"
+#include "cblog_parser.h"
+#include "cblog_event_module.h"
 
 extern void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt);
 extern int read_request_event(event_module *evm, cblog_event *evt);

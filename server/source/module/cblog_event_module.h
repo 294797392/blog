@@ -1,13 +1,13 @@
 ﻿/***********************************************************************************
- * @ file    : cblog_event.h
+ * @ file    : cblog_event_module.h
  * @ author  : oheiheiheiheihei
  * @ version : 0.9
  * @ date    : ???
  * @ brief   : socket事件监控模块
  ************************************************************************************/
 
-#ifndef __CBLOG_EVENT_H__
-#define __CBLOG_EVENT_H__
+#ifndef __CBLOG_EVENT_MODULE_H__
+#define __CBLOG_EVENT_MODULE_H__
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -15,7 +15,7 @@
 
 #include <libY.h>
 
-#include "steak_socket.h"
+#include "cblog_socket.h"
 #include "cblog_types.h"
 
 #ifdef __cplusplus

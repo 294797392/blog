@@ -3,8 +3,8 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "errors.h"
-#include "parser.h"
+#include "cblog_parser.h"
+#include "cblog_errors.h"
 #include "cblog_string.h"
 
 #define state_action(name) static void name(steak_parser *parser, char *http_msg, char character, int character_offset)

@@ -12,11 +12,11 @@
 #include <libY.h>
 #include <cJSON.h>
 
-#include "default.h"
-#include "errors.h"
-#include "app.h"
+#include "cblog_app.h"
+#include "cblog_default.h"
+#include "cblog_errors.h"
 #include "cblog_utils.h"
-#include "steak_socket.h"
+#include "cblog_socket.h"
 
 extern eventpoll_actions eventpoll_actions_select;
 eventpoll_actions *eventpoll_actions_list[] =

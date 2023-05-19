@@ -14,7 +14,7 @@
 
 #include <libY.h>
 
-#include "event.h"
+#include "cblog_event_module.h"
 #include "cblog_types.h"
 
 #ifdef __cplusplus

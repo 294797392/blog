@@ -20,11 +20,11 @@
 
 #include <libY.h>
 
-#include "errors.h"
-#include "event.h"
-#include "app.h"
-#include "default.h"
+#include "cblog_app.h"
+#include "cblog_default.h"
 #include "cblog_types.h"
+#include "cblog_errors.h"
+#include "cblog_event_module.h"
 
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
 #pragma comment(lib, "Ws2_32.lib")
