@@ -54,7 +54,7 @@ void eventpoll_select_release(event_module *evm)
 
 }
 
-int eventpoll_select_add_event(event_module *evm, steak_event *evt)
+int eventpoll_select_add_event(event_module *evm, cblog_event *evt)
 {
 	poll_select *pollselect = (poll_select *)evm->actions_data;
 
@@ -78,7 +78,7 @@ int eventpoll_select_add_event(event_module *evm, steak_event *evt)
 	return STEAK_ERR_OK;
 }
 
-int eventpoll_select_delete_event(event_module *evm, steak_event *evt)
+int eventpoll_select_delete_event(event_module *evm, cblog_event *evt)
 {
 	poll_select *pollselect = (poll_select *)evm->actions_data;
 
@@ -97,7 +97,7 @@ int eventpoll_select_delete_event(event_module *evm, steak_event *evt)
 	return STEAK_ERR_OK;
 }
 
-int eventpoll_select_modify_event(event_module *evm, steak_event *evt, int read, int write)
+int eventpoll_select_modify_event(event_module *evm, cblog_event *evt, int read, int write)
 {
 	poll_select *pollselect = (poll_select *)evm->actions_data;
 
@@ -132,11 +132,11 @@ int eventpoll_select_modify_event(event_module *evm, steak_event *evt, int read,
 	return STEAK_ERR_OK;
 }
 
-int eventpoll_select_poll_event(event_module *evm, steak_event **events, int nevent)
+int eventpoll_select_poll_event(event_module *evm)
 {
 	poll_select *pollselect = (poll_select *)evm->actions_data;
 
-	FD_SET readfds = pollselect->master_read_fd_set;
+ 	FD_SET readfds = pollselect->master_read_fd_set;
 	FD_SET writefds = pollselect->master_write_fd_set;
 
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
@@ -157,7 +157,7 @@ int eventpoll_select_poll_event(event_module *evm, steak_event **events, int nev
 			case EINTR:
 			{
 				// 等待时捕获了一个信号，可以重新发起调用
-				return eventpoll_select_poll_event(evm, events, nevent);
+				return eventpoll_select_poll_event(evm);
 			}
 
 			default:
@@ -170,30 +170,20 @@ int eventpoll_select_poll_event(event_module *evm, steak_event **events, int nev
 	else
 	{
 		// one or more fd has io event
-
-		for(int i = 0; i < nevent; i++)
+		cblog_event *evt = evm->events->first;
+		while(evt != NULL)
 		{
-			steak_event *evt = events[i];
-
-			int got_signal = 0;
-
 			if(FD_ISSET(evt->sock, &readfds))
 			{
-				evt->sigread = 1;
-				got_signal = 1;
+				evt->on_read(evm, evt);
 			}
 
 			if(FD_ISSET(evt->sock, &writefds))
 			{
-				evt->sigwrite = 1;
-				got_signal = 1;
+				evt->on_write(evm, evt);
 			}
 
-			if(got_signal)
-			{
-				// 添加到处理列表里
-				Y_list_add(evm->process_event_list, evt);
-			}
+			evt = evt->next;
 		}
 	}
 

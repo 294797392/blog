@@ -44,7 +44,7 @@ extern "C" {
 
 	struct svchost_s
 	{
-		steak_socket sock;
+		cblog_socket sock;
 		svchost_options options;
 	};
 
@@ -65,7 +65,7 @@ extern "C" {
 		/// <summary>
 		/// 客户端的socket
 		/// </summary>
-		steak_socket sock;
+		cblog_socket sock;
 
 		/// <summary>
 		/// HTTP报文解析器

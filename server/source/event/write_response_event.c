@@ -21,7 +21,7 @@ static void send_hello_cblog(steak_connection *conn)
 	send(conn->sock, str, strlen(str), 0);
 }
 
-int write_response_event(event_module *evm, steak_event *evt)
+int write_response_event(event_module *evm, cblog_event *evt)
 {
 	steak_connection *conn = (steak_connection *)evt->context;
 

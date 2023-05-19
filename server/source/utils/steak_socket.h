@@ -20,7 +20,7 @@
 #include <libY.h>
 
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
-typedef SOCKET steak_socket;
+typedef SOCKET cblog_socket;
 #elif (defined(ENV_UNIX))
 typedef int steak_socket;
 #endif
@@ -45,9 +45,9 @@ extern "C" {
 	 * 返回值：
 	 * 可读取的数据量
 	 */
-	int steak_socket_get_avaliable_size(steak_socket sock);
+	int steak_socket_get_avaliable_size(cblog_socket sock);
 
-	void steak_socket_close(steak_socket sock);
+	void steak_socket_close(cblog_socket sock);
 
 	/*
 	 * 描述：

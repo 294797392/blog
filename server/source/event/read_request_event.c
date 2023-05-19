@@ -132,7 +132,7 @@ void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt
 	}
 }
 
-int read_request_event(event_module *evm, steak_event *evt)
+int read_request_event(event_module *evm, cblog_event *evt)
 {
 	steak_connection *conn = (steak_connection *)evt->context;
 	steak_parser *parser = &conn->parser;

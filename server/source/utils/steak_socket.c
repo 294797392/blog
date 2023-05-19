@@ -29,7 +29,7 @@ int steak_socket_init()
 	return STEAK_ERR_OK;
 }
 
-int steak_socket_get_avaliable_size(steak_socket sock)
+int steak_socket_get_avaliable_size(cblog_socket sock)
 {
 	u_long size = 0;
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
@@ -45,7 +45,7 @@ int steak_socket_get_avaliable_size(steak_socket sock)
 	return size;
 }
 
-void steak_socket_close(steak_socket sock)
+void steak_socket_close(cblog_socket sock)
 {
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
 	closesocket(sock);

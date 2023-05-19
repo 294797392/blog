@@ -9,7 +9,7 @@
 #include "cblog_types.h"
 #include "cblog_sockbuf.h"
 
-cblog_sockbuf *new_cblog_sockbuf(steak_socket sock, int size)
+cblog_sockbuf *new_cblog_sockbuf(cblog_socket sock, int size)
 {
 	cblog_sockbuf *buffer = (cblog_sockbuf *)calloc(1, sizeof(cblog_sockbuf));
 	buffer->sock = sock;

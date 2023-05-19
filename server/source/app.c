@@ -107,8 +107,7 @@ static void init_event_module(event_module *evm, cJSON *json)
 	cJSON *json_timeout = cJSON_GetObjectItem(json, "timeout");
 	evm->timeout_ms = json_timeout->valueint;
 	evm->options.type = json_type->valueint;
-	evm->event_list = Y_create_list();
-	evm->process_event_list = Y_create_list();
+	evm->events = (cblog_events *)calloc(1, sizeof(cblog_events));
 	evm->actions = select_evpoll_actions(evm->options.type);
 	evm->actions->initialize(evm);
 }
@@ -167,7 +166,7 @@ int steak_app_start()
 			return rc;
 		}
 
-		steak_event *evt = new_svchost_event(app_instance->evm, svc);
+		cblog_event *evt = new_svchost_event(app_instance->evm, svc);
 		event_add(app_instance->evm, evt);
 	}
 

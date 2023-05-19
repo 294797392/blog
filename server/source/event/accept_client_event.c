@@ -12,13 +12,13 @@
 #include "app.h"
 #include "cblog_types.h"
 
-int accept_client_event(event_module *evm, steak_event *evt)
+int accept_client_event(event_module *evm, cblog_event *evt)
 {
 	svchost *svc = (svchost *)evt->context;
 
 	struct sockaddr addr;
 	size_t addr_len = sizeof(struct sockaddr);
-	steak_socket sock;
+	cblog_socket sock;
 	if((sock = accept(evt->sock, &addr, &addr_len)) == -1)
 	{
 		YLOGE("accept client failed, %s", strerror(errno));
@@ -28,7 +28,7 @@ int accept_client_event(event_module *evm, steak_event *evt)
 	YLOGI("client connected, new session");
 
 	// 客户端连接成功，把客户端socket加到待监控的事件列表里
-	steak_event *event = new_connection_event(evm, sock, svc);
+	cblog_event *event = new_connection_event(evm, sock, svc);
 	event_add(evm, event);
 
 	return STEAK_ERR_OK;

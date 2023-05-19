@@ -31,13 +31,13 @@
 #pragma comment(lib, "libY.lib")
 #endif
 
-extern int accept_client_event(event_module *evpoll, steak_event *evt);
+extern int accept_client_event(event_module *evpoll, cblog_event *evt);
 
 /// <summary>
 /// 当客户端和服务器之间有一段时间没有通信了就表示该链接超时了
 /// 关闭超时的连接
 /// </summary>
-static void cleanup_timeout_events(event_module *evm, steak_event **events, int nevent)
+static void cleanup_timeout_events(event_module *evm, cblog_event **events, int nevent)
 {
 
 }
@@ -58,8 +58,7 @@ int main(int argc, char **argv)
 	int rc = YERR_SUCCESS;
 
 	Y_log_init(NULL);
-	Y_pool_init(65535, 8192);
-	
+
 	if((rc = steak_socket_init()) != STEAK_ERR_OK)
 	{
 		return 0;
@@ -83,33 +82,19 @@ int main(int argc, char **argv)
 	YLOGI("start svchost success");
 
 	steak_app *app = steak_app_get();
-	int nevent = 0;
-	steak_event **events = NULL;
 	event_module *evm = app->evm;
 
 	while(1)
 	{
 		// 轮询事件列表
-		events = (steak_event **)Y_list_to_array(evm->event_list, &nevent);
-		rc = event_poll(evm, events, nevent);
+		rc = event_run_cycle(evm);
 		if(rc != STEAK_ERR_OK)
 		{
 			YLOGE("poll event failed, %d", rc);
 			continue;
 		}
 
-		// 处理有信号的事件
-		events = (steak_event **)Y_list_to_array(evm->process_event_list, &nevent);
-		if(nevent > 0)
-		{
-			// 开始处理事件
-			rc = event_process(evm, events, nevent);
-			Y_list_clear(evm->process_event_list);
-		}
-
 		// 处理超时了的事件
-		events = (steak_event **)Y_list_to_array(evm->event_list, &nevent);
-		cleanup_timeout_events(evm, events, nevent);
 	}
 
 	return 0;

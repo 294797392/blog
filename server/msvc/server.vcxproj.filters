@@ -25,6 +25,9 @@
     </ClInclude>
     <ClInclude Include="..\source\cblog_types.h" />
     <ClInclude Include="..\source\cblog_sockbuf.h" />
+    <ClInclude Include="..\source\utils\cblog_linkedlist.h">
+      <Filter>utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\main.c" />

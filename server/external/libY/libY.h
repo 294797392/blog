@@ -481,72 +481,6 @@
     YAPI void Y_map_foreach(Ymap *ym, Ymap_foreach_func foreach, void *userdata);
 #endif
 
-/*****************************************************************************************************************
- * @ file    : Ypool.h
- * @ author  : oheiheiheiheihei
- * @ version : 0.9
- * @ date    : 2021.12.06 16:43
- * @ brief   : 
- *****************************************************************************************************************/
-#ifndef YPOOL
-#define YPOOL
-
-	/*
-	 * 描述：
-	 * 初始化内存缓冲池
-     * 整个应用程序生命周期内只需要调用一遍即可
-	 *
-	 * 参数：
-	 * @max_block_size：缓冲池里可以申请的最大的缓冲区大小
-	 * @max_blocks：缓冲池里的内存块的最大个数
-	 *
-	 * 返回值：
-	 * 创建的缓冲池对象
-	 */
-    YAPI int Y_pool_init(int max_block_size, int max_blocks);
-
-	/*
-	 * 描述：
-	 * 从对象缓冲池里获取一个对象
-	 * 如果没有多余的对象了，那么会重新创建一个
-	 * 如果缓冲池里的对象数量大于最大数量，那么会返回NULL
-	 *
-	 * 参数：
-	 * @yp：缓冲池对象
-	 * @blocksize：要申请的内存块的大小
-	 *
-	 * 返回值：
-	 * 内存地址
-	 */
-    YAPI void *Y_pool_obtain(int blocksize);
-
-    /*
-     * 描述：
-     * 重新分配对象的大小
-     *
-     * 参数：
-     * @block：要重新分配的内存对象
-     * @blocksize：要申请的内存块的大小
-     * @newsize：新对象的大小
-     *
-     * 返回值：
-     * 内存地址
-     */
-    YAPI void *Y_pool_resize(void *block, int blocksize, int newsize);
-
-	/*
-	 * 描述：
-	 * 回收缓冲对象，以便于下次继续使用
-	 * 当你从缓冲池里obtain的对象用完了的时候请调用这个函数
-	 * 这个函数会把你用完的对象重新放到缓冲池里，以便于下次复用
-	 *
-	 * 参数：
-	 * @block：要复用的内存块。注意，该内存地址必须是通过Y_pool_obtain分配而得到的
-     * @blocksize：内存块的长度
-	 */
-	YAPI void Y_pool_recycle(void *block, int blocksize);
-#endif
-
 
 /***********************************************************************************
  * @ file    : Yqueue.h
@@ -916,6 +850,89 @@
 
 #endif
 
+
+/***********************************************************************************
+ * @ file    : Ylinklist.h
+ * @ author  : oheiheiheiheihei
+ * @ version : 0.9
+ * @ date    : 2023.05.19 10:20
+ * @ brief   : 定义链表宏。链表里必须有first和last指针，并且node里必须有prev和next指针
+ ************************************************************************************/
+
+#ifndef YLINKLIST
+#define YLINKLIST
+
+#ifdef __cplusplus
+    extern "C" {
+#endif
+
+#define Y_linklist_add(node_type, linklist, node) if(linklist->first == NULL)\
+        {\
+            linklist->first = node;\
+            linklist->last = node;\
+        }\
+        else\
+        {\
+            node_type *a = linklist->last;\
+            node_type *b = node;\
+            a->next = b;\
+            b->prev = a;\
+            linklist->last = b;\
+        }\
+        linklist->count++;\
+
+
+#define Y_linklist_remove(node_type, linklist, node) if(node == linklist->first)\
+        {\
+            if(linklist->count == 1)\
+            {\
+                linklist->first = NULL;\
+                linklist->last = NULL;\
+            }\
+            else\
+            {\
+                linklist->first = node->next;\
+                linklist->first->prev = NULL;\
+            }\
+        }\
+        else if(node == linklist->last)\
+        {\
+            if(linklist->count == 1)\
+            {\
+                linklist->first = NULL;\
+                linklist->last = NULL;\
+            }\
+            else\
+            {\
+                linklist->last = node->prev;\
+                linklist->last->next = NULL;\
+            }\
+        }\
+        else\
+        {\
+            node_type *a = node->prev;\
+            node_type *c = node->next;\
+            a->next = c;\
+            c->prev = a;\
+        }\
+        linklist->count--;\
+
+#define Y_linklist_clear(linklist) linklist->first = NULL;\
+        linklist->last = NULL;\
+        linklist->count = 0;\
+
+#define Y_linklist_foreach(node_type, linklist, callback) node_type *__linklist_foreach_current = linklist->first;\
+        while(__linklist_foreach_current != NULL)\
+        {\
+            callback(__linklist_foreach_current);\
+            __linklist_foreach_current = __linklist_foreach_current->next;\
+        }\
+
+#ifdef __cplusplus
+    }
+#endif
+
+#endif
 
 #endif
 
