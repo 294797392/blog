@@ -19,16 +19,17 @@
 extern "C" {
 #endif
 
-	typedef struct steak_string_s steak_string;
-	typedef struct steak_http_header_s steak_http_header;
+	typedef struct cblog_string_s cblog_string;
+	typedef struct cblog_http_header_s cblog_http_header;
 	typedef struct svchost_s svchost;
 	typedef struct svchost_options_s svchost_options;
-	typedef struct steak_connection_s steak_connection;
-	typedef struct steak_response_s steak_response;
-	typedef struct steak_request_s steak_request;
-	typedef struct steak_session_s steak_session;
+	typedef enum cblog_conn_status_enum cblog_conn_status_enum;
+	typedef struct cblog_connection_s cblog_connection;
+	typedef struct cblog_response_s cblog_response;
+	typedef struct cblog_request_s cblog_request;
+	typedef struct cblog_session_s cblog_session;
 
-	struct steak_string_s
+	struct cblog_string_s
 	{
 		int offset;
 		int length;
@@ -51,16 +52,44 @@ extern "C" {
 	/// <summary>
 	/// 保存HTTP标头信息
 	/// </summary>
-	struct steak_http_header_s
+	struct cblog_http_header_s
 	{
-		steak_string key;
-		steak_string value;
+		cblog_string key;
+		cblog_string value;
+	};
+
+	enum cblog_conn_status_enum
+	{
+		/// <summary>
+		/// 已连接
+		/// </summary>
+		CBLOG_CONN_STATUS_CONNECTED,
+
+		/// <summary>
+		/// 主动关闭连接
+		/// </summary>
+		CBLOG_CONN_STATUS_CLOSE,
+
+		/// <summary>
+		/// 对方已关闭连接
+		/// </summary>
+		CBLOG_CONN_STATS_CLOSED_BY_PEER,
+
+		/// <summary>
+		/// 读/写出错
+		/// </summary>
+		CBLOG_CONN_STATUS_ERROR,
+
+		/// <summary>
+		/// 连接已超时
+		/// </summary>
+		CBLOG_CONN_STATUS_TIMEOUT
 	};
 
 	/// <summary>
 	/// 记录与客户端的HTTP连接状态
 	/// </summary>
-	struct steak_connection_s
+	struct cblog_connection_s
 	{
 		/// <summary>
 		/// 客户端的socket
@@ -80,12 +109,12 @@ extern "C" {
 		/// <summary>
 		/// 保存该连接最后一次请求的信息
 		/// </summary>
-		steak_request *request;
+		cblog_request *request;
 
 		/// <summary>
 		/// 保存该连接最后一次响应的信息
 		/// </summary>
-		steak_response *response;
+		cblog_response *response;
 
 		/// <summary>
 		/// 接收缓冲区
@@ -98,18 +127,18 @@ extern "C" {
 		/// 保存当前需要发送给客户端的原始HTTP报文
 		/// </summary>
 		cblog_sockbuf *sendbuf;
+
+		/// <summary>
+		/// 该连接的状态
+		/// </summary>
+		cblog_conn_status_enum status;
 	};
 
 	/// <summary>
 	/// 存储当前HTTP请求的详细信息
 	/// </summary>
-	struct steak_request_s
+	struct cblog_request_s
 	{
-		/// <summary>
-		/// 原始HTTP报文
-		/// </summary>
-		char *raw_msg;
-
 		/// <summary>
 		/// 请求时间
 		/// </summary>
@@ -125,14 +154,15 @@ extern "C" {
 		/// 请求方法
 		/// </summary>
 		http_method_enum method;
-		steak_string url;
-		steak_string version;
-		steak_string body;
+		cblog_string method_string;
+		cblog_string url;
+		cblog_string version;
+		cblog_string body;
 
 		/// <summary>
 		/// HTTP标头
 		/// </summary>
-		steak_http_header headers[STEAK_DEFAULT_HEADER_COUNT];
+		cblog_http_header headers[STEAK_DEFAULT_HEADER_COUNT];
 
 		/// <summary>
 		/// HTTP标头数量
@@ -143,12 +173,12 @@ extern "C" {
 	/// <summary>
 	/// 记录HTTP响应的详细信息
 	/// </summary>
-	struct steak_response_s
+	struct cblog_response_s
 	{
 		/// <summary>
 		/// HTTP响应头部
 		/// </summary>
-		steak_http_header *header;
+		cblog_http_header *header;
 
 		char *content;
 		int content_length;
@@ -158,27 +188,27 @@ extern "C" {
 	/// 存储当前会话的详细信息
 	/// 一条HTTP网络连接就是一个会话
 	/// </summary>
-	struct steak_session_s
+	struct cblog_session_s
 	{
 		/// <summary>
 		/// 该会话的请求状态
 		/// </summary>
-		steak_request request;
+		cblog_request request;
 
 		/// <summary>
 		/// 该会话的响应状态
 		/// </summary>
-		steak_response response;
+		cblog_response response;
 
 		/// <summary>
 		/// 上一个会话
 		/// </summary>
-		steak_session *prev;
+		cblog_session *prev;
 
 		/// <summary>
 		/// 下一个会话
 		/// </summary>
-		steak_session *next;
+		cblog_session *next;
 	};
 
 #ifdef __cplusplus

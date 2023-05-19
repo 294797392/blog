@@ -27,7 +27,7 @@ extern "C" {
 	typedef enum eventpoll_type_enum eventpoll_type_enum;
 	typedef struct eventpoll_actions_s eventpoll_actions;
 	typedef struct cblog_event_s cblog_event;
-	typedef enum steak_event_type_enum steak_event_type_enum;
+	typedef enum cblog_event_type_enum cblog_event_type_enum;
 	typedef struct cblog_events_s cblog_events;
 
 	struct cblog_events_s
@@ -37,7 +37,7 @@ extern "C" {
 		int count;
 	};
 
-	enum steak_event_type_enum
+	enum cblog_event_type_enum
 	{
 		/// <summary>
 		/// svchost事件
@@ -74,6 +74,12 @@ extern "C" {
 		/// 监控的所有事件
 		/// </summary>
 		cblog_events *events;
+
+		/// <summary>
+		/// 出现异常的事件
+		/// 比如断开了连接，读写失败等等
+		/// </summary>
+		Yqueue *except_events;
 
 		/// <summary>
 		/// 指定监控事件的超时时间
@@ -125,7 +131,7 @@ extern "C" {
 		/// <summary>
 		/// 事件类型
 		/// </summary>
-		steak_event_type_enum type;
+		cblog_event_type_enum type;
 
 		/// <summary>
 		/// 该事件的超时时间

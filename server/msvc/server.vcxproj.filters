@@ -11,7 +11,7 @@
     <ClInclude Include="..\source\utils\steak_socket.h">
       <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\utils\steak_string.h">
+    <ClInclude Include="..\source\utils\cblog_string.h">
       <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="..\source\module\steak_http_handler.h">
@@ -20,14 +20,11 @@
     <ClInclude Include="..\source\event\event.h">
       <Filter>event</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\utils\steak_utils.h">
+    <ClInclude Include="..\source\utils\cblog_utils.h">
       <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="..\source\cblog_types.h" />
     <ClInclude Include="..\source\cblog_sockbuf.h" />
-    <ClInclude Include="..\source\utils\cblog_linkedlist.h">
-      <Filter>utils</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\main.c" />
@@ -47,7 +44,7 @@
     <ClCompile Include="..\source\utils\steak_socket.c">
       <Filter>utils</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\utils\steak_string.c">
+    <ClCompile Include="..\source\utils\cblog_string.c">
       <Filter>utils</Filter>
     </ClCompile>
     <ClCompile Include="..\source\module\steak_http_handler.c">
@@ -59,7 +56,7 @@
     <ClCompile Include="..\source\event\poll_actions_select.c">
       <Filter>event\poll</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\utils\steak_utils.c">
+    <ClCompile Include="..\source\utils\cblog_utils.c">
       <Filter>utils</Filter>
     </ClCompile>
     <ClCompile Include="..\source\cblog_sockbuf.c" />

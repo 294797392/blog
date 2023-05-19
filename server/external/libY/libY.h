@@ -913,7 +913,10 @@
             node_type *a = node->prev;\
             node_type *c = node->next;\
             a->next = c;\
-            c->prev = a;\
+            if(c != NULL)\
+            {\
+                c->prev = a; \
+            }\
         }\
         linklist->count--;\
 

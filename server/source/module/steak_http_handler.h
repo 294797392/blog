@@ -58,8 +58,8 @@ extern "C" {
 
 	struct steak_module_input_s
 	{
-		steak_request *request;
-		steak_response *response;
+		cblog_request *request;
+		cblog_response *response;
 	};
 
 #ifdef __cplusplus

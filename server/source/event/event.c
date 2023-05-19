@@ -52,17 +52,31 @@ int event_run_cycle(event_module *evm)
 	int code = STEAK_ERR_OK;
 	eventpoll_actions *actions = evm->actions;
 	code = actions->poll_event(evm);
+
+	// 删除连接出现异常情况的事件
+	cblog_event *evt = Y_queue_dequeue(evm->except_events);
+	while(evt != NULL)
+	{
+		cblog_connection *conn = (cblog_connection *)evt->context;
+		YLOGI("close connection, reason = %d", conn->status);
+		steak_socket_close(evt->sock);
+		event_remove(evm, evt);
+		free_connection_event(evm, evt);
+		evt = Y_queue_dequeue(evm->except_events);
+	}
+
 	return code;
 }
 
 cblog_event *new_connection_event(event_module *evm, cblog_socket sock, svchost *svc)
 {
-	steak_connection *conn = (steak_connection *)calloc(1, sizeof(steak_connection));
+	cblog_connection *conn = (cblog_connection *)calloc(1, sizeof(cblog_connection));
 	conn->sock = sock;
 	conn->svc = svc;
-	conn->request = (steak_request *)calloc(1, sizeof(steak_request));
-	conn->response = (steak_response *)calloc(1, sizeof(steak_response));
+	conn->request = (cblog_request *)calloc(1, sizeof(cblog_request));
+	conn->response = (cblog_response *)calloc(1, sizeof(cblog_response));
 	conn->recvbuf = new_cblog_sockbuf(sock, CBLOG_DEFAULT_RECV_BUF_SIZE);
+	conn->status = CBLOG_CONN_STATUS_CONNECTED;
 
 	steak_parser *parser = &conn->parser;
 	parser->state = STEAK_PARSER_INITIAL;
@@ -83,7 +97,7 @@ cblog_event *new_connection_event(event_module *evm, cblog_socket sock, svchost 
 void free_connection_event(event_module *evm, cblog_event *evt)
 {
 	// 释放connection
-	steak_connection *conn = (steak_connection *)evt->context;
+	cblog_connection *conn = (cblog_connection *)evt->context;
 	free_cblog_sockbuf(conn->recvbuf);
 	free(conn->request);
 	free(conn);

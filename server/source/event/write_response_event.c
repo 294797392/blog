@@ -15,7 +15,7 @@
 /// 可以发送响应给HTTP客户端了
 /// </summary>
 /// <param name="conn"></param>
-static void send_hello_cblog(steak_connection *conn)
+static void send_hello_cblog(cblog_connection *conn)
 {
 	char *str = "HTTP/1.1 200 OK\r\nContent-Length: 12\r\n\r\nhello cblog!";
 	send(conn->sock, str, strlen(str), 0);
@@ -23,13 +23,11 @@ static void send_hello_cblog(steak_connection *conn)
 
 int write_response_event(event_module *evm, cblog_event *evt)
 {
-	steak_connection *conn = (steak_connection *)evt->context;
+	cblog_connection *conn = (cblog_connection *)evt->context;
 
 	send_hello_cblog(conn);
 
-	steak_socket_close(evt->sock);
-	event_remove(evm, evt);
-	free_connection_event(evm, evt);
+	Y_queue_enqueue(evm->except_events, evt);
 
 	return STEAK_ERR_OK;
 }

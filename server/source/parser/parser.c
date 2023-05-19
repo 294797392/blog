@@ -5,13 +5,14 @@
 
 #include "errors.h"
 #include "parser.h"
+#include "cblog_string.h"
 
 #define state_action(name) static void name(steak_parser *parser, char *http_msg, char character, int character_offset)
 #define invoke_state_action(name) name(parser, http_msg, c, c_offset)
 
 static void enter_state(steak_parser *parser, steak_parser_state state)
 {
-	//YLOGI("enter state, %d -> %d", parser->state, state);
+	//YLOGI("state changed, %d -> %d", parser->state, state);
 	parser->state = state;
 }
 
@@ -134,7 +135,7 @@ state_action(action_header_value)
 		int keylen = parser->seg_len;
 		char *value = http_msg + parser->seg2_offset;
 		int valuelen = parser->seg2_len;
-		if(keylen == strlen("content-length") && !strcasecmp(key, "content-length", keylen))
+		if(keylen == strlen("content-length") && !cblog_string_casecmp(key, "content-length", keylen))
 		{
 			// 此时的http标头是Content-Length
 			char length_buffer[64] = { '\0' };
@@ -163,39 +164,6 @@ state_action(action_header_value)
 	else
 	{
 		// 不可见字符，可能是\r，啥都不做
-	}
-}
-
-state_action(action_header_value_end)
-{
-	if(character == '\n')
-	{
-		// 此时说明所有的header都解析完了
-		// 下面开始解析body。注意要处理body为0的情况
-		if(parser->content_length == 0)
-		{
-			// 没有body，触发请求结束事件
-			parser->on_event(parser, STEAK_PARSER_EVENT_BODY);
-			
-			// 恢复到初始状态
-			enter_state(parser, STEAK_PARSER_INITIAL);
-		}
-		else
-		{
-			// 有body，进入解析body状态
-			enter_state(parser, STEAK_PARSER_BODY);
-		}
-	}
-	else if(isprint(character))
-	{
-		// 此时说明又是header
-		parser->seg_offset = character_offset;
-		parser->seg_len = 1;
-		enter_state(parser, STEAK_PARSER_HEADER_KEY);
-	}
-	else
-	{
-		// do noting
 	}
 }
 
@@ -273,7 +241,37 @@ int steak_parser_parse(steak_parser *parser, char *http_msg, int offset, int siz
 
 			case STEAK_PARSER_HEADER_VALUE_END:
 			{
-				invoke_state_action(action_header_value_end);
+				if(c == '\n')
+				{
+					// 此时说明所有的header都解析完了
+					// 下面开始解析body。注意要处理body为0的情况
+					if(parser->content_length == 0)
+					{
+						// 没有body，触发请求结束事件
+						parser->on_event(parser, STEAK_PARSER_EVENT_BODY);
+
+						// 恢复到初始状态
+						enter_state(parser, STEAK_PARSER_INITIAL);
+
+						return 0;
+					}
+					else
+					{
+						// 有body，进入解析body状态
+						enter_state(parser, STEAK_PARSER_BODY);
+					}
+				}
+				else if(isprint(c))
+				{
+					// 此时说明又是header
+					parser->seg_offset = c_offset;
+					parser->seg_len = 1;
+					enter_state(parser, STEAK_PARSER_HEADER_KEY);
+				}
+				else
+				{
+					// do noting
+				}
 				break;
 			}
 
@@ -300,7 +298,7 @@ int steak_parser_parse(steak_parser *parser, char *http_msg, int offset, int siz
 				{
 					// 收到的字节数小于要接收的字节数，本次请求还没解析完
 					// 需要外部继续接收请求数据。直接返回
-					return size;
+					return -1;
 				}
 				else
 				{
@@ -319,6 +317,6 @@ int steak_parser_parse(steak_parser *parser, char *http_msg, int offset, int siz
 		}
 	}
 
-	return size;
+	return -1;
 }
 

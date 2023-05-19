@@ -92,11 +92,9 @@ extern "C" {
 	/// <param name="offset">http_msg的偏移量，从该处开始解析报文</param>
 	/// <param name="size">要解析的报文长度</param>
 	/// <returns>
-	/// 使用了的字节数
-	/// 有三种可能：
-	/// 1. 返回值小于size：说明本次报文解析完毕。返回值表示本次解析解析使用的字节数。当返回值小于size的时候说明数据里有新的HTTP报文出现。会出现这种情况吗?
-	/// 2. 返回值等于size：说明没解析完，需要外部模块继续接收并解析HTTP报文
-	/// 3. 返回值等于0：说明本次HTTP报文解析完毕，并且本次解析使用了所有的字节数
+	/// 0：报文解析结束
+	/// -1：报文解析没结束，还需要更多的数据用来解析
+	/// > 0：报文解析结束，但是数据没用完，解析的数据里包含下一次请求的数据。返回值表示解析了的字节数
 	/// </returns>
 	int steak_parser_parse(steak_parser *parser, char *http_msg, int offset, int size);
 

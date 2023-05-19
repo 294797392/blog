@@ -15,7 +15,7 @@
 #include "default.h"
 #include "errors.h"
 #include "app.h"
-#include "steak_utils.h"
+#include "cblog_utils.h"
 #include "steak_socket.h"
 
 extern eventpoll_actions eventpoll_actions_select;
@@ -108,6 +108,7 @@ static void init_event_module(event_module *evm, cJSON *json)
 	evm->timeout_ms = json_timeout->valueint;
 	evm->options.type = json_type->valueint;
 	evm->events = (cblog_events *)calloc(1, sizeof(cblog_events));
+	evm->except_events = Y_create_queue();
 	evm->actions = select_evpoll_actions(evm->options.type);
 	evm->actions->initialize(evm);
 }

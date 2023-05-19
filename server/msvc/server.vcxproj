@@ -152,8 +152,8 @@
     <ClInclude Include="..\source\module\steak_http_handler.h" />
     <ClInclude Include="..\source\parser\parser.h" />
     <ClInclude Include="..\source\utils\steak_socket.h" />
-    <ClInclude Include="..\source\utils\steak_string.h" />
-    <ClInclude Include="..\source\utils\steak_utils.h" />
+    <ClInclude Include="..\source\utils\cblog_string.h" />
+    <ClInclude Include="..\source\utils\cblog_utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\app.c" />
@@ -167,8 +167,8 @@
     <ClCompile Include="..\source\module\steak_http_handler.c" />
     <ClCompile Include="..\source\parser\parser.c" />
     <ClCompile Include="..\source\utils\steak_socket.c" />
-    <ClCompile Include="..\source\utils\steak_string.c" />
-    <ClCompile Include="..\source\utils\steak_utils.c" />
+    <ClCompile Include="..\source\utils\cblog_string.c" />
+    <ClCompile Include="..\source\utils\cblog_utils.c" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\source\service.json">
