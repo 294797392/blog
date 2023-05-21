@@ -7,10 +7,10 @@
 #include "cblog_errors.h"
 #include "cblog_string.h"
 
-#define state_action(name) static void name(steak_parser *parser, char *http_msg, char character, int character_offset)
+#define state_action(name) static void name(cblog_parser *parser, char *http_msg, char character, int character_offset)
 #define invoke_state_action(name) name(parser, http_msg, c, c_offset)
 
-static void enter_state(steak_parser *parser, steak_parser_state state)
+static void enter_state(cblog_parser *parser, cblog_parser_state_enum state)
 {
 	//YLOGI("state changed, %d -> %d", parser->state, state);
 	parser->state = state;
@@ -22,7 +22,7 @@ state_action(action_initial)
 	{
 		parser->seg_offset = character_offset;
 		parser->seg_len = 1;
-		enter_state(parser, STEAK_PARSER_METHOD);
+		enter_state(parser, CBLOG_PARSER_STATE_METHOD);
 	}
 	else
 	{
@@ -35,8 +35,8 @@ state_action(action_method_content)
 	if(character == ' ')
 	{
 		// method结束
-		parser->on_event(parser, STEAK_PARSER_EVENT_METHOD);
-		enter_state(parser, STEAK_PARSER_METHOD_END);
+		parser->on_event(parser, CBLOG_PARSER_EVENT_METHOD);
+		enter_state(parser, CBLOG_PARSER_STATE_METHOD_END);
 	}
 	else
 	{
@@ -50,7 +50,7 @@ state_action(action_method_end)
 	{
 		parser->seg_offset = character_offset;
 		parser->seg_len = 1;
-		enter_state(parser, STEAK_PARSER_URL);
+		enter_state(parser, CBLOG_PARSER_STATE_URL);
 	}
 }
 
@@ -59,8 +59,8 @@ state_action(action_url_content)
 	if(character == ' ')
 	{
 		// uri结束
-		parser->on_event(parser, STEAK_PARSER_EVENT_URI);
-		enter_state(parser, STEAK_PARSER_URL_END);
+		parser->on_event(parser, CBLOG_PARSER_EVENT_URI);
+		enter_state(parser, CBLOG_PARSER_STATE_URL_END);
 	}
 	else
 	{
@@ -74,7 +74,7 @@ state_action(action_url_end)
 	{
 		parser->seg_offset = character_offset;
 		parser->seg_len = 1;
-		enter_state(parser, STEAK_PARSER_VERSION);
+		enter_state(parser, CBLOG_PARSER_STATE_VERSION);
 	}
 }
 
@@ -82,8 +82,8 @@ state_action(action_version_content)
 {
 	if(character == '\n')
 	{
-		parser->on_event(parser, STEAK_PARSER_EVENT_VERSION);
-		enter_state(parser, STEAK_PARSER_VERSION_END);
+		parser->on_event(parser, CBLOG_PARSER_EVENT_VERSION);
+		enter_state(parser, CBLOG_PARSER_STATE_VERSION_END);
 	}
 	else if(isprint(character))
 	{
@@ -102,7 +102,7 @@ state_action(action_version_end)
 		// header key begin
 		parser->seg_offset = character_offset;
 		parser->seg_len = 1;
-		enter_state(parser, STEAK_PARSER_HEADER_KEY);
+		enter_state(parser, CBLOG_PARSER_STATE_HEADER_KEY);
 	}
 	else
 	{
@@ -117,7 +117,7 @@ state_action(action_header_key)
 		// header_key结束了，开始header_value
 		parser->seg2_len = 0;
 		parser->seg2_offset = 0;
-		enter_state(parser, STEAK_PARSER_HEADER_VALUE);
+		enter_state(parser, CBLOG_PARSER_STATE_HEADER_VALUE);
 	}
 	else
 	{
@@ -132,13 +132,13 @@ state_action(action_header_value)
 		// header_value结束了
 
 		// 触发事件
-		parser->on_event(parser, STEAK_PARSER_EVENT_HEADER);
+		parser->on_event(parser, CBLOG_PARSER_EVENT_HEADER);
 
 		parser->seg_len = 0;
 		parser->seg_offset = 0;
 		parser->seg2_len = 0;
 		parser->seg2_offset = 0;
-		enter_state(parser, STEAK_PARSER_HEADER_VALUE_END);
+		enter_state(parser, CBLOG_PARSER_STATE_HEADER_VALUE_END);
 	}
 	else if(character != ' ' && isprint(character))
 	{
@@ -157,7 +157,7 @@ state_action(action_header_value)
 
 
 
-int steak_parser_parse(steak_parser *parser, char *http_msg, int offset, int size)
+int cblog_parser_parse(cblog_parser *parser, char *http_msg, int offset, int size)
 {
 	char *msg = http_msg + offset;
 	int msg_size = size;
@@ -172,61 +172,61 @@ int steak_parser_parse(steak_parser *parser, char *http_msg, int offset, int siz
 
 		switch(parser->state)
 		{
-			case STEAK_PARSER_INITIAL:
+			case CBLOG_PARSER_STATE_INITIAL:
 			{
 				invoke_state_action(action_initial);
 				break;
 			}
 
-			case STEAK_PARSER_METHOD:
+			case CBLOG_PARSER_STATE_METHOD:
 			{
 				invoke_state_action(action_method_content);
 				break;
 			}
 
-			case STEAK_PARSER_METHOD_END:
+			case CBLOG_PARSER_STATE_METHOD_END:
 			{
 				invoke_state_action(action_method_end);
 				break;
 			}
 
-			case STEAK_PARSER_URL:
+			case CBLOG_PARSER_STATE_URL:
 			{
 				invoke_state_action(action_url_content);
 				break;
 			}
 
-			case STEAK_PARSER_URL_END:
+			case CBLOG_PARSER_STATE_URL_END:
 			{
 				invoke_state_action(action_url_end);
 				break;
 			}
 
-			case STEAK_PARSER_VERSION:
+			case CBLOG_PARSER_STATE_VERSION:
 			{
 				invoke_state_action(action_version_content);
 				break;
 			}
 
-			case STEAK_PARSER_VERSION_END:
+			case CBLOG_PARSER_STATE_VERSION_END:
 			{
 				invoke_state_action(action_version_end);
 				break;
 			}
 
-			case STEAK_PARSER_HEADER_KEY:
+			case CBLOG_PARSER_STATE_HEADER_KEY:
 			{
 				invoke_state_action(action_header_key);
 				break;
 			}
 
-			case STEAK_PARSER_HEADER_VALUE:
+			case CBLOG_PARSER_STATE_HEADER_VALUE:
 			{
 				invoke_state_action(action_header_value);
 				break;
 			}
 
-			case STEAK_PARSER_HEADER_VALUE_END:
+			case CBLOG_PARSER_STATE_HEADER_VALUE_END:
 			{
 				if(c == '\n')
 				{
@@ -235,17 +235,17 @@ int steak_parser_parse(steak_parser *parser, char *http_msg, int offset, int siz
 					if(parser->content_length == 0)
 					{
 						// 没有body，触发请求结束事件
-						parser->on_event(parser, STEAK_PARSER_EVENT_BODY);
+						parser->on_event(parser, CBLOG_PARSER_EVENT_BODY);
 
 						// 恢复到初始状态
-						enter_state(parser, STEAK_PARSER_INITIAL);
+						enter_state(parser, CBLOG_PARSER_STATE_INITIAL);
 
 						return 0;
 					}
 					else
 					{
 						// 有body，进入解析body状态
-						enter_state(parser, STEAK_PARSER_BODY);
+						enter_state(parser, CBLOG_PARSER_STATE_BODY);
 					}
 				}
 				else if(isprint(c))
@@ -253,7 +253,7 @@ int steak_parser_parse(steak_parser *parser, char *http_msg, int offset, int siz
 					// 此时说明又是header
 					parser->seg_offset = c_offset;
 					parser->seg_len = 1;
-					enter_state(parser, STEAK_PARSER_HEADER_KEY);
+					enter_state(parser, CBLOG_PARSER_STATE_HEADER_KEY);
 				}
 				else
 				{
@@ -262,7 +262,7 @@ int steak_parser_parse(steak_parser *parser, char *http_msg, int offset, int siz
 				break;
 			}
 
-			case STEAK_PARSER_BODY:
+			case CBLOG_PARSER_STATE_BODY:
 			{
 				if(parser->seg_offset == 0)
 				{
@@ -277,8 +277,8 @@ int steak_parser_parse(steak_parser *parser, char *http_msg, int offset, int siz
 				{
 					// 收到的字节数等于需要接收的字节数，本次解析完毕
 					parser->seg_len = parser->content_length;
-					parser->on_event(parser, STEAK_PARSER_EVENT_BODY);
-					enter_state(parser, STEAK_PARSER_INITIAL);
+					parser->on_event(parser, CBLOG_PARSER_EVENT_BODY);
+					enter_state(parser, CBLOG_PARSER_STATE_INITIAL);
 					return 0;
 				}
 				else if(size < left)
@@ -292,8 +292,8 @@ int steak_parser_parse(steak_parser *parser, char *http_msg, int offset, int siz
 					// 收到的字节数大于要接收的字节数
 					// 有可能数据里包含下一次请求
 					parser->seg_len = parser->content_length;
-					parser->on_event(parser, STEAK_PARSER_EVENT_BODY);
-					enter_state(parser, STEAK_PARSER_INITIAL);
+					parser->on_event(parser, CBLOG_PARSER_EVENT_BODY);
+					enter_state(parser, CBLOG_PARSER_STATE_INITIAL);
 					return i + left;
 				}
 				break;

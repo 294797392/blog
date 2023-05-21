@@ -62,16 +62,6 @@ void cblog_string_print2(char *prepend, cblog_string *str)
 	cblog_string_print(str);
 }
 
-void cblog_string_print_header(cblog_http_header *header)
-{
-	cblog_string *key = &header->key;
-	cblog_string *value = &header->value;
-
-	char format[64] = { '\0' };
-	snprintf(format, sizeof(format), "%%.%ds: %%.%ds\r\n", header->key.length, header->value.length);
-	printf(format, cblog_string_string(key), cblog_string_string(value));
-}
-
 int cblog_string_to_int32(cblog_string *str)
 {
 	char buffer[32] = { '\0' };

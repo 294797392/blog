@@ -10,7 +10,7 @@
 
 #include <libY.h>
 
-#include "protocol.h"
+#include "cblog_protocol.h"
 #include "cblog_app.h"
 #include "cblog_errors.h"
 #include "cblog_socket.h"
@@ -19,29 +19,15 @@
 #include "cblog_parser.h"
 #include "cblog_event_module.h"
 
-typedef struct textvalue_s
+static print_header(cblog_http_header *header)
 {
-	char *text;
-	int value;
-}textvalue;
+	cblog_string *key = &header->key;
+	cblog_string *value = &header->value;
 
-static textvalue http_method_list[] =
-{
-	{.text = "GET",		.value = STEAK_HTTP_METHOD_GET },
-	{.text = "POST",	.value = STEAK_HTTP_METHOD_POST },
-	{.text = "HEAD",	.value = STEAK_HTTP_METHOD_HEAD },
-	{.text = "PUT",		.value = STEAK_HTTP_METHOD_PUT },
-	{.text = "TRACE",	.value = STEAK_HTTP_METHOD_TRACE },
-	{.text = "OPTIONS", .value = STEAK_HTTP_METHOD_OPTIONS },
-	{.text = "DELETE",	.value = STEAK_HTTP_METHOD_DELETE },
-	{.text = NULL }
-};
-
-static textvalue http_version_list[] =
-{
-	{.text = "HTTP/1.1", .value = CBLOG_HTTP_VERSION_1DOT1 },
-	{.text = NULL }
-};
+	char format[64] = { '\0' };
+	snprintf(format, sizeof(format), "%%.%ds: %%.%ds\r\n", header->key.length, header->value.length);
+	printf(format, cblog_string_string(key), cblog_string_string(value));
+}
 
 static void dump_request(cblog_request *request)
 {
@@ -50,45 +36,12 @@ static void dump_request(cblog_request *request)
 	cblog_string_print2("version: ", &request->version_string);
 	for(int i = 0; i < request->nheader; i++)
 	{
-		cblog_string_print_header(&request->headers[i]);
+		print_header(&request->headers[i]);
 	}
 }
 
-static int text2value(cblog_string *str, textvalue *tvs)
+static void generate_response(cblog_request *request, cblog_response *response)
 {
-	for(int i = 0; ; i++)
-	{
-		textvalue *tv = &tvs[i];
-
-		if(tv->text == NULL)
-		{
-			return 0;
-		}
-
-		if(!cblog_string_casecmp(str, tv->text))
-		{
-			return tv->value;
-		}
-	}
-
-	return 0;
-}
-
-/// <summary>
-/// 当HTTP请求被接收完了调用
-/// </summary>
-/// <param name="evm"></param>
-/// <param name="evt"></param>
-static void process_request(event_module *evm, cblog_event *evt)
-{
-	cblog_connection *conn = (cblog_connection *)evt->context;
-	cblog_request *request = conn->request;
-	cblog_response *response = conn->response;
-
-	dump_request(request);
-
-	event_modify(evm, evt, evt->read, 1);
-
 	switch(request->method)
 	{
 		case STEAK_HTTP_METHOD_GET:
@@ -115,12 +68,33 @@ static void process_request(event_module *evm, cblog_event *evt)
 		default:
 			break;
 	}
+}
+
+/// <summary>
+/// 当HTTP请求被接收完了调用
+/// </summary>
+/// <param name="evm"></param>
+/// <param name="evt"></param>
+static void process_request(event_module *evm, cblog_event *evt)
+{
+	cblog_connection *conn = (cblog_connection *)evt->context;
+	cblog_request *request = conn->request;
+	cblog_response *response = conn->response;
+
+	// 打印请求的调试信息
+	dump_request(request);
+
+	// 生成响应
+	generate_response(request, response);
+
+	// 把文件描述符设置为可写状态
+	event_modify(evm, evt, evt->read, 1);
 
 	request->nheader = 0;
 }
 
 
-void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt)
+void http_parser_event_handler(cblog_parser *parser, cblog_parser_event_enum evt)
 {
 	cblog_connection *conn = (cblog_connection *)parser->userdata;
 	cblog_request *request = conn->request;
@@ -128,16 +102,16 @@ void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt
 
 	switch(evt)
 	{
-		case STEAK_PARSER_EVENT_METHOD:
+		case CBLOG_PARSER_EVENT_METHOD:
 		{
 			request->method_string.offset = parser->seg_offset;
 			request->method_string.length = parser->seg_len;
 			request->method_string.buffer = recvbuf;
-			request->method = text2value(&request->method_string, http_method_list);
+			request->method = cblog_http_method_string2enum(&request->method_string);
 			break;
 		}
 
-		case STEAK_PARSER_EVENT_URI:
+		case CBLOG_PARSER_EVENT_URI:
 		{
 			request->url.offset = parser->seg_offset;
 			request->url.length = parser->seg_len;
@@ -145,16 +119,16 @@ void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt
 			break;
 		}
 
-		case STEAK_PARSER_EVENT_VERSION:
+		case CBLOG_PARSER_EVENT_VERSION:
 		{
 			request->version_string.offset = parser->seg_offset;
 			request->version_string.length = parser->seg_len;
 			request->version_string.buffer = recvbuf;
-			request->version = text2value(&request->version_string, http_version_list);
+			request->version = cblog_http_version_string2enum(&request->version_string);
 			break;
 		}
 
-		case STEAK_PARSER_EVENT_HEADER:
+		case CBLOG_PARSER_EVENT_HEADER:
 		{
 			int nheader = request->nheader;
 			if(nheader == request->max_header)
@@ -198,7 +172,7 @@ void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt
 			break;
 		}
 
-		case STEAK_PARSER_EVENT_BODY:
+		case CBLOG_PARSER_EVENT_BODY:
 		{
 			request->body.offset = parser->seg_offset;
 			request->body.length = parser->seg_len;
@@ -214,7 +188,7 @@ void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt
 int read_request_event(event_module *evm, cblog_event *evt)
 {
 	cblog_connection *conn = (cblog_connection *)evt->context;
-	steak_parser *parser = &conn->parser;
+	cblog_parser *parser = &conn->parser;
 	cblog_socket_buffer *recvbuf = conn->recvbuf;
 	int old_offset = recvbuf->offset;
 
@@ -236,7 +210,7 @@ int read_request_event(event_module *evm, cblog_event *evt)
 	// socket发生错误, 直接关闭该链接
 	if(rc == -1)
 	{
-		YLOGE("recv socket failed, %d, close connection", steak_socket_error());
+		YLOGE("recv socket failed, %d, close connection", cblog_socket_error());
 		Y_queue_enqueue(evm->except_events, evt);
 		return STEAK_ERR_OK;
 	}
@@ -246,7 +220,7 @@ int read_request_event(event_module *evm, cblog_event *evt)
 	// 所以使用while循环去解析报文
 	while(1)
 	{
-		int count = steak_parser_parse(parser, recvbuf->ptr, old_offset, rc);
+		int count = cblog_parser_parse(parser, recvbuf->ptr, old_offset, rc);
 		if(count == -1)
 		{
 			// 报文还没解析结束，还需要更多数据

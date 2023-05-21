@@ -28,9 +28,9 @@ extern "C" {
 	typedef struct eventpoll_actions_s eventpoll_actions;
 	typedef struct cblog_event_s cblog_event;
 	typedef enum cblog_event_type_enum cblog_event_type_enum;
-	typedef struct cblog_events_s cblog_events;
+	typedef struct cblog_event_chain_s cblog_event_chain;
 
-	struct cblog_events_s
+	struct cblog_event_chain_s
 	{
 		cblog_event *first;
 		cblog_event *last;
@@ -42,12 +42,12 @@ extern "C" {
 		/// <summary>
 		/// svchost事件
 		/// </summary>
-		STEAK_EVENT_TYPE_SVCHOST,
+		CBLOG_EVENT_TYPE_SVCHOST,
 
 		/// <summary>
 		/// HTTP客户端链接事件
 		/// </summary>
-		STEAK_EVENT_TYPE_CONNECTION
+		CBLOG_EVENT_TYPE_CONNECTION
 	};
 
 	enum eventpoll_type_enum
@@ -73,7 +73,7 @@ extern "C" {
 		/// <summary>
 		/// 监控的所有事件
 		/// </summary>
-		cblog_events *events;
+		cblog_event_chain *events;
 
 		/// <summary>
 		/// 出现异常的事件
@@ -203,23 +203,6 @@ extern "C" {
 	 * @nevent：事件列表里事件的数量
 	 */
 	int event_run_cycle(event_module *evm);
-
-	/*
-	 * 描述：
-	 * 创建一个事件的实例
-	 *
-	 * 参数：
-	 * @evm：event_module对象
-	 * @sock：客户端socket
-	 * @svc：该链接所属的service
-	 *
-	 * 返回值：
-	 * event实例
-	 */
-	cblog_event *new_connection_event(event_module *evm, cblog_socket sock, svchost *svc);
-	void free_connection_event(event_module *evm, cblog_event *evt);
-	
-	cblog_event *new_svchost_event(event_module *evm, svchost *svc);
 
 #ifdef __cplusplus
 }

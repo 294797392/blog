@@ -17,6 +17,7 @@
 #include "cblog_errors.h"
 #include "cblog_utils.h"
 #include "cblog_socket.h"
+#include "cblog_factory.h"
 
 extern eventpoll_actions eventpoll_actions_select;
 eventpoll_actions *eventpoll_actions_list[] =
@@ -65,7 +66,7 @@ static int start_svchost(svchost *svc)
 {
 	if((svc->sock = socket(PF_INET, SOCK_STREAM, 0)) < 0)
 	{
-		YLOGE("create socket failed, %d", steak_socket_error());
+		YLOGE("create socket failed, %d", cblog_socket_error());
 		return STEAK_ERR_SYSERR;
 	}
 
@@ -73,7 +74,7 @@ static int start_svchost(svchost *svc)
 	int on = 1;
 	if(setsockopt(svc->sock, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on)) < 0)
 	{
-		YLOGE("setsockopt failed SO_REUSEADDR, %d", steak_socket_error());
+		YLOGE("setsockopt failed SO_REUSEADDR, %d", cblog_socket_error());
 		return STEAK_ERR_SYSERR;
 	}
 
@@ -87,14 +88,14 @@ static int start_svchost(svchost *svc)
 	// °ó¶¨
 	if(bind(svc->sock, (struct sockaddr *)&bdaddr, sizeof(struct sockaddr)) < 0)
 	{
-		YLOGE("bind failed, %d", steak_socket_error());
+		YLOGE("bind failed, %d", cblog_socket_error());
 		return STEAK_ERR_SYSERR;
 	}
 
 	// ¼àÌý
 	if(listen(svc->sock, 5) < 0)
 	{
-		YLOGE("listen failed, %d", steak_socket_error());
+		YLOGE("listen failed, %d", cblog_socket_error());
 		return STEAK_ERR_SYSERR;
 	}
 
@@ -107,7 +108,7 @@ static void init_event_module(event_module *evm, cJSON *json)
 	cJSON *json_timeout = cJSON_GetObjectItem(json, "timeout");
 	evm->timeout_ms = json_timeout->valueint;
 	evm->options.type = json_type->valueint;
-	evm->events = (cblog_events *)calloc(1, sizeof(cblog_events));
+	evm->events = (cblog_event_chain *)calloc(1, sizeof(cblog_event_chain));
 	evm->except_events = Y_create_queue();
 	evm->actions = select_evpoll_actions(evm->options.type);
 	evm->actions->initialize(evm);
@@ -167,7 +168,7 @@ int steak_app_start()
 			return rc;
 		}
 
-		cblog_event *evt = new_svchost_event(app_instance->evm, svc);
+		cblog_event *evt = new_cblog_svchost_event(svc);
 		event_add(app_instance->evm, evt);
 	}
 

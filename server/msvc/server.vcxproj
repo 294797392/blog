@@ -143,21 +143,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\source\cblog_app.h" />
+    <ClInclude Include="..\source\cblog_factory.h" />
     <ClInclude Include="..\source\cblog_parser.h" />
+    <ClInclude Include="..\source\cblog_protocol.h" />
     <ClInclude Include="..\source\cblog_types.h" />
     <ClInclude Include="..\source\cblog_default.h" />
     <ClInclude Include="..\source\cblog_unit_test.h" />
     <ClInclude Include="..\source\module\cblog_event_module.h" />
-    <ClInclude Include="..\source\protocol.h" />
     <ClInclude Include="..\source\cblog_errors.h" />
-    <ClInclude Include="..\source\module\steak_http_handler.h" />
+    <ClInclude Include="..\source\module\cblog_http_handler.h" />
     <ClInclude Include="..\source\utils\cblog_socket.h" />
     <ClInclude Include="..\source\utils\cblog_string.h" />
     <ClInclude Include="..\source\utils\cblog_utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\cblog_app.c" />
+    <ClCompile Include="..\source\cblog_factory.c" />
     <ClCompile Include="..\source\cblog_parser.c" />
+    <ClCompile Include="..\source\cblog_protocol.c" />
     <ClCompile Include="..\source\cblog_unit_test.c" />
     <ClCompile Include="..\source\event\accept_client_event.c" />
     <ClCompile Include="..\source\event\poll_actions_select.c" />
@@ -165,7 +168,7 @@
     <ClCompile Include="..\source\event\write_response_event.c" />
     <ClCompile Include="..\source\main.c" />
     <ClCompile Include="..\source\module\cblog_event_module.c" />
-    <ClCompile Include="..\source\module\steak_http_handler.c" />
+    <ClCompile Include="..\source\module\cblog_http_handler.c" />
     <ClCompile Include="..\source\utils\cblog_socket.c" />
     <ClCompile Include="..\source\utils\cblog_string.c" />
     <ClCompile Include="..\source\utils\cblog_utils.c" />

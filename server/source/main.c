@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 
 	Y_log_init(NULL);
 
-	if((rc = steak_socket_init()) != STEAK_ERR_OK)
+	if((rc = cblog_socket_init()) != STEAK_ERR_OK)
 	{
 		return 0;
 	}

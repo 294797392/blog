@@ -33,7 +33,7 @@ void free_cblog_sockbuf(cblog_socket_buffer *buffer)
 int cblog_sockbuf_recv(cblog_socket_buffer *buffer)
 {
 	// 获取当前socket缓冲区里的数据大小
-	int avaliable = steak_socket_get_avaliable_size(buffer->sock);
+	int avaliable = cblog_socket_get_avaliable_size(buffer->sock);
 	if(avaliable == -1)
 	{
 		// 返回0，外部模块会关闭连接
@@ -72,7 +72,7 @@ void cblog_sockbuf_reset(cblog_socket_buffer *buffer)
 
 
 
-int steak_socket_init()
+int cblog_socket_init()
 {
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
 	WORD version = MAKEWORD(1, 1);
@@ -88,7 +88,7 @@ int steak_socket_init()
 	return STEAK_ERR_OK;
 }
 
-int steak_socket_get_avaliable_size(cblog_socket sock)
+int cblog_socket_get_avaliable_size(cblog_socket sock)
 {
 	u_long size = 0;
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
@@ -104,7 +104,24 @@ int steak_socket_get_avaliable_size(cblog_socket sock)
 	return size;
 }
 
-void steak_socket_close(cblog_socket sock)
+int cblog_socket_set_nonblock(cblog_socket sock)
+{
+	u_long on = 1;
+#if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
+	if(ioctlsocket(sock, FIONBIO, &on) != 0)
+#elif (defined(ENV_UNIX))
+	int val = fcntl(sock, F_GETFL, 0);
+	fcntl(sock, F_SETFL, val | O_NONBLOCK);
+#endif
+	{
+		YLOGE("set socket nonblock failed, %d", cblog_socket_error());
+		return STEAK_ERR_SYSERR;
+	}
+
+	return STEAK_ERR_OK;
+}
+
+void cblog_socket_close(cblog_socket sock)
 {
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
 	closesocket(sock);
@@ -113,7 +130,7 @@ void steak_socket_close(cblog_socket sock)
 #endif
 }
 
-int steak_socket_error()
+int cblog_socket_error()
 {
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
 	return WSAGetLastError();

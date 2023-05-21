@@ -4,31 +4,31 @@
 
 #include "cblog_unit_test.h"
 
-static void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt)
+static void http_parser_event_handler(cblog_parser *parser, cblog_parser_event_enum evt)
 {
 	switch(evt)
 	{
-		case STEAK_PARSER_EVENT_METHOD:
+		case CBLOG_PARSER_EVENT_METHOD:
 		{
 			break;
 		}
 
-		case STEAK_PARSER_EVENT_URI:
+		case CBLOG_PARSER_EVENT_URI:
 		{
 			break;
 		}
 
-		case STEAK_PARSER_EVENT_VERSION:
+		case CBLOG_PARSER_EVENT_VERSION:
 		{
 			break;
 		}
 
-		case STEAK_PARSER_EVENT_HEADER:
+		case CBLOG_PARSER_EVENT_HEADER:
 		{
 			break;
 		}
 
-		case STEAK_PARSER_EVENT_BODY:
+		case CBLOG_PARSER_EVENT_BODY:
 		{
 			break;
 		}
@@ -58,8 +58,8 @@ void cblog_parser_unit_test()
 		"Accept - Language : zh - CN, zh; q = 0.9, en; q = 0.8, en - GB; q = 0.7, en - US; q = 0.6\r\n";
 	int buflen = strlen(buf);
 
-	steak_parser parser;
+	cblog_parser parser;
 	parser.on_event = http_parser_event_handler;
-	steak_parser_parse(&parser, buf, 0, buflen);
+	cblog_parser_parse(&parser, buf, 0, buflen);
 	printf("parse ok\n");
 }

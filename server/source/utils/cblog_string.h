@@ -13,7 +13,6 @@
 
 #include <libY.h>
 
-#include "cblog_types.h"
 #include "cblog_socket.h"
 
 #define cblog_string_charat(_str, _offset) _str->buffer->ptr[_str->offset + _offset]
@@ -22,6 +21,14 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+	typedef struct cblog_string_s cblog_string;
+	struct cblog_string_s
+	{
+		cblog_socket_buffer *buffer;
+		int offset;
+		int length;
+	};
 
 	/// <summary>
 	/// 
@@ -34,7 +41,6 @@ extern "C" {
 
 	void cblog_string_print(cblog_string *str);
 	void cblog_string_print2(char *prepend, cblog_string *str);
-	void cblog_string_print_header(cblog_http_header *header);
 
 	int cblog_string_to_int32(cblog_string *str);
 

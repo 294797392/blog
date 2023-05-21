@@ -11,6 +11,7 @@
 #include "cblog_types.h"
 #include "cblog_socket.h"
 #include "cblog_event_module.h"
+#include "cblog_factory.h"
 
 int accept_client_event(event_module *evm, cblog_event *evt)
 {
@@ -27,8 +28,11 @@ int accept_client_event(event_module *evm, cblog_event *evt)
 
 	YLOGI("client connected, new session");
 
+	// 设置套接字为非阻塞
+	cblog_socket_set_nonblock(sock);
+
 	// 客户端连接成功，把客户端socket加到待监控的事件列表里
-	cblog_event *event = new_connection_event(evm, sock, svc);
+	cblog_event *event = new_cblog_connection_event(sock, svc);
 	event_add(evm, event);
 
 	return STEAK_ERR_OK;

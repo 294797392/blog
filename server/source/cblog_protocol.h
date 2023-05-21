@@ -9,20 +9,14 @@
 #ifndef __CBLOG_PROTOCOL_H__
 #define __CBLOG_PROTOCOL_H__
 
+#include "cblog_string.h"
+
 #define CBLOG_HTTP_HEADER_CONNECTION                   "connection"
 #define CBLOG_HTTP_HEADER_CONTENT_LENGTH               "content-length"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-    typedef enum
-    {
-        STEAK_HTTP_VERSION_0,
-        STEAK_HTTP_VERSION_1,
-        STEAK_HTTP_VERSION_1_1,
-        STEAK_HTTP_VERSION_2,
-    }http_version_enum;
 
     typedef enum
     {
@@ -33,7 +27,7 @@ extern "C" {
         STEAK_HTTP_METHOD_TRACE,
         STEAK_HTTP_METHOD_OPTIONS,
         STEAK_HTTP_METHOD_DELETE,
-    }http_method_enum;
+    }cblog_http_method_enum;
 
     typedef enum
     {
@@ -51,6 +45,14 @@ extern "C" {
         CBLOG_HTTP_VERSION_2,
         CBLOG_HTTP_VERSION_3
     }cblog_http_version_enum;
+
+    typedef enum
+    {
+        CBLOG_HTTP_STATUS_CODE_OK = 200
+    }cblog_http_status_code_enum;
+
+    int cblog_http_method_string2enum(cblog_string *str);
+    int cblog_http_version_string2enum(cblog_string *str);
 
 #ifdef __cplusplus
 }

@@ -19,7 +19,7 @@ typedef struct poll_select_s
 	int max_read;
 	int max_write;
 	int nevents;
-	int max_fd;
+	cblog_socket max_fd;
 
 	struct timeval timeout;
 }poll_select;

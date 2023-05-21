@@ -116,7 +116,7 @@ extern "C" {
 	 * 描述：
 	 * 初始化socket
 	 */
-	int steak_socket_init();
+	int cblog_socket_init();
 
 	/*
 	 * 描述：
@@ -128,15 +128,29 @@ extern "C" {
 	 * 返回值：
 	 * 可读取的数据量
 	 */
-	int steak_socket_get_avaliable_size(cblog_socket sock);
+	int cblog_socket_get_avaliable_size(cblog_socket sock);
+	
 
-	void steak_socket_close(cblog_socket sock);
+	/*
+	 * 描述：
+	 * 设置一个套接字的读写模式为异步
+	 * 读写该套接字不会阻塞
+	 *
+	 * 参数：
+	 * @sock：要设置的socket对象
+	 *
+	 * 返回值：
+	 * CBLOG_ERR
+	 */
+	int cblog_socket_set_nonblock(cblog_socket sock);
+
+	void cblog_socket_close(cblog_socket sock);
 
 	/*
 	 * 描述：
 	 * 获取socket错误码
 	 */
-	int steak_socket_error();
+	int cblog_socket_error();
 
 
 
