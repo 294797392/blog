@@ -146,6 +146,7 @@
     <ClInclude Include="..\source\cblog_parser.h" />
     <ClInclude Include="..\source\cblog_types.h" />
     <ClInclude Include="..\source\cblog_default.h" />
+    <ClInclude Include="..\source\cblog_unit_test.h" />
     <ClInclude Include="..\source\module\cblog_event_module.h" />
     <ClInclude Include="..\source\protocol.h" />
     <ClInclude Include="..\source\cblog_errors.h" />
@@ -157,6 +158,7 @@
   <ItemGroup>
     <ClCompile Include="..\source\cblog_app.c" />
     <ClCompile Include="..\source\cblog_parser.c" />
+    <ClCompile Include="..\source\cblog_unit_test.c" />
     <ClCompile Include="..\source\event\accept_client_event.c" />
     <ClCompile Include="..\source\event\poll_actions_select.c" />
     <ClCompile Include="..\source\event\read_request_event.c" />

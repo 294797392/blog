@@ -22,6 +22,7 @@
     <ClInclude Include="..\source\module\cblog_event_module.h">
       <Filter>module</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\cblog_unit_test.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\main.c" />
@@ -54,6 +55,7 @@
     <ClCompile Include="..\source\module\cblog_event_module.c">
       <Filter>module</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\cblog_unit_test.c" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="event">

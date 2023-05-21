@@ -38,7 +38,7 @@ extern "C" {
 		cblog_socket sock;
 
 		/// <summary>
-		/// buffer÷∏’Î
+		/// bufferµÿ÷∑
 		/// </summary>
 		char *ptr;
 

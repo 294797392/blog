@@ -74,6 +74,11 @@ static int text2value(cblog_string *str, textvalue *tvs)
 	return 0;
 }
 
+/// <summary>
+/// 当HTTP请求被接收完了调用
+/// </summary>
+/// <param name="evm"></param>
+/// <param name="evt"></param>
 static void process_request(event_module *evm, cblog_event *evt)
 {
 	cblog_connection *conn = (cblog_connection *)evt->context;
@@ -111,7 +116,7 @@ static void process_request(event_module *evm, cblog_event *evt)
 			break;
 	}
 
-	return NULL;
+	request->nheader = 0;
 }
 
 
@@ -152,6 +157,15 @@ void http_parser_event_handler(steak_parser *parser, steak_parser_event_enum evt
 		case STEAK_PARSER_EVENT_HEADER:
 		{
 			int nheader = request->nheader;
+			if(nheader == request->max_header)
+			{
+				// TODO：
+				// 这里需要扩容，因为目前用的不是指针，先暂不处理
+				// 记录日志以后处理
+				YLOGE("too many header, ignore");
+				break;
+			}
+
 			request->headers[nheader].key.offset = parser->seg_offset;
 			request->headers[nheader].key.length = parser->seg_len;
 			request->headers[nheader].key.buffer = recvbuf;

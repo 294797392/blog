@@ -69,20 +69,33 @@ int event_run_cycle(event_module *evm)
 
 cblog_event *new_connection_event(event_module *evm, cblog_socket sock, svchost *svc)
 {
+	// 创建connection实例
 	cblog_connection *conn = (cblog_connection *)calloc(1, sizeof(cblog_connection));
 	conn->sock = sock;
 	conn->svc = svc;
-	conn->request = (cblog_request *)calloc(1, sizeof(cblog_request));
-	conn->response = (cblog_response *)calloc(1, sizeof(cblog_response));
-	conn->recvbuf = new_cblog_sockbuf(sock, CBLOG_DEFAULT_RECV_BUF_SIZE);
 	conn->status = CBLOG_CONN_STATUS_CONNECTED;
 	conn->keep_alive = 1; // 默认开始keep-alive
+	conn->recvbuf = new_cblog_sockbuf(sock, CBLOG_DEFAULT_RECV_BUF_SIZE);
 
+	cblog_request *request = (cblog_request *)calloc(1, sizeof(cblog_request));
+	request->max_header = STEAK_DEFAULT_HEADER_COUNT;
+	conn->request = request;
+
+	cblog_response *response = (cblog_response *)calloc(1, sizeof(cblog_response));
+	conn->response = response;
+
+	// 配置选项参数
+	cblog_connection_options *opts = &conn->options;
+	opts->save_request = 1;
+	//opts->save_request_path = "request.txt";
+
+	// 配置HTTP解析器参数
 	steak_parser *parser = &conn->parser;
 	parser->state = STEAK_PARSER_INITIAL;
 	parser->userdata = conn;
 	parser->on_event = http_parser_event_handler;
 
+	// 创建event实例
 	cblog_event *evt = (cblog_event *)calloc(1, sizeof(cblog_event));
 	evt->read = 1;
 	evt->write = 0;

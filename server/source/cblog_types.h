@@ -24,6 +24,7 @@ extern "C" {
 	typedef struct svchost_options_s svchost_options;
 	typedef enum cblog_conn_status_enum cblog_conn_status_enum;
 	typedef struct cblog_connection_s cblog_connection;
+	typedef struct cblog_connection_options_s cblog_connection_options;
 	typedef struct cblog_response_s cblog_response;
 	typedef struct cblog_request_s cblog_request;
 	typedef struct cblog_session_s cblog_session;
@@ -86,6 +87,19 @@ extern "C" {
 		CBLOG_CONN_STATUS_TIMEOUT
 	};
 
+	struct cblog_connection_options_s
+	{
+		/// <summary>
+		/// 是否保存原始的HTTP请求报文
+		/// </summary>
+		int save_request;
+
+		/// <summary>
+		/// 保存HTTP请求报文的文件路径
+		/// </summary>
+		char save_request_path[256];
+	};
+
 	/// <summary>
 	/// 记录与客户端的HTTP连接状态
 	/// </summary>
@@ -95,6 +109,11 @@ extern "C" {
 		/// 客户端的socket
 		/// </summary>
 		cblog_socket sock;
+
+		/// <summary>
+		/// 该链接的选项
+		/// </summary>
+		cblog_connection_options options;
 
 		/// <summary>
 		/// HTTP报文解析器
@@ -173,6 +192,11 @@ extern "C" {
 		/// HTTP标头
 		/// </summary>
 		cblog_http_header headers[STEAK_DEFAULT_HEADER_COUNT];
+
+		/// <summary>
+		/// 最多支持的标头数量
+		/// </summary>
+		int max_header;
 
 		/// <summary>
 		/// HTTP标头数量

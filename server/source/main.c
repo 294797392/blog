@@ -25,6 +25,7 @@
 #include "cblog_types.h"
 #include "cblog_errors.h"
 #include "cblog_event_module.h"
+#include "cblog_unit_test.h"
 
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
 #pragma comment(lib, "Ws2_32.lib")
