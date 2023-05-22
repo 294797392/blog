@@ -115,7 +115,7 @@ static void init_event_module(event_module *evm, cJSON *json)
 }
 
 
-int steak_app_init(const char *config)
+int cblog_app_init(const char *config)
 {
 	new_object(cblog_app, app);
 
@@ -155,7 +155,7 @@ int steak_app_init(const char *config)
 	return STEAK_ERR_OK;
 }
 
-int steak_app_start()
+int cblog_app_start()
 {
 	int rc = STEAK_ERR_OK;
 
@@ -175,7 +175,15 @@ int steak_app_start()
 	return STEAK_ERR_OK;
 }
 
-cblog_app *steak_app_get()
+cblog_app *cblog_app_get()
 {
 	return app_instance;
 }
+
+void cblog_app_register_event(cblog_app *app, cblog_app_event_enum evt, cblog_app_event_handler handler)
+{
+
+}
+
+void cblog_app_unregister_event(cblog_app *app, cblog_app_event_enum evt, cblog_app_event_handler handler)
+{}

@@ -54,7 +54,6 @@ int write_response_event(event_module *evm, cblog_event *evt)
 	event_modify(evm, evt, evt->read, 0);
 #pragma endregion
 
-
 	// 先判断待发送队列是否为空，不为空的话，优先发送待发送队列里的数据
 
 

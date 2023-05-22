@@ -70,19 +70,19 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	if((rc = steak_app_init(STEAK_DEFAULT_CONFIG_FILE)) != STEAK_ERR_OK)
+	if((rc = cblog_app_init(STEAK_DEFAULT_CONFIG_FILE)) != STEAK_ERR_OK)
 	{
 		return 0;
 	}
 
-	if((rc = steak_app_start()) != STEAK_ERR_OK)
+	if((rc = cblog_app_start()) != STEAK_ERR_OK)
 	{
 		return 0;
 	}
 
 	YLOGI("start svchost success");
 
-	cblog_app *app = steak_app_get();
+	cblog_app *app = cblog_app_get();
 	event_module *evm = app->evm;
 
 	while(1)

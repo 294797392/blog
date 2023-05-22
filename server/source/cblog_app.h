@@ -1,5 +1,5 @@
 /***********************************************************************************
- * @ file    : app.h
+ * @ file    : cblog_app.h
  * @ author  : oheiheiheiheihei
  * @ version : 0.9
  * @ date    : 2023.05.09 17:22
@@ -7,8 +7,8 @@
  *			 : 这些对象相当于ASP.NET里的八大对象
  ************************************************************************************/
 
-#ifndef __STEAK_APP_H__
-#define __STEAK_APP_H__
+#ifndef __CBLOG_APP_H__
+#define __CBLOG_APP_H__
 
 #include <stdint.h>
 
@@ -20,6 +20,21 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+	typedef enum cblog_app_event_enum
+	{
+		/// <summary>
+		/// 当收到了一个新的请求的时候触发该事件
+		/// </summary>
+		CBLOG_APP_EVENT_BEGIN_REUQEST = 0,
+
+		/// <summary>
+		/// 当HttpHandler处理完请求，准备发送到客户端之前触发
+		/// </summary>
+		CBLOG_APP_EVENT_END_REQUEST
+	}cblog_app_event_enum;
+
+	typedef int(*cblog_app_event_handler)(cblog_app *app);
 
 	/// <summary>
 	/// 存储整个App的详细信息
@@ -49,6 +64,8 @@ extern "C" {
 		/// 事件轮询模块
 		/// </summary>
 		event_module *evm;
+
+		cblog_app_event_handler **event_handlers;
 	};
 
 	/*
@@ -60,13 +77,13 @@ extern "C" {
 	 * 返回值：
 	 * STEAK_ERR
 	 */
-	int steak_app_init(const char *config);
+	int cblog_app_init(const char *config);
 
 	/// <summary>
 	/// 运行app
 	/// </summary>
 	/// <returns></returns>
-	int steak_app_start();
+	int cblog_app_start();
 
 	/*
 	 * 描述：
@@ -75,7 +92,17 @@ extern "C" {
 	 * 返回值：
 	 * steak_app实例
 	 */
-	cblog_app *steak_app_get();
+	cblog_app *cblog_app_get();
+
+	/// <summary>
+	/// 注册app事件
+	/// </summary>
+	/// <param name="app"></param>
+	/// <param name="evt"></param>
+	/// <param name="handler"></param>
+	/// <returns></returns>
+	void cblog_app_register_event(cblog_app *app, cblog_app_event_enum evt, cblog_app_event_handler handler);
+	void cblog_app_unregister_event(cblog_app *app, cblog_app_event_enum evt, cblog_app_event_handler handler);
 
 #ifdef __cplusplus
 }
