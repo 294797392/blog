@@ -519,8 +519,8 @@
 
     /*
      * 描述：
-     * 清空集合里的元素
-     * 如果你设置了Ylist_free_func，那么这个函数会帮你调用freefunc，然后把length设置成0
+     * 弹出队列里的第一个元素
+     * 如果队列里没有元素，那么返回NULL
      * 
      * 参数：
      * @yl：要操作的集合
@@ -852,21 +852,21 @@
 
 
 /***********************************************************************************
- * @ file    : Ylinklist.h
+ * @ file    : Ychain.h
  * @ author  : oheiheiheiheihei
  * @ version : 0.9
  * @ date    : 2023.05.19 10:20
  * @ brief   : 定义链表宏。链表里必须有first和last指针，并且node里必须有prev和next指针
  ************************************************************************************/
 
-#ifndef YLINKLIST
-#define YLINKLIST
+#ifndef YCHAIN
+#define YCHAIN
 
 #ifdef __cplusplus
     extern "C" {
 #endif
 
-#define Y_linklist_add(node_type, linklist, node) if(linklist->first == NULL)\
+#define Y_chain_add(node_type, linklist, node) if(linklist->first == NULL)\
         {\
             linklist->first = node;\
             linklist->last = node;\
@@ -882,7 +882,7 @@
         linklist->count++;\
 
 
-#define Y_linklist_remove(node_type, linklist, node) if(node == linklist->first)\
+#define Y_chain_remove(node_type, linklist, node) if(node == linklist->first)\
         {\
             if(linklist->count == 1)\
             {\
@@ -915,20 +915,21 @@
             a->next = c;\
             if(c != NULL)\
             {\
-                c->prev = a; \
+                c->prev = a;\
             }\
         }\
         linklist->count--;\
 
-#define Y_linklist_clear(linklist) linklist->first = NULL;\
+#define Y_chain_clear(linklist) linklist->first = NULL;\
         linklist->last = NULL;\
         linklist->count = 0;\
 
-#define Y_linklist_foreach(node_type, linklist, callback) node_type *__linklist_foreach_current = linklist->first;\
+#define Y_chain_foreach(node_type, linklist, code) node_type *__linklist_foreach_current = linklist->first;\
         while(__linklist_foreach_current != NULL)\
         {\
-            callback(__linklist_foreach_current);\
+            node_type *current = __linklist_foreach_current;\
             __linklist_foreach_current = __linklist_foreach_current->next;\
+            code\
         }\
 
 #ifdef __cplusplus

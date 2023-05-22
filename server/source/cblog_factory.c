@@ -3,30 +3,42 @@
 #include <string.h>
 
 #include "cblog_factory.h"
+#include "cblog_buffer.h"
 
 cblog_request *new_cblog_request()
 {
 	cblog_request *request = (cblog_request *)calloc(1, sizeof(cblog_request));
-	request->nheader = 0;
-	request->max_header = STEAK_DEFAULT_HEADER_COUNT;
+	request->header_chain = (cblog_http_headers *)calloc(1, sizeof(cblog_http_headers));
 	return request;
 }
 
 void free_cblog_request(cblog_request *request)
 {
+	Y_chain_foreach(cblog_http_header, request->header_chain, { free_cblog_http_header(current); });
+	Y_chain_clear(request->header_chain);
+
+	free(request->header_chain);
 	free(request);
 }
 
 cblog_response *new_cblog_response()
 {
 	cblog_response *response = (cblog_response *)calloc(1, sizeof(cblog_response));
-	response->nheader = 0;
-	response->max_header = STEAK_DEFAULT_HEADER_COUNT;
+	response->header_chain = (cblog_http_headers *)calloc(1, sizeof(cblog_http_headers));
+	response->header_buffer = new_cblog_buffer(CBLOG_DEFAULT_HEADER_BUFFER_SIZE);
+	response->body_buffer = new_cblog_buffer(CBLOG_DEFAULT_RESPONSE_BODY_BUFFER_SIZE);
+	response->buffer = new_cblog_buffer(CBLOG_DEFAULT_RESPONSE_BUFFER_SIZE);
 	return response;
 }
 
 void free_cblog_response(cblog_response *response)
 {
+	Y_chain_foreach(cblog_http_header, response->header_chain, { free_cblog_http_header(current); });
+	Y_chain_clear(response->header_chain);
+	free(response->header_chain);
+	free(response->header_buffer);
+	free(response->body_buffer);
+	free(response->buffer);
 	free(response);
 }
 
@@ -59,9 +71,10 @@ cblog_connection *new_cblog_connection(cblog_socket sock, svchost *svc)
 	conn->svc = svc;
 	conn->status = CBLOG_CONN_STATUS_CONNECTED;
 	conn->keep_alive = 1; // 默认开始keep-alive
-	conn->recvbuf = new_cblog_sockbuf(sock, CBLOG_DEFAULT_RECV_BUF_SIZE);
+	conn->recvbuf = new_cblog_buffer(CBLOG_DEFAULT_REQUEST_BUFFER_SIZE);
 	conn->request = new_cblog_request();
 	conn->response = new_cblog_response();
+	conn->pending_response_list = (cblog_pending_response_chain *)calloc(1, sizeof(cblog_pending_response_chain));
 
 	// 配置选项参数
 	cblog_connection_options *opts = &conn->options;
@@ -80,18 +93,13 @@ cblog_connection *new_cblog_connection(cblog_socket sock, svchost *svc)
 void free_cblog_connection(cblog_connection *conn)
 {
 	// 释放pending_response_chain
-	cblog_pending_response_chain *chain = &conn->pending_response_list;
-	cblog_pending_response *pending_response = chain->first;
-	while(pending_response != NULL)
-	{
-		free_cblog_pending_response(pending_response);
-		pending_response = pending_response->next;
-	}
-	Y_linklist_clear(chain);
+	Y_chain_foreach(cblog_pending_response, conn->pending_response_list, { free_cblog_pending_response(current); });
+	Y_chain_clear(conn->pending_response_list);
 
 	free_cblog_response(conn->response);
 	free_cblog_request(conn->request);
-	free_cblog_sockbuf(conn->recvbuf);
+	free_cblog_buffer(conn->recvbuf);
+	free(conn->pending_response_list);
 	free(conn);
 }
 
@@ -133,4 +141,15 @@ cblog_event *new_cblog_svchost_event(svchost *svc)
 void free_cblog_svchost_event(cblog_event *evt)
 {
 	free(evt);
+}
+
+cblog_http_header *new_cblog_http_header()
+{
+	cblog_http_header *header = (cblog_http_header *)calloc(1, sizeof(cblog_http_header));
+	return header;
+}
+
+void free_cblog_http_header(cblog_http_header *header)
+{
+	free(header);
 }

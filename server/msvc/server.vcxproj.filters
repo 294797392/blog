@@ -10,9 +10,6 @@
     <ClInclude Include="..\source\utils\cblog_string.h">
       <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\module\cblog_http_handler.h">
-      <Filter>handler</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\utils\cblog_utils.h">
       <Filter>utils</Filter>
     </ClInclude>
@@ -24,6 +21,17 @@
     <ClInclude Include="..\source\cblog_unit_test.h" />
     <ClInclude Include="..\source\cblog_factory.h" />
     <ClInclude Include="..\source\cblog_protocol.h" />
+    <ClInclude Include="..\source\cblog_response.h" />
+    <ClInclude Include="..\source\cblog_buffer.h" />
+    <ClInclude Include="..\source\http_handler\cblog_http_context.h">
+      <Filter>http_handler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\http_handler\cblog_http_handler.h">
+      <Filter>http_handler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\module\cblog_http_module.h">
+      <Filter>module</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\main.c" />
@@ -43,9 +51,6 @@
     <ClCompile Include="..\source\utils\cblog_string.c">
       <Filter>utils</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\module\cblog_http_handler.c">
-      <Filter>handler</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\event\poll_actions_select.c">
       <Filter>event\poll</Filter>
     </ClCompile>
@@ -59,6 +64,17 @@
     <ClCompile Include="..\source\cblog_unit_test.c" />
     <ClCompile Include="..\source\cblog_factory.c" />
     <ClCompile Include="..\source\cblog_protocol.c" />
+    <ClCompile Include="..\source\cblog_response.c" />
+    <ClCompile Include="..\source\cblog_buffer.c" />
+    <ClCompile Include="..\source\http_handler\cblog_http_context.c">
+      <Filter>http_handler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\http_handler\cblog_http_handler.c">
+      <Filter>http_handler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\module\cblog_http_module.c">
+      <Filter>module</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="event">
@@ -70,11 +86,11 @@
     <Filter Include="event\poll">
       <UniqueIdentifier>{3c1d6f97-d3f6-405c-b3e2-71a3b6138d2a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="handler">
-      <UniqueIdentifier>{45e3ca55-d0e2-487a-bdd6-c44edae08e41}</UniqueIdentifier>
-    </Filter>
     <Filter Include="module">
       <UniqueIdentifier>{bf294fd8-0491-49f7-b92a-0cef385e43fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="http_handler">
+      <UniqueIdentifier>{45e3ca55-d0e2-487a-bdd6-c44edae08e41}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

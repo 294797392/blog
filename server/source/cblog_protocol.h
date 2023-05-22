@@ -11,8 +11,8 @@
 
 #include "cblog_string.h"
 
-#define CBLOG_HTTP_HEADER_CONNECTION                   "connection"
-#define CBLOG_HTTP_HEADER_CONTENT_LENGTH               "content-length"
+#define CBLOG_HTTP_HEADER_STRING_CONNECTION                   "connection"
+#define CBLOG_HTTP_HEADER_STRING_CONTENT_LENGTH               "content-length"
 
 #ifdef __cplusplus
 extern "C" {
@@ -51,8 +51,16 @@ extern "C" {
         CBLOG_HTTP_STATUS_CODE_OK = 200
     }cblog_http_status_code_enum;
 
+    typedef enum
+    {
+        CBLOG_HTTP_HEADER_CONTENT_LENGTH
+    }cblog_http_header_enum;
+
     int cblog_http_method_string2enum(cblog_string *str);
     int cblog_http_version_string2enum(cblog_string *str);
+    const char *cblog_http_status_code_string(cblog_http_status_code_enum status_code);
+    const char *cblog_http_version_string(cblog_http_version_enum version);
+    const char *cblog_http_header_string(cblog_http_header_enum header);
 
 #ifdef __cplusplus
 }

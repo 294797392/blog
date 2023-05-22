@@ -24,9 +24,9 @@ extern "C" {
 	/// <summary>
 	/// 存储整个App的详细信息
 	/// </summary>
-	typedef struct steak_app_s steak_app;
+	typedef struct cblog_app_s cblog_app;
 
-	struct steak_app_s
+	struct cblog_app_s
 	{
 		/// <summary>
 		/// app启动时间
@@ -75,7 +75,7 @@ extern "C" {
 	 * 返回值：
 	 * steak_app实例
 	 */
-	steak_app *steak_app_get();
+	cblog_app *steak_app_get();
 
 #ifdef __cplusplus
 }

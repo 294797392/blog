@@ -25,7 +25,7 @@ eventpoll_actions *eventpoll_actions_list[] =
 	&eventpoll_actions_select
 };
 
-steak_app *app_instance = NULL;
+cblog_app *app_instance = NULL;
 
 
 static eventpoll_actions *select_evpoll_actions(eventpoll_type_enum polltype)
@@ -117,7 +117,7 @@ static void init_event_module(event_module *evm, cJSON *json)
 
 int steak_app_init(const char *config)
 {
-	new_object(steak_app, app);
+	new_object(cblog_app, app);
 
 	char *json_content = NULL;
 	uint64_t json_len = 0;
@@ -175,7 +175,7 @@ int steak_app_start()
 	return STEAK_ERR_OK;
 }
 
-steak_app *steak_app_get()
+cblog_app *steak_app_get()
 {
 	return app_instance;
 }

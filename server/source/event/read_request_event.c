@@ -18,6 +18,9 @@
 #include "cblog_types.h"
 #include "cblog_parser.h"
 #include "cblog_event_module.h"
+#include "cblog_factory.h"
+#include "cblog_buffer.h"
+#include "cblog_response.h"
 
 static print_header(cblog_http_header *header)
 {
@@ -34,34 +37,28 @@ static void dump_request(cblog_request *request)
 	cblog_string_print2("method: ", &request->method_string);
 	cblog_string_print2("uri: ", &request->url);
 	cblog_string_print2("version: ", &request->version_string);
-	for(int i = 0; i < request->nheader; i++)
-	{
-		print_header(&request->headers[i]);
-	}
+	Y_chain_foreach(cblog_http_header, request->header_chain,
+		{
+			print_header(current);
+		});
 }
 
-static void generate_response(cblog_request *request, cblog_response *response)
+static void generate_response(cblog_connection *conn, cblog_request *request, cblog_response *response)
 {
+	svchost *svc = conn->svc;
+
 	switch(request->method)
 	{
 		case STEAK_HTTP_METHOD_GET:
 		{
-			//char path[1024] = { '\0' };
-			//snprintf(path, sizeof(path), "%s\\%s", svc->options.root, svc->options.index_page);
-			//if(Y_file_exist(path) == -1)
-			//{
-			//	// 文件不存在，显示404
-			//	return NULL;
-			//}
-
-			//char *content = NULL;
-			//uint64_t size = 0;
-			//int rc = Y_file_read_all(path, &content, &size);
-			//if(rc != YERR_SUCCESS)
-			//{
-			//	// 文件不存在，显示404
-			//	return NULL;
-			//}
+			if(!cblog_string_casecmp(&request->url, "\\") ||
+				!cblog_string_casecmp(&request->url, svc->options.index_page))
+			{
+				// 访问的是主页
+				response->version = request->version;
+				response->status_code = CBLOG_HTTP_STATUS_CODE_OK;
+				cblog_buffer_write(response->body_buffer, CBLOG_WELCOME_MESSAGE, strlen(CBLOG_WELCOME_MESSAGE));
+			}
 			break;
 		}
 
@@ -85,12 +82,14 @@ static void process_request(event_module *evm, cblog_event *evt)
 	dump_request(request);
 
 	// 生成响应
-	generate_response(request, response);
+	generate_response(conn, request, response);
 
 	// 把文件描述符设置为可写状态
 	event_modify(evm, evt, evt->read, 1);
 
-	request->nheader = 0;
+	// 重置request，便于存储下一次的request
+	Y_chain_foreach(cblog_http_header, request->header_chain, { free_cblog_http_header(current); });
+	Y_chain_clear(request->header_chain);
 }
 
 
@@ -98,7 +97,7 @@ void http_parser_event_handler(cblog_parser *parser, cblog_parser_event_enum evt
 {
 	cblog_connection *conn = (cblog_connection *)parser->userdata;
 	cblog_request *request = conn->request;
-	cblog_socket_buffer *recvbuf = conn->recvbuf;
+	cblog_buffer *recvbuf = conn->recvbuf;
 
 	switch(evt)
 	{
@@ -130,27 +129,19 @@ void http_parser_event_handler(cblog_parser *parser, cblog_parser_event_enum evt
 
 		case CBLOG_PARSER_EVENT_HEADER:
 		{
-			int nheader = request->nheader;
-			if(nheader == request->max_header)
-			{
-				// TODO：
-				// 这里需要扩容，因为目前用的不是指针，先暂不处理
-				// 记录日志以后处理
-				YLOGE("too many header, ignore");
-				break;
-			}
+			// 创建新的header
+			cblog_http_header *header = new_cblog_http_header();
+			header->key.offset = parser->seg_offset;
+			header->key.length = parser->seg_len;
+			header->key.buffer = recvbuf;
+			header->value.offset = parser->seg2_offset;
+			header->value.length = parser->seg2_len;
+			header->value.buffer = recvbuf;
 
-			request->headers[nheader].key.offset = parser->seg_offset;
-			request->headers[nheader].key.length = parser->seg_len;
-			request->headers[nheader].key.buffer = recvbuf;
-			request->headers[nheader].value.offset = parser->seg2_offset;
-			request->headers[nheader].value.length = parser->seg2_len;
-			request->headers[nheader].value.buffer = recvbuf;
-
-			cblog_string *key = &request->headers[nheader].key;
-			cblog_string *value = &request->headers[nheader].value;
-
-			if(!cblog_string_casecmp(key, CBLOG_HTTP_HEADER_CONNECTION))
+			// 对特殊的header做单独处理
+			cblog_string *key = &header->key;
+			cblog_string *value = &header->value;
+			if(!cblog_string_casecmp(key, CBLOG_HTTP_HEADER_STRING_CONNECTION))
 			{
 				// Connection标头
 				if(!cblog_string_casecmp(value, "close") && conn->keep_alive != 0)
@@ -158,7 +149,7 @@ void http_parser_event_handler(cblog_parser *parser, cblog_parser_event_enum evt
 					conn->keep_alive = 0;
 				}
 			}
-			else if(!cblog_string_casecmp(key, CBLOG_HTTP_HEADER_CONTENT_LENGTH))
+			else if(!cblog_string_casecmp(key, CBLOG_HTTP_HEADER_STRING_CONTENT_LENGTH))
 			{
 				// Content-Length标头
 				int content_length = cblog_string_to_int32(value);
@@ -167,7 +158,8 @@ void http_parser_event_handler(cblog_parser *parser, cblog_parser_event_enum evt
 				request->content_length = content_length;
 			}
 
-			request->nheader++;
+			// header添加到链表末尾
+			Y_chain_add(cblog_http_header, request->header_chain, header);
 
 			break;
 		}
@@ -189,11 +181,11 @@ int read_request_event(event_module *evm, cblog_event *evt)
 {
 	cblog_connection *conn = (cblog_connection *)evt->context;
 	cblog_parser *parser = &conn->parser;
-	cblog_socket_buffer *recvbuf = conn->recvbuf;
+	cblog_buffer *recvbuf = conn->recvbuf;
 	int old_offset = recvbuf->offset;
 
 	// 接收socket数据
-	int rc = cblog_sockbuf_recv(recvbuf);
+	int rc = cblog_buffer_recv_socket(recvbuf, conn->sock);
 
 	// socket返回0，此时对方有两种情况：
 	// 1. 调用了close。对方发送了FIN
@@ -220,7 +212,7 @@ int read_request_event(event_module *evm, cblog_event *evt)
 	// 所以使用while循环去解析报文
 	while(1)
 	{
-		int count = cblog_parser_parse(parser, recvbuf->ptr, old_offset, rc);
+		int count = cblog_parser_parse(parser, recvbuf->pdata, old_offset, rc);
 		if(count == -1)
 		{
 			// 报文还没解析结束，还需要更多数据
@@ -232,7 +224,7 @@ int read_request_event(event_module *evm, cblog_event *evt)
 			// 本次报文接收完毕，并且缓冲区里的数据也都用完了
 			// 重置接收缓冲区
 			process_request(evm, evt);
-			cblog_sockbuf_reset(recvbuf);
+			cblog_buffer_reset(recvbuf);
 			break;
 		}
 		else
@@ -240,7 +232,7 @@ int read_request_event(event_module *evm, cblog_event *evt)
 			// 处理的字节数小于接收的字节数，说明本次接收到了新的HTTP请求
 			// 把新的HTTP请求报文偏移量移动到接收缓冲区的开头
 			process_request(evm, evt);
-			memmove(recvbuf->ptr, recvbuf->ptr + old_offset + count, rc - count);
+			memmove(recvbuf->pdata, recvbuf->pdata + old_offset + count, rc - count);
 			recvbuf->offset = rc - count;
 			recvbuf->left = recvbuf->size - recvbuf->offset;
 			// 继续调用parser

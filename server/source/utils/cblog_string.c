@@ -66,6 +66,6 @@ int cblog_string_to_int32(cblog_string *str)
 {
 	char buffer[32] = { '\0' };
 	memset(buffer, '\0', sizeof(buffer));
-	strncpy(buffer, str->buffer->ptr + str->offset, str->length);
+	strncpy(buffer, str->buffer->pdata + str->offset, str->length);
 	return atoi(buffer);
 }

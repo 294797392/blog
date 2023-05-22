@@ -82,7 +82,7 @@ int main(int argc, char **argv)
 
 	YLOGI("start svchost success");
 
-	steak_app *app = steak_app_get();
+	cblog_app *app = steak_app_get();
 	event_module *evm = app->evm;
 
 	while(1)

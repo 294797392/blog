@@ -14,9 +14,10 @@
 #include <libY.h>
 
 #include "cblog_socket.h"
+#include "cblog_buffer.h"
 
-#define cblog_string_charat(_str, _offset) _str->buffer->ptr[_str->offset + _offset]
-#define cblog_string_string(_str) _str->buffer->ptr + _str->offset
+#define cblog_string_charat(_str, _offset) _str->buffer->pdata[_str->offset + _offset]
+#define cblog_string_string(_str) _str->buffer->pdata + _str->offset
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,8 +26,19 @@ extern "C" {
 	typedef struct cblog_string_s cblog_string;
 	struct cblog_string_s
 	{
-		cblog_socket_buffer *buffer;
+		/// <summary>
+		/// 存储字符串的缓冲区
+		/// </summary>
+		cblog_buffer *buffer;
+
+		/// <summary>
+		/// 该字符串相对于缓冲区的偏移量
+		/// </summary>
 		int offset;
+
+		/// <summary>
+		/// 字符串长度
+		/// </summary>
 		int length;
 	};
 

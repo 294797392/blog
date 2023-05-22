@@ -36,7 +36,6 @@ extern "C" {
 	cblog_connection *new_cblog_connection(cblog_socket sock, svchost *svc);
 	void free_cblog_connection(cblog_connection *conn);
 
-
 	/*
 	 * 描述：
 	 * 创建一个事件的实例
@@ -54,6 +53,8 @@ extern "C" {
 	cblog_event *new_cblog_svchost_event(svchost *svc);
 	void free_cblog_svchost_event(cblog_event *evt);
 
+	cblog_http_header *new_cblog_http_header();
+	void free_cblog_http_header(cblog_http_header *header);
 
 #ifdef __cplusplus
 }

@@ -15,7 +15,7 @@ int event_add(event_module *evm, cblog_event *evt)
 {
 	eventpoll_actions *actions = evm->actions;
 	actions->add_event(evm, evt);
-	Y_linklist_add(cblog_event, evm->events, evt);
+	Y_chain_add(cblog_event, evm->events, evt);
 	return STEAK_ERR_OK;
 }
 
@@ -23,7 +23,7 @@ int event_remove(event_module *evm, cblog_event *evt)
 {
 	eventpoll_actions *actions = evm->actions;
 	actions->delete_event(evm, evt);
-	Y_linklist_remove(cblog_event, evm->events, evt);
+	Y_chain_remove(cblog_event, evm->events, evt);
 	return STEAK_ERR_OK;
 }
 
