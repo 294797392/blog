@@ -25,8 +25,9 @@ eventpoll_actions *eventpoll_actions_list[] =
 	&eventpoll_actions_select
 };
 
-cblog_app *app_instance = NULL;
+extern cblog_http_handler cblog_default_http_handler;
 
+cblog_app *app_instance = NULL;
 
 static eventpoll_actions *select_evpoll_actions(eventpoll_type_enum polltype)
 {
@@ -149,6 +150,8 @@ int cblog_app_init(const char *config)
 	new_object(event_module, evm);
 	init_event_module(evm, json_event);
 	app->evm = evm;
+
+	app->http_handler = &cblog_default_http_handler;
 
 	app_instance = app;
 

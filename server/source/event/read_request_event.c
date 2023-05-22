@@ -22,7 +22,7 @@
 #include "cblog_buffer.h"
 #include "cblog_response.h"
 
-static print_header(cblog_http_header *header)
+static void print_header(cblog_http_header *header)
 {
 	cblog_string *key = &header->key;
 	cblog_string *value = &header->value;
@@ -43,28 +43,18 @@ static void dump_request(cblog_request *request)
 		});
 }
 
-static void generate_response(cblog_connection *conn, cblog_request *request, cblog_response *response)
+static void reset_request(cblog_request *request)
 {
-	svchost *svc = conn->svc;
+	Y_chain_foreach(cblog_http_header, request->header_chain, { free_cblog_http_header(current); });
+	Y_chain_clear(request->header_chain);
+}
 
-	switch(request->method)
-	{
-		case STEAK_HTTP_METHOD_GET:
-		{
-			if(!cblog_string_casecmp(&request->url, "\\") ||
-				!cblog_string_casecmp(&request->url, svc->options.index_page))
-			{
-				// 访问的是主页
-				response->version = request->version;
-				response->status_code = CBLOG_HTTP_STATUS_CODE_OK;
-				cblog_buffer_write(response->body_buffer, CBLOG_WELCOME_MESSAGE, strlen(CBLOG_WELCOME_MESSAGE));
-			}
-			break;
-		}
-
-		default:
-			break;
-	}
+static void reset_response(cblog_response *response)
+{
+	Y_chain_foreach(cblog_http_header, response->header_chain, { free_cblog_http_header(current); });
+	Y_chain_clear(response->header_chain);
+	cblog_buffer_reset(response->body_buffer);
+	cblog_buffer_reset(response->header_buffer);
 }
 
 /// <summary>
@@ -74,6 +64,7 @@ static void generate_response(cblog_connection *conn, cblog_request *request, cb
 /// <param name="evt"></param>
 static void process_request(event_module *evm, cblog_event *evt)
 {
+	cblog_app *app = cblog_app_get();
 	cblog_connection *conn = (cblog_connection *)evt->context;
 	cblog_request *request = conn->request;
 	cblog_response *response = conn->response;
@@ -81,15 +72,24 @@ static void process_request(event_module *evm, cblog_event *evt)
 	// 打印请求的调试信息
 	dump_request(request);
 
-	// 生成响应
-	generate_response(conn, request, response);
+	// 处理Http请求
+	cblog_http_context context =
+	{
+		.request = request,
+		.response = response,
+		.svc = conn->svc
+	};
+	app->http_handler->process_request(&context);
+
+	// 构建一个新的pending_response，并挂载到队列上，等待下次轮询的时候写入
+
 
 	// 把文件描述符设置为可写状态
 	event_modify(evm, evt, evt->read, 1);
 
-	// 重置request，便于存储下一次的request
-	Y_chain_foreach(cblog_http_header, request->header_chain, { free_cblog_http_header(current); });
-	Y_chain_clear(request->header_chain);
+	// 重置request和response，便于下一次存储
+	reset_request(request);
+	reset_response(response);
 }
 
 

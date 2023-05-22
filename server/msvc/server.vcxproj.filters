@@ -23,12 +23,6 @@
     <ClInclude Include="..\source\cblog_protocol.h" />
     <ClInclude Include="..\source\cblog_response.h" />
     <ClInclude Include="..\source\cblog_buffer.h" />
-    <ClInclude Include="..\source\http_handler\cblog_http_context.h">
-      <Filter>http_handler</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\http_handler\cblog_http_handler.h">
-      <Filter>http_handler</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\module\cblog_http_module.h">
       <Filter>module</Filter>
     </ClInclude>
@@ -66,11 +60,8 @@
     <ClCompile Include="..\source\cblog_protocol.c" />
     <ClCompile Include="..\source\cblog_response.c" />
     <ClCompile Include="..\source\cblog_buffer.c" />
-    <ClCompile Include="..\source\http_handler\cblog_http_context.c">
-      <Filter>http_handler</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\http_handler\cblog_http_handler.c">
-      <Filter>http_handler</Filter>
+      <Filter>http</Filter>
     </ClCompile>
     <ClCompile Include="..\source\module\cblog_http_module.c">
       <Filter>module</Filter>
@@ -89,7 +80,7 @@
     <Filter Include="module">
       <UniqueIdentifier>{bf294fd8-0491-49f7-b92a-0cef385e43fb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="http_handler">
+    <Filter Include="http">
       <UniqueIdentifier>{45e3ca55-d0e2-487a-bdd6-c44edae08e41}</UniqueIdentifier>
     </Filter>
   </ItemGroup>

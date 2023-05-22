@@ -1,65 +1,37 @@
 /***********************************************************************************
- * @ file    : steak_module.h
+ * @ file    : cblog_http_handler.h
  * @ author  : oheiheiheiheihei
  * @ version : 0.9
  * @ date    : 2023.05.15 11:00
- * @ brief   : 当HTTP请求响应完了之后，用户自定义的处理HTTP请求的对象
+ * @ brief   : 处理HTTP请求的对象
  ************************************************************************************/
 
-#ifndef __STEAK_MODULE_H__
-#define __STEAK_MODULE_H__
+#ifndef __CBLOG_HTTP_HANDLER_H__
+#define __CBLOG_HTTP_HANDLER_H__
 
-#include "request.h"
-#include "response.h"
+#include "cblog_types.h"
+#include "cblog_response.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-	/// <summary>
-	/// 存储模块状态
-	/// </summary>
-	typedef struct steak_module_s steak_module;
+	typedef struct cblog_http_context_s cblog_http_context;
+	typedef struct cblog_http_handler_s cblog_http_handler;
 
-	/// <summary>
-	/// 模块的输入参数
-	/// </summary>
-	typedef struct steak_module_input_s steak_module_input;
-
-	struct steak_module_s
-	{
-		char *name;
-		char *desc;
-		char *author;
-
-		/// <summary>
-		/// 模块类型
-		/// </summary>
-		int type;
-
-		/// <summary>
-		/// 在整个应用启动的时候调用
-		/// 只调用一次
-		/// </summary>
-		int(*initialize)();
-
-		/// <summary>
-		/// 在整个应用结束的时候调用
-		/// 只调用一次
-		/// </summary>
-		void(*release)();
-
-		/// <summary>
-		/// 每收到一个HTTP请求就调用一次
-		/// </summary>
-		int(*process)(steak_module_input *input);
-		void *context;
-	};
-
-	struct steak_module_input_s
+	struct cblog_http_context_s
 	{
 		cblog_request *request;
 		cblog_response *response;
+	};
+
+	struct cblog_http_handler_s
+	{
+		/// <summary>
+		/// 处理请求
+		/// 1. 填充HTTP响应对象
+		/// </summary>
+		void(*process_request)(cblog_http_context *ctx);
 	};
 
 #ifdef __cplusplus

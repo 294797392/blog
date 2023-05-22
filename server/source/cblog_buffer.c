@@ -90,12 +90,37 @@ int cblog_buffer_recv_socket(cblog_buffer *buffer, cblog_socket sock)
 
 int cblog_buffer_write(cblog_buffer *buffer, const char *str, int len)
 {
+	if(len == 0)
+	{
+		return;
+	}
+
 	if(ensure_buffer_size(buffer, len))
 	{
 		return STEAK_ERR_NO_MEM;
 	}
 
 	strncpy(buffer->pdata, str, len);
+	buffer->offset += len;
+	buffer->left -= len;
 
 	return STEAK_ERR_OK;
+}
+
+int cblog_buffer_write2(cblog_buffer *writeto, cblog_buffer *buffer2)
+{
+	int len = buffer2->offset;
+	if(len == 0)
+	{
+		return;
+	}
+
+	if(ensure_buffer_size(writeto, len))
+	{
+		return STEAK_ERR_NO_MEM;
+	}
+
+	strncpy(writeto->pdata + writeto->offset, buffer2->pdata, len);
+	writeto->offset += len;
+	writeto->left -= len;
 }

@@ -19,6 +19,9 @@ extern "C" {
 	void cblog_response_write_header_string(cblog_response *response, cblog_http_header_enum k, char *v, int vlen);
 	void cblog_response_write_header_int(cblog_response *response, cblog_http_header_enum k, int v);
 
+	cblog_pending_response *new_cblog_pending_response(cblog_response *response);
+	void free_cblog_pending_response(cblog_pending_response *response);
+
 #ifdef __cplusplus
 }
 #endif

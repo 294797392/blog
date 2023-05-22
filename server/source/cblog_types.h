@@ -31,6 +31,8 @@ extern "C" {
 	typedef struct cblog_pending_response_chain_s cblog_pending_response_chain;
 	typedef struct cblog_response_s cblog_response;
 	typedef struct cblog_session_s cblog_session;
+	typedef struct cblog_http_context_s cblog_http_context;
+	typedef struct cblog_http_handler_s cblog_http_handler;
 
 	enum cblog_conn_status_enum
 	{
@@ -138,8 +140,7 @@ extern "C" {
 		cblog_pending_response *prev;
 		cblog_pending_response *next;
 
-		char *buffer;
-		int buflen;
+		cblog_buffer *buffer;
 	};
 
 	/// <summary>
@@ -184,11 +185,6 @@ extern "C" {
 		/// body缓冲区
 		/// </summary>
 		cblog_buffer *body_buffer;
-
-		/// <summary>
-		/// 存储原始HTTP响应报文的缓冲区
-		/// </summary>
-		cblog_buffer *buffer;
 	};
 
 	/// <summary>
@@ -292,6 +288,23 @@ extern "C" {
 		/// Connection标头是否需要keep-alive
 		/// </summary>
 		int keep_alive;
+	};
+
+
+	struct cblog_http_context_s
+	{
+		svchost *svc;
+		cblog_request *request;
+		cblog_response *response;
+	};
+
+	struct cblog_http_handler_s
+	{
+		/// <summary>
+		/// 处理请求
+		/// 1. 填充HTTP响应对象
+		/// </summary>
+		void(*process_request)(cblog_http_context *ctx);
 	};
 
 #ifdef __cplusplus

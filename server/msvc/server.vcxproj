@@ -151,8 +151,6 @@
     <ClInclude Include="..\source\cblog_types.h" />
     <ClInclude Include="..\source\cblog_default.h" />
     <ClInclude Include="..\source\cblog_unit_test.h" />
-    <ClInclude Include="..\source\http_handler\cblog_http_context.h" />
-    <ClInclude Include="..\source\http_handler\cblog_http_handler.h" />
     <ClInclude Include="..\source\module\cblog_event_module.h" />
     <ClInclude Include="..\source\cblog_errors.h" />
     <ClInclude Include="..\source\module\cblog_http_module.h" />
@@ -172,7 +170,6 @@
     <ClCompile Include="..\source\event\poll_actions_select.c" />
     <ClCompile Include="..\source\event\read_request_event.c" />
     <ClCompile Include="..\source\event\write_response_event.c" />
-    <ClCompile Include="..\source\http_handler\cblog_http_context.c" />
     <ClCompile Include="..\source\http_handler\cblog_http_handler.c" />
     <ClCompile Include="..\source\main.c" />
     <ClCompile Include="..\source\module\cblog_event_module.c" />

@@ -27,7 +27,6 @@ cblog_response *new_cblog_response()
 	response->header_chain = (cblog_http_headers *)calloc(1, sizeof(cblog_http_headers));
 	response->header_buffer = new_cblog_buffer(CBLOG_DEFAULT_HEADER_BUFFER_SIZE);
 	response->body_buffer = new_cblog_buffer(CBLOG_DEFAULT_RESPONSE_BODY_BUFFER_SIZE);
-	response->buffer = new_cblog_buffer(CBLOG_DEFAULT_RESPONSE_BUFFER_SIZE);
 	return response;
 }
 
@@ -38,27 +37,6 @@ void free_cblog_response(cblog_response *response)
 	free(response->header_chain);
 	free(response->header_buffer);
 	free(response->body_buffer);
-	free(response->buffer);
-	free(response);
-}
-
-cblog_pending_response *new_cblog_pending_response(cblog_response *response)
-{
-	cblog_pending_response *pending_response = (cblog_pending_response *)calloc(1, sizeof(cblog_pending_response));
-	return pending_response;
-}
-
-cblog_pending_response *new_cblog_pending_response2(char *buf, int buflen)
-{
-	cblog_pending_response *pending_response = (cblog_pending_response *)calloc(1, sizeof(cblog_pending_response));
-	pending_response->buffer = buf;
-	pending_response->buflen = buflen;
-	return pending_response;
-}
-
-void free_cblog_pending_response(cblog_pending_response *response)
-{
-	free(response->buffer);
 	free(response);
 }
 

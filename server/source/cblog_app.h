@@ -21,7 +21,15 @@
 extern "C" {
 #endif
 
-	typedef enum cblog_app_event_enum
+	typedef enum cblog_app_event_enum cblog_app_event_enum;
+	/// <summary>
+	/// 存储整个App的详细信息
+	/// </summary>
+	typedef struct cblog_app_s cblog_app;
+
+	typedef int(*cblog_app_event_handler)(cblog_app *app);
+
+	enum cblog_app_event_enum
 	{
 		/// <summary>
 		/// 当收到了一个新的请求的时候触发该事件
@@ -32,14 +40,7 @@ extern "C" {
 		/// 当HttpHandler处理完请求，准备发送到客户端之前触发
 		/// </summary>
 		CBLOG_APP_EVENT_END_REQUEST
-	}cblog_app_event_enum;
-
-	typedef int(*cblog_app_event_handler)(cblog_app *app);
-
-	/// <summary>
-	/// 存储整个App的详细信息
-	/// </summary>
-	typedef struct cblog_app_s cblog_app;
+	};
 
 	struct cblog_app_s
 	{
@@ -65,7 +66,10 @@ extern "C" {
 		/// </summary>
 		event_module *evm;
 
-		cblog_app_event_handler **event_handlers;
+		/// <summary>
+		/// 处理HTTP请求的主结构体
+		/// </summary>
+		cblog_http_handler *http_handler;
 	};
 
 	/*

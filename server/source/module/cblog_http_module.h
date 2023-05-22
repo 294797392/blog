@@ -15,7 +15,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-	
+
 	typedef struct cblog_http_module_s cblog_http_module;
 
 	typedef int(*cblog_http_module_init_func)(cblog_http_module *mod);

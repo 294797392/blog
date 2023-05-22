@@ -114,6 +114,14 @@ extern "C" {
 	/// <returns></returns>
 	int cblog_buffer_write(cblog_buffer *buffer, const char *str, int len);
 
+	/// <summary>
+	/// ∞—buffer2–¥µΩbuffer¿Ô
+	/// </summary>
+	/// <param name="writeto"></param>
+	/// <param name="buffer2"></param>
+	/// <returns></returns>
+	int cblog_buffer_write2(cblog_buffer *writeto, cblog_buffer *buffer);
+
 #ifdef __cplusplus
 }
 #endif
