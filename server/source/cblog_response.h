@@ -16,8 +16,10 @@
 extern "C" {
 #endif
 
-	void cblog_response_write_header_string(cblog_response *response, cblog_http_header_enum k, char *v, int vlen);
+	void cblog_response_write_header_string(cblog_response *response, cblog_http_header_enum k, const char *v, int vlen);
 	void cblog_response_write_header_int(cblog_response *response, cblog_http_header_enum k, int v);
+	void cblog_response_write_body(cblog_response *response, const char *data, int len);
+
 
 #ifdef __cplusplus
 }

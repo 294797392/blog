@@ -89,7 +89,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;ENV_WIN32;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)../external/libY;$(SolutionDir)../external/cJSON;$(SolutionDir)../source;$(SolutionDir)../source/event;$(SolutionDir)../source/utils;$(SolutionDir)../source/module;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)../external/libY;$(SolutionDir)../external/cJSON;$(SolutionDir)../source;$(SolutionDir)../source/event;$(SolutionDir)../source/utils;$(SolutionDir)../source/module;$(SolutionDir)../source/http;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,9 +151,10 @@
     <ClInclude Include="..\source\cblog_types.h" />
     <ClInclude Include="..\source\cblog_default.h" />
     <ClInclude Include="..\source\cblog_unit_test.h" />
+    <ClInclude Include="..\source\http\cblog_http_event.h" />
+    <ClInclude Include="..\source\http\cblog_http_module.h" />
     <ClInclude Include="..\source\module\cblog_event_module.h" />
     <ClInclude Include="..\source\cblog_errors.h" />
-    <ClInclude Include="..\source\module\cblog_http_module.h" />
     <ClInclude Include="..\source\utils\cblog_socket.h" />
     <ClInclude Include="..\source\utils\cblog_string.h" />
     <ClInclude Include="..\source\utils\cblog_utils.h" />
@@ -170,10 +171,11 @@
     <ClCompile Include="..\source\event\poll_actions_select.c" />
     <ClCompile Include="..\source\event\read_request_event.c" />
     <ClCompile Include="..\source\event\write_response_event.c" />
-    <ClCompile Include="..\source\http_handler\cblog_http_handler.c" />
+    <ClCompile Include="..\source\http\cblog_demo_http_module.c" />
+    <ClCompile Include="..\source\http\cblog_http_event.c" />
+    <ClCompile Include="..\source\http\cblog_http_handler.c" />
     <ClCompile Include="..\source\main.c" />
     <ClCompile Include="..\source\module\cblog_event_module.c" />
-    <ClCompile Include="..\source\module\cblog_http_module.c" />
     <ClCompile Include="..\source\utils\cblog_socket.c" />
     <ClCompile Include="..\source\utils\cblog_string.c" />
     <ClCompile Include="..\source\utils\cblog_utils.c" />

@@ -26,13 +26,12 @@
 #include "cblog_errors.h"
 #include "cblog_event_module.h"
 #include "cblog_unit_test.h"
+#include "cblog_http_module.h"
 
 #if (defined(ENV_WIN32)) || (defined(ENV_MINGW))
 #pragma comment(lib, "Ws2_32.lib")
 #pragma comment(lib, "libY.lib")
 #endif
-
-extern int accept_client_event(event_module *evpoll, cblog_event *evt);
 
 /// <summary>
 /// 当客户端和服务器之间有一段时间没有通信了就表示该链接超时了
@@ -43,17 +42,6 @@ static void cleanup_timeout_events(event_module *evm, cblog_event **events, int 
 
 }
 
-/// <summary>
-/// 初始化所有的模块
-/// </summary>
-/// <returns></returns>
-static int init_modules()
-{
-	return CBLOG_ERR_OK;
-}
-
-
-
 int main(int argc, char **argv)
 {
 	int rc = YERR_SUCCESS;
@@ -61,11 +49,6 @@ int main(int argc, char **argv)
 	Y_log_init(NULL);
 
 	if((rc = cblog_socket_init()) != CBLOG_ERR_OK)
-	{
-		return 0;
-	}
-
-	if((rc = init_modules()) != CBLOG_ERR_OK)
 	{
 		return 0;
 	}

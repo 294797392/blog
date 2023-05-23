@@ -34,7 +34,7 @@ static void write_header(cblog_buffer *buffer, cblog_http_header *header, const 
 }
 
 
-void cblog_response_write_header_string(cblog_response *response, cblog_http_header_enum k, char *v, int vlen)
+void cblog_response_write_header_string(cblog_response *response, cblog_http_header_enum k, const char *v, int vlen)
 {
 	cblog_http_header *header = new_cblog_http_header();
 
@@ -57,4 +57,9 @@ void cblog_response_write_header_int(cblog_response *response, cblog_http_header
 	write_header(response->header_buffer, header, key, keylen, value, valuelen);
 
 	Y_chain_add(cblog_http_header, response->header_chain, header);
+}
+
+void cblog_response_write_body(cblog_response *response, const char *data, int len)
+{
+	cblog_buffer_write(response->body_buffer, data, len);
 }

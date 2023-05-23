@@ -12,31 +12,25 @@
 
 #include <libY.h>
 
+#include "cblog_app.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 	typedef struct cblog_http_module_s cblog_http_module;
-
-	typedef int(*cblog_http_module_init_func)(cblog_http_module *mod);
-
-	typedef void(*cblog_http_module_release_func)(cblog_http_module *mod);
-
-	/// <summary>
-	/// 当收到了一个新的请求的时候触发该事件
-	/// </summary>
-	typedef int(*cblog_http_module_begin_request_func)(cblog_http_module *mod);
-
-	/// <summary>
-	/// 当HttpHandler处理完请求，准备发送到客户端之前触发
-	/// </summary>
-	typedef int(*cblog_http_module_end_request_func)(cblog_http_module *mod);
-
 	struct cblog_http_module_s
 	{
-		void *ptr;
-	};
+		cblog_http_module *prev;
+		cblog_http_module *next;
 
+		char *name;
+		char *desc;
+		char *author;
+		void *(*initialize)(cblog_app *app);
+		void(*release)(void *ctx);
+		void *context;
+	};
 
 #ifdef __cplusplus
 }

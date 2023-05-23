@@ -173,3 +173,14 @@ void free_cblog_pending_response(cblog_pending_response *response)
 	free_cblog_buffer(response->buffer);
 	free(response);
 }
+
+cblog_http_event_list *new_cblog_http_event_list()
+{
+	cblog_http_event_list *evlist = (cblog_http_event_list *)calloc(1, sizeof(cblog_http_event_list));
+	return evlist;
+}
+
+void free_cblog_http_event_list(cblog_http_event_list *evlist)
+{
+	free(evlist);
+}

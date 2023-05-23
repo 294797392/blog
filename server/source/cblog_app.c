@@ -18,14 +18,29 @@
 #include "cblog_utils.h"
 #include "cblog_socket.h"
 #include "cblog_factory.h"
+#include "cblog_http_event.h"
+#include "cblog_http_module.h"
 
+// 事件轮询驱动
 extern eventpoll_actions eventpoll_actions_select;
 eventpoll_actions *eventpoll_actions_list[] =
 {
-	&eventpoll_actions_select
+	&eventpoll_actions_select,
+	NULL
 };
 
+// http handler
 extern cblog_http_handler cblog_default_http_handler;
+
+// http模块列表
+extern cblog_http_module cblog_demo_http_module;
+cblog_http_module *cblog_http_module_list[] =
+{
+	&cblog_demo_http_module,
+	NULL
+};
+
+
 
 cblog_app *app_instance = NULL;
 
@@ -103,8 +118,15 @@ static int start_svchost(svchost *svc)
 	return CBLOG_ERR_OK;
 }
 
-static void init_event_module(event_module *evm, cJSON *json)
+static void init_event_module(cblog_app *app, cJSON *json)
 {
+	event_module *evm = (event_module *)calloc(1, sizeof(event_module));
+	if(evm == NULL)
+	{
+		YLOGE("create evm failed, %s", strerror(errno));
+		return;
+	}
+
 	cJSON *json_type = cJSON_GetObjectItem(json, "type");
 	cJSON *json_timeout = cJSON_GetObjectItem(json, "timeout");
 	evm->timeout_ms = json_timeout->valueint;
@@ -113,6 +135,41 @@ static void init_event_module(event_module *evm, cJSON *json)
 	evm->except_events = Y_create_queue();
 	evm->actions = select_evpoll_actions(evm->options.type);
 	evm->actions->initialize(evm);
+
+	app->evm = evm;
+}
+
+static void init_http_modules(cblog_app *app)
+{
+	cblog_http_module_chain *chain = (cblog_http_module_chain *)calloc(1, sizeof(cblog_http_module_chain));
+	if(chain == NULL)
+	{
+		YLOGE("create cblog_http_module_chain failed, %s", strerror(errno));
+		return;
+	}
+
+	int nmodule = sizeof(cblog_http_module_list) / sizeof(cblog_http_module *);
+
+	for(int i = 0; i < nmodule; i++)
+	{
+		cblog_http_module *module = cblog_http_module_list[i];
+		if(module == NULL)
+		{
+			break;
+		}
+
+		void *ctx = module->initialize(app);
+		if(ctx == NULL)
+		{
+			YLOGE("init %s module failed", module->name);
+			continue;
+		}
+
+		module->context = ctx;
+
+		// 模块加到链表里
+		Y_chain_add(cblog_http_module, chain, module);
+	}
 }
 
 
@@ -147,11 +204,16 @@ int cblog_app_init(const char *config)
 
 	// 初始化event_module
 	cJSON *json_event = cJSON_GetObjectItem(json, "event");
-	new_object(event_module, evm);
-	init_event_module(evm, json_event);
-	app->evm = evm;
+	init_event_module(app, json_event);
 
+	// 初始化HttpHandler
 	app->http_handler = &cblog_default_http_handler;
+
+	// 初始化http生命周期事件列表
+	app->http_evlist = new_cblog_http_event_list();
+
+	// 初始化http模块列表
+	init_http_modules(app);
 
 	app_instance = app;
 
@@ -182,11 +244,3 @@ cblog_app *cblog_app_get()
 {
 	return app_instance;
 }
-
-void cblog_app_register_event(cblog_app *app, cblog_app_event_enum evt, cblog_app_event_handler handler)
-{
-
-}
-
-void cblog_app_unregister_event(cblog_app *app, cblog_app_event_enum evt, cblog_app_event_handler handler)
-{}

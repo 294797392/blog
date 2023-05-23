@@ -21,6 +21,7 @@
 #include "cblog_factory.h"
 #include "cblog_buffer.h"
 #include "cblog_response.h"
+#include "cblog_http_event.h"
 
 static void print_header(cblog_http_header *header)
 {
@@ -72,6 +73,9 @@ static void process_request(event_module *evm, cblog_event *evt)
 	// 打印请求的调试信息
 	//dump_request(request);
 
+	// 触发CBLOG_HTTP_EVENT_BEGIN_RESPONSE事件
+	cblog_http_raise_event(app->http_evlist, CBLOG_HTTP_EVENT_BEGIN_RESPONSE, conn);
+
 	// 处理Http请求
 	cblog_http_context context =
 	{
@@ -80,6 +84,13 @@ static void process_request(event_module *evm, cblog_event *evt)
 		.svc = conn->svc
 	};
 	app->http_handler->process_request(&context);
+
+	// 触发CBLOG_HTTP_EVENT_END_RESPONSE事件
+	cblog_http_raise_event(app->http_evlist, CBLOG_HTTP_EVENT_END_RESPONSE, conn);
+
+	// 此时HTTP响应完全被处理完了，设置content_length标头
+	int content_length = response->body_buffer->offset;
+	cblog_response_write_header_int(response, CBLOG_HTTP_HEADER_CONTENT_LENGTH, content_length);
 
 	// 构建一个新的pending_response，并挂载到队列上，等待下次轮询的时候写入
 	cblog_pending_response *pending_response = new_cblog_pending_response(response);

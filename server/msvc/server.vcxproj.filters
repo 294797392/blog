@@ -23,8 +23,11 @@
     <ClInclude Include="..\source\cblog_protocol.h" />
     <ClInclude Include="..\source\cblog_response.h" />
     <ClInclude Include="..\source\cblog_buffer.h" />
-    <ClInclude Include="..\source\module\cblog_http_module.h">
-      <Filter>module</Filter>
+    <ClInclude Include="..\source\http\cblog_http_module.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\http\cblog_http_event.h">
+      <Filter>http</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -60,11 +63,14 @@
     <ClCompile Include="..\source\cblog_protocol.c" />
     <ClCompile Include="..\source\cblog_response.c" />
     <ClCompile Include="..\source\cblog_buffer.c" />
-    <ClCompile Include="..\source\http_handler\cblog_http_handler.c">
+    <ClCompile Include="..\source\http\cblog_http_handler.c">
       <Filter>http</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\module\cblog_http_module.c">
-      <Filter>module</Filter>
+    <ClCompile Include="..\source\http\cblog_demo_http_module.c">
+      <Filter>http</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\http\cblog_http_event.c">
+      <Filter>http</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

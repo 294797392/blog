@@ -20,6 +20,14 @@
 										return CBLOG_ERR_NO_MEM;											\
 									}																		\
 
+#define new_object2(struct_type, var, code) struct_type *var = (struct_type *)calloc(1, sizeof(struct_type));		\
+									if(var == NULL)															\
+									{																		\
+										YLOGE("calloc failed, %s", strerror(errno));						\
+										code\
+									}																		\
+
+
 #define new_array(struct_type, var, count) struct_type **var = (struct_type **)calloc(count, sizeof(struct_type));			\
 											if(var == NULL)																	\
 											{																				\

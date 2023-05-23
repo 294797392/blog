@@ -39,4 +39,7 @@
 
 #define STEAK_DEFAULT_CONFIG_FILE							"service.json"
 
+// 默认的http生命周期事件个数
+#define CBLOG_DEFAULT_HTTP_EVENT_COUNT						16
+
 #endif

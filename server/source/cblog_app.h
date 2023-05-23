@@ -16,32 +16,26 @@
 
 #include "cblog_event_module.h"
 #include "cblog_types.h"
+#include "cblog_http_event.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-	typedef enum cblog_app_event_enum cblog_app_event_enum;
+	typedef struct cblog_app_s cblog_app;
+	typedef struct cblog_http_module_chain_s cblog_http_module_chain;
+	typedef struct cblog_http_module_s cblog_http_module;
+
+	struct cblog_http_module_chain_s
+	{
+		cblog_http_module *first;
+		cblog_http_module *last;
+		int count;
+	};
+
 	/// <summary>
 	/// 存储整个App的详细信息
 	/// </summary>
-	typedef struct cblog_app_s cblog_app;
-
-	typedef int(*cblog_app_event_handler)(cblog_app *app);
-
-	enum cblog_app_event_enum
-	{
-		/// <summary>
-		/// 当收到了一个新的请求的时候触发该事件
-		/// </summary>
-		CBLOG_APP_EVENT_BEGIN_REUQEST = 0,
-
-		/// <summary>
-		/// 当HttpHandler处理完请求，准备发送到客户端之前触发
-		/// </summary>
-		CBLOG_APP_EVENT_END_REQUEST
-	};
-
 	struct cblog_app_s
 	{
 		/// <summary>
@@ -70,6 +64,16 @@ extern "C" {
 		/// 处理HTTP请求的主结构体
 		/// </summary>
 		cblog_http_handler *http_handler;
+
+		/// <summary>
+		/// app事件列表
+		/// </summary>
+		cblog_http_event_list *http_evlist;
+
+		/// <summary>
+		/// http模块列表
+		/// </summary>
+		cblog_http_module_chain *http_modules;
 	};
 
 	/*
@@ -97,16 +101,6 @@ extern "C" {
 	 * steak_app实例
 	 */
 	cblog_app *cblog_app_get();
-
-	/// <summary>
-	/// 注册app事件
-	/// </summary>
-	/// <param name="app"></param>
-	/// <param name="evt"></param>
-	/// <param name="handler"></param>
-	/// <returns></returns>
-	void cblog_app_register_event(cblog_app *app, cblog_app_event_enum evt, cblog_app_event_handler handler);
-	void cblog_app_unregister_event(cblog_app *app, cblog_app_event_enum evt, cblog_app_event_handler handler);
 
 #ifdef __cplusplus
 }

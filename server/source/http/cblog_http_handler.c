@@ -26,10 +26,6 @@ static void process_request(cblog_http_context *ctx)
 				cblog_buffer_write(response->body_buffer, CBLOG_WELCOME_MESSAGE, strlen(CBLOG_WELCOME_MESSAGE));
 			}
 
-			// Ð´Èëcontent_length
-			int content_length = response->body_buffer->offset;
-			cblog_response_write_header_int(response, CBLOG_HTTP_HEADER_CONTENT_LENGTH, content_length);
-
 			break;
 		}
 

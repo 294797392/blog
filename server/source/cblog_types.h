@@ -33,7 +33,6 @@ extern "C" {
 	typedef struct cblog_http_context_s cblog_http_context;
 	typedef struct cblog_http_handler_s cblog_http_handler;
 
-
 	enum cblog_conn_status_enum
 	{
 		/// <summary>

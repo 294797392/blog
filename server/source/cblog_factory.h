@@ -18,6 +18,7 @@
 #include "cblog_socket.h"
 #include "cblog_types.h"
 #include "cblog_event_module.h"
+#include "cblog_http_event.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -54,6 +55,9 @@ extern "C" {
 
 	cblog_pending_response *new_cblog_pending_response(cblog_response *response);
 	void free_cblog_pending_response(cblog_pending_response *response);
+
+	cblog_http_event_list *new_cblog_http_event_list();
+	void free_cblog_http_event_list(cblog_http_event_list *evlist);
 
 #ifdef __cplusplus
 }
