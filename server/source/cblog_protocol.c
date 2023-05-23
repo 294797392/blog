@@ -32,6 +32,7 @@ static enum_string cblog_http_version_list[] =
 static enum_string cblog_http_status_code_list[] =
 {
 	{.enum_value = CBLOG_HTTP_STATUS_CODE_OK,				.string = "OK"},
+	{.enum_value = CBLOG_HTTP_STATUS_NOT_FOUND,				.string = "Not Found"},
 	{.enum_value = -1,										.string = NULL}
 };
 

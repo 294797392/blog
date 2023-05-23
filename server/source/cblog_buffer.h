@@ -120,6 +120,15 @@ extern "C" {
 	/// <returns></returns>
 	int cblog_buffer_write3(cblog_buffer *buffer, cblog_string *str);
 
+	/// <summary>
+	/// 把一个文件写入到buffer里
+	/// </summary>
+	/// <param name="buffer"></param>
+	/// <param name="file_path"></param>
+	/// <returns></returns>
+	int cblog_buffer_write_file(cblog_buffer *buffer, const char *file_path);
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -70,3 +70,9 @@ int cblog_string_to_int32(cblog_string *str)
 	strncpy(buffer, str->buffer->pdata + str->offset, str->length);
 	return atoi(buffer);
 }
+
+void cblog_string_copy(cblog_string *str, char *buf, size_t bufsize)
+{
+	memset(buf, '\0', bufsize);
+	strncpy(buf, str->buffer->pdata + str->offset, str->length);
+}

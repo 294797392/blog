@@ -30,7 +30,7 @@ extern "C" {
 		cblog_buffer *buffer;
 
 		/// <summary>
-		/// 该字符串相对于缓冲区的偏移量
+		/// 该字符串相对于buffer->pdata的偏移量
 		/// </summary>
 		int offset;
 
@@ -53,6 +53,14 @@ extern "C" {
 	void cblog_string_print2(char *prepend, cblog_string *str);
 
 	int cblog_string_to_int32(cblog_string *str);
+
+	/// <summary>
+	/// 把str拷贝到buf里
+	/// </summary>
+	/// <param name="str"></param>
+	/// <param name="buf"></param>
+	/// <param name="bufsize"></param>
+	void cblog_string_copy(cblog_string *str, char *buf, size_t bufsize);
 
 #ifdef __cplusplus
 }
