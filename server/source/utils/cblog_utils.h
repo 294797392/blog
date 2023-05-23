@@ -17,14 +17,14 @@
 									if(var == NULL)															\
 									{																		\
 										YLOGE("calloc failed, %s", strerror(errno));						\
-										return STEAK_ERR_NO_MEM;											\
+										return CBLOG_ERR_NO_MEM;											\
 									}																		\
 
 #define new_array(struct_type, var, count) struct_type **var = (struct_type **)calloc(count, sizeof(struct_type));			\
 											if(var == NULL)																	\
 											{																				\
 												YLOGE("calloc failed, %s", strerror(errno));								\
-												return STEAK_ERR_NO_MEM;													\
+												return CBLOG_ERR_NO_MEM;													\
 											}																				\
 
 

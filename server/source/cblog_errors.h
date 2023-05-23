@@ -9,11 +9,11 @@
 #ifndef __CBLOG_ERRORS_H__
 #define __CBLOG_ERRORS_H__
 
-#define STEAK_ERR_OK							0
-#define STEAK_ERR_NO_MEM						1
-#define STEAK_ERR_FAILED						2
-#define STEAK_ERR_REQUEST_INVALID				3				// 不存在content-length
-#define STEAK_ERR_SYSERR						4				// 系统错误
-#define STEAK_ERR_INVALID_CONFIG				5				// 配置文件格式不正确
+#define CBLOG_ERR_OK							0
+#define CBLOG_ERR_NO_MEM						1
+#define CBLOG_ERR_FAILED						2
+#define CBLOG_ERR_INVALID_REQUEST				3				// 不存在content-length
+#define CBLOG_ERR_SYSERR						4				// 系统错误
+#define CBLOG_ERR_INVALID_CONFIG				5				// 配置文件格式不正确
 
 #endif

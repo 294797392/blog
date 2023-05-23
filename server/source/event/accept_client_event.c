@@ -23,7 +23,7 @@ int accept_client_event(event_module *evm, cblog_event *evt)
 	if((sock = accept(evt->sock, &addr, &addr_len)) == -1)
 	{
 		YLOGE("accept client failed, %s", strerror(errno));
-		return STEAK_ERR_FAILED;
+		return CBLOG_ERR_FAILED;
 	}
 
 	YLOGI("client connected, new session");
@@ -35,5 +35,5 @@ int accept_client_event(event_module *evm, cblog_event *evt)
 	cblog_event *event = new_cblog_connection_event(sock, svc);
 	event_add(evm, event);
 
-	return STEAK_ERR_OK;
+	return CBLOG_ERR_OK;
 }

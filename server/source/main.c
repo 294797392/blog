@@ -49,7 +49,7 @@ static void cleanup_timeout_events(event_module *evm, cblog_event **events, int 
 /// <returns></returns>
 static int init_modules()
 {
-	return STEAK_ERR_OK;
+	return CBLOG_ERR_OK;
 }
 
 
@@ -60,22 +60,22 @@ int main(int argc, char **argv)
 
 	Y_log_init(NULL);
 
-	if((rc = cblog_socket_init()) != STEAK_ERR_OK)
+	if((rc = cblog_socket_init()) != CBLOG_ERR_OK)
 	{
 		return 0;
 	}
 
-	if((rc = init_modules()) != STEAK_ERR_OK)
+	if((rc = init_modules()) != CBLOG_ERR_OK)
 	{
 		return 0;
 	}
 
-	if((rc = cblog_app_init(STEAK_DEFAULT_CONFIG_FILE)) != STEAK_ERR_OK)
+	if((rc = cblog_app_init(STEAK_DEFAULT_CONFIG_FILE)) != CBLOG_ERR_OK)
 	{
 		return 0;
 	}
 
-	if((rc = cblog_app_start()) != STEAK_ERR_OK)
+	if((rc = cblog_app_start()) != CBLOG_ERR_OK)
 	{
 		return 0;
 	}
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
 	{
 		// 轮询事件列表
 		rc = event_run_cycle(evm);
-		if(rc != STEAK_ERR_OK)
+		if(rc != CBLOG_ERR_OK)
 		{
 			YLOGE("poll event failed, %d", rc);
 			continue;

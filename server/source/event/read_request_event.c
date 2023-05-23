@@ -197,7 +197,7 @@ int read_request_event(event_module *evm, cblog_event *evt)
 	{
 		YLOGE("recv socket zero, close connection");
 		Y_queue_enqueue(evm->except_events, evt);
-		return STEAK_ERR_OK;
+		return CBLOG_ERR_OK;
 	}
 
 	// socket发生错误, 直接关闭该链接
@@ -205,7 +205,7 @@ int read_request_event(event_module *evm, cblog_event *evt)
 	{
 		YLOGE("recv socket failed, %d, close connection", cblog_socket_error());
 		Y_queue_enqueue(evm->except_events, evt);
-		return STEAK_ERR_OK;
+		return CBLOG_ERR_OK;
 	}
 
 	// 解析http报文
@@ -241,5 +241,5 @@ int read_request_event(event_module *evm, cblog_event *evt)
 		}
 	}
 
-	return STEAK_ERR_OK;
+	return CBLOG_ERR_OK;
 }

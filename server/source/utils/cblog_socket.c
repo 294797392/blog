@@ -22,11 +22,11 @@ int cblog_socket_init()
 	if(rc != 0)
 	{
 		YLOGE("WASStartup failed, %s", strerror(errno));
-		return STEAK_ERR_SYSERR;
+		return CBLOG_ERR_SYSERR;
 	}
 #endif
 
-	return STEAK_ERR_OK;
+	return CBLOG_ERR_OK;
 }
 
 int cblog_socket_get_avaliable_size(cblog_socket sock)
@@ -56,10 +56,10 @@ int cblog_socket_set_nonblock(cblog_socket sock)
 #endif
 	{
 		YLOGE("set socket nonblock failed, %d", cblog_socket_error());
-		return STEAK_ERR_SYSERR;
+		return CBLOG_ERR_SYSERR;
 	}
 
-	return STEAK_ERR_OK;
+	return CBLOG_ERR_OK;
 }
 
 void cblog_socket_close(cblog_socket sock)

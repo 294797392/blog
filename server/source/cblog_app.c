@@ -68,7 +68,7 @@ static int start_svchost(svchost *svc)
 	if((svc->sock = socket(PF_INET, SOCK_STREAM, 0)) < 0)
 	{
 		YLOGE("create socket failed, %d", cblog_socket_error());
-		return STEAK_ERR_SYSERR;
+		return CBLOG_ERR_SYSERR;
 	}
 
 	// 设置Socket选项，当程序异常退出之后再次打开程序的时候端口还可以继续使用
@@ -76,7 +76,7 @@ static int start_svchost(svchost *svc)
 	if(setsockopt(svc->sock, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on)) < 0)
 	{
 		YLOGE("setsockopt failed SO_REUSEADDR, %d", cblog_socket_error());
-		return STEAK_ERR_SYSERR;
+		return CBLOG_ERR_SYSERR;
 	}
 
 	// 设置要侦听的网络接口和端口
@@ -90,17 +90,17 @@ static int start_svchost(svchost *svc)
 	if(bind(svc->sock, (struct sockaddr *)&bdaddr, sizeof(struct sockaddr)) < 0)
 	{
 		YLOGE("bind failed, %d", cblog_socket_error());
-		return STEAK_ERR_SYSERR;
+		return CBLOG_ERR_SYSERR;
 	}
 
 	// 监听
 	if(listen(svc->sock, 5) < 0)
 	{
 		YLOGE("listen failed, %d", cblog_socket_error());
-		return STEAK_ERR_SYSERR;
+		return CBLOG_ERR_SYSERR;
 	}
 
-	return STEAK_ERR_OK;
+	return CBLOG_ERR_OK;
 }
 
 static void init_event_module(event_module *evm, cJSON *json)
@@ -126,7 +126,7 @@ int cblog_app_init(const char *config)
 	if(rc != YERR_SUCCESS)
 	{
 		YLOGE("config file error, %s", config);
-		return STEAK_ERR_INVALID_CONFIG;
+		return CBLOG_ERR_INVALID_CONFIG;
 	}
 
 	cJSON *json = cJSON_Parse(json_content);
@@ -155,18 +155,18 @@ int cblog_app_init(const char *config)
 
 	app_instance = app;
 
-	return STEAK_ERR_OK;
+	return CBLOG_ERR_OK;
 }
 
 int cblog_app_start()
 {
-	int rc = STEAK_ERR_OK;
+	int rc = CBLOG_ERR_OK;
 
 	// 启动svchost
 	for(int i = 0; i < app_instance->nsvchost; i++)
 	{
 		svchost *svc = app_instance->svchosts[i];
-		if((rc = start_svchost(svc)) != STEAK_ERR_OK)
+		if((rc = start_svchost(svc)) != CBLOG_ERR_OK)
 		{
 			return rc;
 		}
@@ -175,7 +175,7 @@ int cblog_app_start()
 		event_add(app_instance->evm, evt);
 	}
 
-	return STEAK_ERR_OK;
+	return CBLOG_ERR_OK;
 }
 
 cblog_app *cblog_app_get()

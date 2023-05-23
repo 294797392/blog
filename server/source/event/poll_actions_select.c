@@ -30,7 +30,7 @@ int eventpoll_select_initialize(event_module *evm)
 	if(pollselect == NULL)
 	{
 		YLOGE("cannot create poll_select instance, no memory");
-		return STEAK_ERR_NO_MEM;
+		return CBLOG_ERR_NO_MEM;
 	}
 
 	evm->actions_data = pollselect;
@@ -43,7 +43,7 @@ int eventpoll_select_initialize(event_module *evm)
 	pollselect->timeout.tv_sec = 0;
 	pollselect->timeout.tv_usec = evm->timeout_ms * 1000;
 
-	return STEAK_ERR_OK;
+	return CBLOG_ERR_OK;
 }
 
 void eventpoll_select_release(event_module *evm)
@@ -72,7 +72,7 @@ int eventpoll_select_add_event(event_module *evm, cblog_event *evt)
 		pollselect->max_fd = evt->sock;
 	}
 
-	return STEAK_ERR_OK;
+	return CBLOG_ERR_OK;
 }
 
 int eventpoll_select_delete_event(event_module *evm, cblog_event *evt)
@@ -91,7 +91,7 @@ int eventpoll_select_delete_event(event_module *evm, cblog_event *evt)
 		pollselect->max_write--;
 	}
 
-	return STEAK_ERR_OK;
+	return CBLOG_ERR_OK;
 }
 
 int eventpoll_select_modify_event(event_module *evm, cblog_event *evt, int read, int write)
@@ -126,7 +126,7 @@ int eventpoll_select_modify_event(event_module *evm, cblog_event *evt, int read,
 		pollselect->max_write--;
 	}
 
-	return STEAK_ERR_OK;
+	return CBLOG_ERR_OK;
 }
 
 int eventpoll_select_poll_event(event_module *evm)
@@ -144,7 +144,7 @@ int eventpoll_select_poll_event(event_module *evm)
 	if(ret == 0)
 	{
 		// timeout
-		return STEAK_ERR_OK;
+		return CBLOG_ERR_OK;
 	}
 	else if(ret < 0)
 	{
@@ -160,7 +160,7 @@ int eventpoll_select_poll_event(event_module *evm)
 			default:
 			{
 				YLOGE("select failed, %s", strerror(errno));
-				return STEAK_ERR_OK;
+				return CBLOG_ERR_OK;
 			}
 		}
 	}
@@ -184,7 +184,7 @@ int eventpoll_select_poll_event(event_module *evm)
 		}
 	}
 
-	return STEAK_ERR_OK;
+	return CBLOG_ERR_OK;
 }
 
 eventpoll_actions eventpoll_actions_select =

@@ -16,7 +16,7 @@ int event_add(event_module *evm, cblog_event *evt)
 	eventpoll_actions *actions = evm->actions;
 	actions->add_event(evm, evt);
 	Y_chain_add(cblog_event, evm->events, evt);
-	return STEAK_ERR_OK;
+	return CBLOG_ERR_OK;
 }
 
 int event_remove(event_module *evm, cblog_event *evt)
@@ -24,7 +24,7 @@ int event_remove(event_module *evm, cblog_event *evt)
 	eventpoll_actions *actions = evm->actions;
 	actions->delete_event(evm, evt);
 	Y_chain_remove(cblog_event, evm->events, evt);
-	return STEAK_ERR_OK;
+	return CBLOG_ERR_OK;
 }
 
 int event_modify(event_module *evm, cblog_event *evt, int read, int write)
@@ -33,7 +33,7 @@ int event_modify(event_module *evm, cblog_event *evt, int read, int write)
 
 	if(evt->read == read && evt->write == write)
 	{
-		return STEAK_ERR_OK;
+		return CBLOG_ERR_OK;
 	}
 
 	evt->read = read;
@@ -44,7 +44,7 @@ int event_modify(event_module *evm, cblog_event *evt, int read, int write)
 
 int event_run_cycle(event_module *evm)
 {
-	int code = STEAK_ERR_OK;
+	int code = CBLOG_ERR_OK;
 	eventpoll_actions *actions = evm->actions;
 	code = actions->poll_event(evm);
 

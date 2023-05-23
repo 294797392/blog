@@ -134,5 +134,5 @@ int write_response_event(event_module *evm, cblog_event *evt)
 		}
 	}
 
-	return STEAK_ERR_OK;
+	return CBLOG_ERR_OK;
 }
