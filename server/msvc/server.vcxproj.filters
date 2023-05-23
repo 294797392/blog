@@ -29,6 +29,9 @@
     <ClInclude Include="..\source\http\cblog_http_event.h">
       <Filter>http</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\utils\cblog_xaml2html.h">
+      <Filter>utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\main.c" />
@@ -72,6 +75,12 @@
     <ClCompile Include="..\source\http\cblog_http_event.c">
       <Filter>http</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\http\modules\xaml2html_module.c">
+      <Filter>http\modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\utils\cblog_xaml2html.c">
+      <Filter>utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="event">
@@ -88,6 +97,9 @@
     </Filter>
     <Filter Include="http">
       <UniqueIdentifier>{45e3ca55-d0e2-487a-bdd6-c44edae08e41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="http\modules">
+      <UniqueIdentifier>{65a7692e-31d1-43ac-8ed2-f43ae4538482}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
