@@ -3,6 +3,9 @@
 #include <string.h>
 
 #include "cblog_types.h"
+#include "cblog_buffer.h"
+#include "cblog_string.h"
+#include "cblog_response.h"
 
 static void process_request(cblog_http_context *ctx)
 {
@@ -22,6 +25,11 @@ static void process_request(cblog_http_context *ctx)
 				response->status_code = CBLOG_HTTP_STATUS_CODE_OK;
 				cblog_buffer_write(response->body_buffer, CBLOG_WELCOME_MESSAGE, strlen(CBLOG_WELCOME_MESSAGE));
 			}
+
+			// Ð´Èëcontent_length
+			int content_length = response->body_buffer->offset;
+			cblog_response_write_header_int(response, CBLOG_HTTP_HEADER_CONTENT_LENGTH, content_length);
+
 			break;
 		}
 

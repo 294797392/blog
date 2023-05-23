@@ -6,6 +6,7 @@
 #include <libY.h>
 
 #include "cblog_string.h"
+#include "cblog_buffer.h"
 
 int cblog_string_casecmp(cblog_string *str1, const char *str2)
 {

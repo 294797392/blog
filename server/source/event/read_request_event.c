@@ -70,7 +70,7 @@ static void process_request(event_module *evm, cblog_event *evt)
 	cblog_response *response = conn->response;
 
 	// 打印请求的调试信息
-	dump_request(request);
+	//dump_request(request);
 
 	// 处理Http请求
 	cblog_http_context context =
@@ -82,7 +82,8 @@ static void process_request(event_module *evm, cblog_event *evt)
 	app->http_handler->process_request(&context);
 
 	// 构建一个新的pending_response，并挂载到队列上，等待下次轮询的时候写入
-
+	cblog_pending_response *pending_response = new_cblog_pending_response(response);
+	Y_chain_add(cblog_pending_response, conn->pending_response_list, pending_response);
 
 	// 把文件描述符设置为可写状态
 	event_modify(evm, evt, evt->read, 1);

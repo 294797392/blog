@@ -29,10 +29,6 @@ extern "C" {
 	cblog_response *new_cblog_response();
 	void free_cblog_response(cblog_response *response);
 
-	cblog_pending_response *new_cblog_pending_response(cblog_response *response);
-	cblog_pending_response *new_cblog_pending_response2(char *buf, int buflen);
-	void free_cblog_pending_response(cblog_pending_response *response);
-
 	cblog_connection *new_cblog_connection(cblog_socket sock, svchost *svc);
 	void free_cblog_connection(cblog_connection *conn);
 
@@ -55,6 +51,9 @@ extern "C" {
 
 	cblog_http_header *new_cblog_http_header();
 	void free_cblog_http_header(cblog_http_header *header);
+
+	cblog_pending_response *new_cblog_pending_response(cblog_response *response);
+	void free_cblog_pending_response(cblog_pending_response *response);
 
 #ifdef __cplusplus
 }

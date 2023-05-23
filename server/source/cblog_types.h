@@ -13,7 +13,6 @@
 #include "cblog_default.h"
 #include "cblog_socket.h"
 #include "cblog_parser.h"
-#include "cblog_string.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,6 +32,7 @@ extern "C" {
 	typedef struct cblog_session_s cblog_session;
 	typedef struct cblog_http_context_s cblog_http_context;
 	typedef struct cblog_http_handler_s cblog_http_handler;
+
 
 	enum cblog_conn_status_enum
 	{
@@ -140,7 +140,20 @@ extern "C" {
 		cblog_pending_response *prev;
 		cblog_pending_response *next;
 
+		/// <summary>
+		/// 缓冲区指针
+		/// </summary>
 		cblog_buffer *buffer;
+
+		/// <summary>
+		/// 发送缓冲区里的偏移量
+		/// </summary>
+		int offset;
+
+		/// <summary>
+		/// 剩余要发送的长度
+		/// </summary>
+		int left;
 	};
 
 	/// <summary>

@@ -14,11 +14,13 @@
 #include <libY.h>
 
 #include "cblog_socket.h"
+#include "cblog_types.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+	typedef struct cblog_string_s cblog_string;
 	typedef struct cblog_buffer_s cblog_buffer;
 	struct cblog_buffer_s
 	{
@@ -40,6 +42,7 @@ extern "C" {
 
 		/// <summary>
 		/// 写偏移量
+		/// 也就是缓冲区里的数据长度
 		/// </summary>
 		int offset;
 	};
@@ -91,19 +94,6 @@ extern "C" {
 	 */
 	int cblog_buffer_recv_socket(cblog_buffer *buffer, cblog_socket sock);
 
-	/*
-	 * 描述：
-	 * 向socket发送数据
-	 *
-	 * 参数：
-	 * @buffer：要操作的缓冲区对象
-	 * @sock：socket句柄
-	 *
-	 * 返回值：
-	 * 同send返回值
-	 */
-	int cblog_buffer_send_socket(cblog_buffer *buffer, cblog_socket sock);
-
 	/// <summary>
 	/// 往缓冲区里写数据
 	/// 如果缓冲区不够，那么会自动扩容缓冲区
@@ -121,6 +111,14 @@ extern "C" {
 	/// <param name="buffer2"></param>
 	/// <returns></returns>
 	int cblog_buffer_write2(cblog_buffer *writeto, cblog_buffer *buffer);
+
+	/// <summary>
+	/// 把一个cblog_string写入到cblog_buffer里
+	/// </summary>
+	/// <param name="buffer"></param>
+	/// <param name="str"></param>
+	/// <returns></returns>
+	int cblog_buffer_write3(cblog_buffer *buffer, cblog_string *str);
 
 #ifdef __cplusplus
 }

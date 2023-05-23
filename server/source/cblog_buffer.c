@@ -92,7 +92,7 @@ int cblog_buffer_write(cblog_buffer *buffer, const char *str, int len)
 {
 	if(len == 0)
 	{
-		return;
+		return STEAK_ERR_OK;
 	}
 
 	if(ensure_buffer_size(buffer, len))
@@ -100,7 +100,7 @@ int cblog_buffer_write(cblog_buffer *buffer, const char *str, int len)
 		return STEAK_ERR_NO_MEM;
 	}
 
-	strncpy(buffer->pdata, str, len);
+	strncpy(buffer->pdata + buffer->offset, str, len);
 	buffer->offset += len;
 	buffer->left -= len;
 
@@ -112,7 +112,7 @@ int cblog_buffer_write2(cblog_buffer *writeto, cblog_buffer *buffer2)
 	int len = buffer2->offset;
 	if(len == 0)
 	{
-		return;
+		return STEAK_ERR_OK;
 	}
 
 	if(ensure_buffer_size(writeto, len))
@@ -123,4 +123,26 @@ int cblog_buffer_write2(cblog_buffer *writeto, cblog_buffer *buffer2)
 	strncpy(writeto->pdata + writeto->offset, buffer2->pdata, len);
 	writeto->offset += len;
 	writeto->left -= len;
+
+	return STEAK_ERR_OK;
+}
+
+int cblog_buffer_write3(cblog_buffer *buffer, cblog_string *str)
+{
+	int len = str->length;
+	if(len == 0)
+	{
+		return STEAK_ERR_OK;
+	}
+
+	if(ensure_buffer_size(buffer, len))
+	{
+		return STEAK_ERR_NO_MEM;
+	}
+
+	strncpy(buffer->pdata + buffer->offset, str->buffer->pdata + str->offset, len);
+	buffer->offset += len;
+	buffer->left -= len;
+
+	return STEAK_ERR_OK;
 }
